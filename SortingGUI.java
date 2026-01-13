@@ -224,4 +224,3 @@ public class SortingGUI extends JFrame {
         SwingUtilities.invokeLater(() -> new SortingGUI().setVisible(true));
     }
 }
-...
