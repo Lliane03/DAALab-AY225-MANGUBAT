@@ -1,7 +1,6 @@
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
-import java.io.*;
 import java.util.*;
 
 public class SortingGUI extends JFrame {
@@ -90,7 +89,8 @@ public class SortingGUI extends JFrame {
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             try (Scanner scanner = new Scanner(chooser.getSelectedFile())) {
                 ArrayList<Integer> list = new ArrayList<>();
-                while (scanner.hasNextInt()) list.add(scanner.nextInt());
+                while (scanner.hasNextInt())
+                    list.add(scanner.nextInt());
                 data = list.stream().mapToInt(i -> i).toArray();
 
                 textArea.setText("Dataset Loaded (" + data.length + " values)\n\n");
@@ -131,9 +131,8 @@ public class SortingGUI extends JFrame {
 
         statusLabel.setText(
                 " Algorithm: " + type +
-                " | Order: " + (ascending ? "Ascending" : "Descending") +
-                " | Time: " + String.format("%.6f", seconds) + " seconds"
-        );
+                        " | Order: " + (ascending ? "Ascending" : "Descending") +
+                        " | Time: " + String.format("%.6f", seconds) + " seconds");
     }
 
     // ===== DISPLAY =====
@@ -180,7 +179,9 @@ public class SortingGUI extends JFrame {
         for (int i = 0; i < a.length - 1; i++)
             for (int j = 0; j < a.length - i - 1; j++)
                 if ((asc && a[j] > a[j + 1]) || (!asc && a[j] < a[j + 1])) {
-                    int t = a[j]; a[j] = a[j + 1]; a[j + 1] = t;
+                    int t = a[j];
+                    a[j] = a[j + 1];
+                    a[j + 1] = t;
                 }
     }
 
@@ -216,8 +217,10 @@ public class SortingGUI extends JFrame {
                 a[k++] = R[j++];
             }
         }
-        while (i < L.length) a[k++] = L[i++];
-        while (j < R.length) a[k++] = R[j++];
+        while (i < L.length)
+            a[k++] = L[i++];
+        while (j < R.length)
+            a[k++] = R[j++];
     }
 
     public static void main(String[] args) {
