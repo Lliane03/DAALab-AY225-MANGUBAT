@@ -1,6 +1,6 @@
 # Bubble Sort - PRELIM-LAB-WORK-1
 
-A Python implementation of the Bubble Sort algorithm that sorts data in descending order.
+This is a console-based Python program that implements the Bubble Sort algorithm to sort data in descending order.
 
 ## Requirements
 

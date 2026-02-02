@@ -1,6 +1,6 @@
 # Sorting GUI - PRELIM-LAB-WORK-2
 
-A Java GUI application that implements and compares various sorting algorithms (Bubble Sort, Insertion Sort, and Merge Sort).
+This is a GUI-based Java application that implements and compares various sorting algorithms (Bubble Sort, Insertion Sort, and Merge Sort).
 
 ## Requirements
 
