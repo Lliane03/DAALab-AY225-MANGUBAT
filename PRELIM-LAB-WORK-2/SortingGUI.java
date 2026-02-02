@@ -54,8 +54,8 @@ public class SortingGUI extends JFrame {
         mainPanel.setOpaque(false);
 
         // ===== TOP PANEL =====
-        uploadButton = createModernButton("📁 Upload Dataset", PRIMARY, Color.WHITE);
-        refreshButton = createModernButton("🔄 Refresh", TEXT_SECONDARY, Color.WHITE);
+        uploadButton = createModernButton("Upload Dataset", PRIMARY, Color.WHITE);
+        refreshButton = createModernButton("Refresh", TEXT_SECONDARY, Color.WHITE);
 
         JPanel uploadPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         uploadPanel.setOpaque(false);
@@ -63,9 +63,9 @@ public class SortingGUI extends JFrame {
         uploadPanel.add(refreshButton);
 
         // Algorithm buttons with emoji icons
-        bubbleButton = createModernButton("🫧 Bubble Sort", ACCENT, Color.WHITE);
-        insertionButton = createModernButton("📌 Insertion Sort", SUCCESS, Color.WHITE);
-        mergeButton = createModernButton("🔀 Merge Sort", SECONDARY, Color.WHITE);
+        bubbleButton = createModernButton("Bubble Sort", ACCENT, Color.WHITE);
+        insertionButton = createModernButton("Insertion Sort", SUCCESS, Color.WHITE);
+        mergeButton = createModernButton("Merge Sort", SECONDARY, Color.WHITE);
 
         JPanel sortPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
         sortPanel.setOpaque(false);
@@ -74,8 +74,8 @@ public class SortingGUI extends JFrame {
         sortPanel.add(mergeButton);
 
         // Modern radio buttons
-        ascButton = createModernRadio("⬆️ Ascending");
-        descButton = createModernRadio("⬇️ Descending");
+        ascButton = createModernRadio("Ascending");
+        descButton = createModernRadio("Descending");
         descButton.setSelected(true);
 
         ButtonGroup orderGroup = new ButtonGroup();
@@ -107,7 +107,7 @@ public class SortingGUI extends JFrame {
         textArea.setLineWrap(false);
 
         JScrollPane scrollPane = new JScrollPane(textArea);
-        scrollPane.setBorder(createModernTitledBorder("📊 Results"));
+        scrollPane.setBorder(createModernTitledBorder("Results"));
         scrollPane.getViewport().setBackground(Color.WHITE);
         
         // Custom scrollbar styling
@@ -115,7 +115,7 @@ public class SortingGUI extends JFrame {
         scrollPane.getHorizontalScrollBar().setUI(new ModernScrollBarUI());
 
         // ===== STATUS BAR WITH GRADIENT =====
-        statusLabel = new JLabel(" 🚀 Ready to sort") {
+        statusLabel = new JLabel(" Ready to sort") {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2d = (Graphics2D) g;
@@ -223,12 +223,12 @@ public class SortingGUI extends JFrame {
                     list.add(scanner.nextInt());
                 data = list.stream().mapToInt(i -> i).toArray();
 
-                textArea.setText("✅ Dataset Loaded Successfully (" + data.length + " values)\n\n");
+                textArea.setText("Dataset Loaded Successfully (" + data.length + " values)\n\n");
                 displayResult(data);
-                statusLabel.setText(" 📂 Dataset loaded: " + data.length + " integers");
+                statusLabel.setText(" Dataset loaded: " + data.length + " integers");
 
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "❌ Invalid file format!", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Invalid file format!", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -236,7 +236,7 @@ public class SortingGUI extends JFrame {
     // ===== SORT HANDLER =====
     private void sortData(String type) {
         if (data == null) {
-            JOptionPane.showMessageDialog(this, "⚠️ Please upload a dataset first!", "Warning", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please upload a dataset first!", "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -254,16 +254,15 @@ public class SortingGUI extends JFrame {
         }
 
         long end = System.nanoTime();
-        double seconds = (end - start) / 1_000_000_000.0;
+        double milliseconds = (end - start) / 1_000_000.0;
 
-        String arrow = ascending ? "⬆️" : "⬇️";
-        textArea.setText("✨ " + type + " Sort Complete " + arrow + " " + (ascending ? "Ascending" : "Descending") + "\n\n");
+        textArea.setText(type + " Sort Complete - " + (ascending ? "Ascending" : "Descending") + "\n\n");
         displayResult(temp);
 
         statusLabel.setText(
-                " 🎯 Algorithm: " + type +
-                        " | Order: " + (ascending ? "Ascending ⬆️" : "Descending ⬇️") +
-                        " | ⏱️ Time: " + String.format("%.6f", seconds) + "s");
+                " Algorithm: " + type +
+                        " | Order: " + (ascending ? "Ascending" : "Descending") +
+                        " | Time: " + String.format("%.3f", milliseconds) + " ms");
     }
 
     // ===== DISPLAY =====
@@ -305,7 +304,7 @@ public class SortingGUI extends JFrame {
     private void refresh() {
         data = null;
         textArea.setText("");
-        statusLabel.setText(" 🚀 Ready to sort");
+        statusLabel.setText(" Ready to sort");
 
         bubbleButton.setBorder(null);
         insertionButton.setBorder(null);
