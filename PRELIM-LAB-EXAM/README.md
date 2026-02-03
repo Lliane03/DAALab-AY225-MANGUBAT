@@ -57,20 +57,33 @@ This project implements and compares three fundamental sorting algorithms (Bubbl
 ### Key Observations
 
 1. **Merge Sort Dominance**: For 100,000 records, Merge Sort is approximately:
-   - **___× faster** than Bubble Sort
-   - **___× faster** than Insertion Sort
+   - **1,428× faster** than Bubble Sort
+   - **688× faster** than Insertion Sort
 
 2. **Quadratic Growth**: O(n²) algorithms show exponential time increase:
-   - From 1,000 to 10,000 records (10× data): Time increased by approximately **___×**
-   - From 10,000 to 100,000 records (10× data): Time increased by approximately **___×**
+   - From 1,000 to 10,000 records (10× data): Time increased by approximately **15×**
+   - From 10,000 to 100,000 records (10× data): Time increased by approximately **186×**
 
 3. **Linear-Logarithmic Efficiency**: Merge Sort maintains near-linear scaling:
-   - From 1,000 to 10,000 records (10× data): Time increased by approximately **___×**
-   - From 10,000 to 100,000 records (10× data): Time increased by approximately **___×**
+   - From 1,000 to 10,000 records (10× data): Time increased by approximately **0.6×**
+   - From 10,000 to 100,000 records (10× data): Time increased by approximately **13.0×**
 
 4. **String vs Integer Comparison**: 
-   - Sorting by FirstName/LastName is *[faster/slower/similar]* compared to sorting by ID
-   - This is because *[add explanation]*
+   - Sorting by FirstName/LastName is *slower* compared to sorting by ID
+   - This is because *string comparisons check each character one by one, while integer comparisons happen instantly*.
+
+### Additional Insights
+
+- **Bubble Sort Performance**: At 100,000 records, Bubble Sort took over **3 minutes** (188,845.70 ms), making it impractical for large datasets.
+- **Insertion Sort Advantage**: Insertion Sort is approximately **2.3× faster** than Bubble Sort for large datasets, though still significantly slower than Merge Sort.
+- **Merge Sort Consistency**: Merge Sort showed remarkable consistency across all test cases, with minimal variation in performance regardless of column type.
+
+- **String Sorting Impact**: 
+  - FirstName sorting was **47.4% slower** than ID sorting on average
+  - LastName sorting was **74.4% slower** than ID sorting on average
+  - This demonstrates the overhead of string comparison operations
+
+- **Scalability Winner**: Merge Sort is the clear choice for production systems, maintaining sub-second performance even with 100,000 records across all column types.
 
 ## 🚀 Getting Started
 
