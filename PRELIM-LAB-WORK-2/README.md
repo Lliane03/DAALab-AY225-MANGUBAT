@@ -9,19 +9,13 @@ This is a GUI-based Java application that implements and compares various sortin
 
 ## How to Run
 
-### 1. Compile the Code
+### 1. Clone the Repository
 
-```bash
-javac SortingGUI.java
-```
+### 2. Compile the Code
 
-### 2. Run the Application
+### 3. Run the Application
 
-```bash
-java SortingGUI
-```
-
-### 3. Using the Application
+### 4. Using the Application
 
 1. **Upload Dataset**: Click the "Upload Dataset (.txt)" button to select a text file containing numbers (one number per line or space-separated)
 2. **Select Sort Algorithm**: Choose from:
@@ -57,3 +51,46 @@ or one number per line:
 - Ascending/Descending sort order selection
 - Performance metrics display
 - File upload functionality for custom datasets
+
+## 👤 Author
+
+**Name**: Angel Julliane I. Mangubat 
+
+**Student ID**: 24-2246-776
+
+**Degree Program**: Bachelor of Science in Computer Science with Specialization in Data Science 
+
+**Course & Section**: BSCS 2206L Design, Analysis, and Algorithm Technologies - Lab (9407-AY225)
+
+**Instructor**: Engr. Val Patrick F. Fabregas, MTA
+
+**Date**: January 27, 2026
+
+## 🙏 Acknowledgments
+
+- Dataset generated specifically for this educational project
+- Sorting algorithms based on classical computer science implementations
+- GUI design inspired by modern software development best practices
+- Special thanks to Sir Val for guidance and project requirements
+
+## 📞 Contact
+
+For questions or feedback regarding this project:
+- **Email**: angeljullianemangubat@gmail.com
+- **GitHub**: Lliane03
+
+---
+
+## 📄 License
+
+This project is submitted as academic work for educational purposes only.
+
+---
+
+## 🔗 Repository
+
+**GitHub Repository**: (https://github.com/Lliane03/DAALab-AY225-MANGUBAT.git)
+
+---
+
+**Last Updated**: February 3, 2026

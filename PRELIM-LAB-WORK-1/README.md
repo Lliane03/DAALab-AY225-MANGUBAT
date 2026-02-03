@@ -46,3 +46,45 @@ Time: 0.000123 seconds
 - Performance timing measurement
 - File input support for datasets
 - Optimization: Early termination when array is sorted
+
+## 👤 Author
+
+**Name**: Angel Julliane I. Mangubat 
+
+**Student ID**: 24-2246-776
+
+**Degree Program**: Bachelor of Science in Computer Science with Specialization in Data Science 
+
+**Course & Section**: BSCS 2206L Design, Analysis, and Algorithm Technologies - Lab (9407-AY225)
+
+**Instructor**: Engr. Val Patrick F. Fabregas, MTA
+
+**Date**: January 27, 2026
+
+## 🙏 Acknowledgments
+
+- Dataset generated specifically for this educational project
+- Sorting algorithms based on classical computer science implementations
+- Special thanks to Sir Val for guidance and project requirements
+
+## 📞 Contact
+
+For questions or feedback regarding this project:
+- **Email**: angeljullianemangubat@gmail.com
+- **GitHub**: Lliane03
+
+---
+
+## 📄 License
+
+This project is submitted as academic work for educational purposes only.
+
+---
+
+## 🔗 Repository
+
+**GitHub Repository**: (https://github.com/Lliane03/DAALab-AY225-MANGUBAT.git)
+
+---
+
+**Last Updated**: January 27, 2026
