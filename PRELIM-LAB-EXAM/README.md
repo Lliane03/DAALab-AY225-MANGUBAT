@@ -50,9 +50,9 @@ This project implements and compares three fundamental sorting algorithms (Bubbl
 
 | Algorithm          | 1,000 Records | 10,000 Records | 50,000 Records | 100,000 Records |
 |--------------------|---------------|----------------|----------------|-----------------|
-| **Bubble Sort**    | 59.86 ms      | 2587.52 ms     | 58495.13 ms    |            |
-| **Insertion Sort** | 27.83 ms      | 714.25 ms      | 27158.69 ms    |            |
-| **Merge Sort**     | 1.10 ms       | 49.93 ms       | 63.27 ms       |       |
+| **Bubble Sort**    | 59.86 ms      | 2587.52 ms     | 58495.13 ms    | 313587.18 ms    |
+| **Insertion Sort** | 27.83 ms      | 714.25 ms      | 27158.69 ms    | 156078.59 ms    |
+| **Merge Sort**     | 1.10 ms       | 49.93 ms       | 102.59 ms      | 164.49 ms       |
 
 ### Key Observations
 
