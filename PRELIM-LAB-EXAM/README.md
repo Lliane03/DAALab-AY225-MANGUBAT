@@ -56,8 +56,6 @@ This project implements and compares three fundamental sorting algorithms (Bubbl
 
 ### Key Observations
 
-*After completing your benchmarks, add your observations here. For example:*
-
 1. **Merge Sort Dominance**: For 100,000 records, Merge Sort is approximately:
    - **___× faster** than Bubble Sort
    - **___× faster** than Insertion Sort
@@ -72,7 +70,7 @@ This project implements and compares three fundamental sorting algorithms (Bubbl
 
 4. **String vs Integer Comparison**: 
    - Sorting by FirstName/LastName is *[faster/slower/similar]* compared to sorting by ID
-   - This is because *[add your explanation]*
+   - This is because *[add explanation]*
 
 ## 🚀 Getting Started
 
@@ -86,33 +84,19 @@ This project implements and compares three fundamental sorting algorithms (Bubbl
 ```
 sorting-stress-test/
 ├── src/
-│   └── SortingStressTest.java    # Main application file
+│   └── SortingStressTest.java     # Main application file
 ├── data/
 │   └── generated_data.csv         # Dataset (100,000 records)
-├── docs/
-│   └── (documentation files)
-├── README.md                      # This file
-└── .gitignore                     # Git ignore file
+└── README.md                      # This file
 ```
 
 ### Installation & Setup
 
 1. **Clone the Repository**
-   ```bash
-   git clone <your-repository-url>
-   cd sorting-stress-test
-   ```
 
 2. **Compile the Program**
-   ```bash
-   cd src
-   javac SortingStressTest.java
-   ```
 
 3. **Run the Application**
-   ```bash
-   java SortingStressTest
-   ```
 
 ## 📖 How to Use
 
@@ -273,25 +257,25 @@ This approach ensures:
 
 ## 👤 Author
 
-**Name**: [Your Full Name]  
-**Student ID**: [Your Student ID]  
-**Course**: [Your Course Code and Name]  
-**Instructor**: [Your Instructor's Name]  
-**Institution**: [Your University/College]  
-**Date**: [Submission Date]
+**Name**: Angel Julliane I. Mangubat 
+**Student ID**: 24-2246-776
+**Degree Program**: Bachelor of Science in Computer Science with Specialization in Data Science 
+**Course**: BSCS 2206L Design, Analysis, and Algorithm Technologies - Lab (9407-AY225)
+**Instructor**: Engr. Val Patrick F. Fabregas, MTA
+**Date**: February 4, 2026
 
 ## 🙏 Acknowledgments
 
 - Dataset generated specifically for this educational project
 - Sorting algorithms based on classical computer science implementations
 - GUI design inspired by modern software development best practices
-- Special thanks to [Instructor Name] for guidance and project requirements
+- Special thanks to Sir Val for guidance and project requirements
 
 ## 📞 Contact
 
 For questions or feedback regarding this project:
-- **Email**: [Your Email]
-- **GitHub**: [Your GitHub Profile]
+- **Email**: angeljullianemangubat@gmail.com
+- **GitHub**: Lliane03
 
 ---
 
@@ -311,5 +295,5 @@ This project is submitted as academic work for educational purposes only.
 
 ---
 
-**Last Updated**: [Date]  
+**Last Updated**: February 4, 2026
 **Version**: 1.0
