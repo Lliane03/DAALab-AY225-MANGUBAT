@@ -30,6 +30,8 @@ This project implements and compares three fundamental sorting algorithms (Bubbl
 
 ## 📊 Benchmark Results (Sort Times Logged with Consistent Load Times for Each Datasize)
 
+*Note: Actual times will vary based on your computer's CPU, RAM, and current system load.*
+
 ### Performance Comparison Table (Sorting by ID)
 
 | Algorithm          | 1,000 Records | 10,000 Records | 50,000 Records | 100,000 Records |
@@ -182,18 +184,6 @@ ID,FirstName,LastName
 ```
 
 ## ⚠️ Performance Notes
-
-### Expected Execution Times (Reference)
-
-*These are approximate guidelines based on typical modern hardware:*
-
-| Algorithm      | 1,000 Records | 10,000 Records  | 100,000 Records |
-|----------------|---------------|-----------------|-----------------|
-| Bubble Sort    | ~5-15 ms      | ~400-800 ms     | ~40-80 seconds  |
-| Insertion Sort | ~2-5 ms       | ~50-100 ms      | ~5-10 seconds   |
-| Merge Sort     | ~0.5-1.5 ms   | ~3-6 ms         | ~30-60 ms       |
-
-*Note: Actual times will vary based on your computer's CPU, RAM, and current system load.*
 
 ### Warnings
 
