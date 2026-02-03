@@ -28,31 +28,31 @@ This project implements and compares three fundamental sorting algorithms (Bubbl
   - Real-time performance metrics
   - Progress indicators for long operations
 
-## 📊 Benchmark Results
+## 📊 Benchmark Results (Sort Times Logged with Consistent Load Times for Each Datasize)
 
 ### Performance Comparison Table (Sorting by ID)
 
-| Algorithm          | 1,000 Records | 10,000 Records | 100,000 Records | Time Complexity |
-|--------------------|---------------|----------------|-----------------|-----------------|
-| **Bubble Sort**    |               |                |                 | O(n²)           |
-| **Insertion Sort** |               |                |                 | O(n²)           |
-| **Merge Sort**     |               |                |                 | O(n log n)      |
+| Algorithm          | 1,000 Records | 10,000 Records | 50,000 Records | 100,000 Records |
+|--------------------|---------------|----------------|----------------|-----------------|
+| **Bubble Sort**    | 68.29 ms      | 1014.76 ms     | 34695.28 ms    | 188845.70 ms    |
+| **Insertion Sort** | 53.57 ms      | 618.08 ms      | 12397.31 ms    | 80427.54 ms     |
+| **Merge Sort**     | 18.31 ms      | 10.19 ms       | 140.08 ms      | 132.25 ms       |
 
 ### Performance Comparison Table (Sorting by FirstName)
 
-| Algorithm          | 1,000 Records | 10,000 Records | 100,000 Records | Time Complexity |
-|--------------------|---------------|----------------|-----------------|-----------------|
-| **Bubble Sort**    |               |                |                 | O(n²)           |
-| **Insertion Sort** |               |                |                 | O(n²)           |
-| **Merge Sort**     |               |                |                 | O(n log n)      |
+| Algorithm          | 1,000 Records | 10,000 Records | 50,000 Records | 100,000 Records |
+|--------------------|---------------|----------------|----------------|-----------------|
+| **Bubble Sort**    | 87.77 ms      | 2258.44 ms     | 76371.83 ms    | 266873.70 ms    |
+| **Insertion Sort** | 62.03 ms      | 837.65 ms      | 30932.24 ms    | 130132.74 ms    |
+| **Merge Sort**     | 6.80 ms       | 66.42 ms       | 160.58 ms      | 144.39 ms       |
 
 ### Performance Comparison Table (Sorting by LastName)
 
-| Algorithm          | 1,000 Records | 10,000 Records | 100,000 Records | Time Complexity |
-|--------------------|---------------|----------------|-----------------|-----------------|
-| **Bubble Sort**    |               |                |                 | O(n²)           |
-| **Insertion Sort** |               |                |                 | O(n²)           |
-| **Merge Sort**     |               |                |                 | O(n log n)      |
+| Algorithm          | 1,000 Records | 10,000 Records | 50,000 Records | 100,000 Records |
+|--------------------|---------------|----------------|----------------|-----------------|
+| **Bubble Sort**    | 59.86 ms      | 2587.52 ms     | 58495.13 ms    |            |
+| **Insertion Sort** | 27.83 ms      | 714.25 ms      | 27158.69 ms    |            |
+| **Merge Sort**     | 1.10 ms       | 49.93 ms       | 63.27 ms       |       |
 
 ### Key Observations
 

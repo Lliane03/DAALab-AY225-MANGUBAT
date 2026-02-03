@@ -390,7 +390,7 @@ public class SortingStressTest extends JFrame {
         // Warning for large O(n²) operations
         if ((algorithm.equals("Bubble") || algorithm.equals("Insertion")) && actualCount >= 50000) {
             int response = JOptionPane.showConfirmDialog(this,
-                String.format("⚠️ WARNING ⚠️\n\n" +
+                String.format("WARNING \n\n" +
                     "You are about to sort %,d records using %s Sort (O(n²)).\n" +
                     "This may take several minutes or longer.\n\n" +
                     "Consider using Merge Sort for large datasets.\n\n" +
