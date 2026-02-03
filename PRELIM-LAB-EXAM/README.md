@@ -82,7 +82,7 @@ This project implements and compares three fundamental sorting algorithms (Bubbl
 ### Repository Structure
 
 ```
-sorting-stress-test/
+DAALab-AY225-MANGUBAT/PRELIM-LAB-EXAM/
 ├── src/
 │   └── SortingStressTest.java     # Main application file
 ├── data/
@@ -258,10 +258,15 @@ This approach ensures:
 ## 👤 Author
 
 **Name**: Angel Julliane I. Mangubat 
+
 **Student ID**: 24-2246-776
+
 **Degree Program**: Bachelor of Science in Computer Science with Specialization in Data Science 
+
 **Course**: BSCS 2206L Design, Analysis, and Algorithm Technologies - Lab (9407-AY225)
+
 **Instructor**: Engr. Val Patrick F. Fabregas, MTA
+
 **Date**: February 4, 2026
 
 ## 🙏 Acknowledgments
@@ -287,7 +292,7 @@ This project is submitted as academic work for educational purposes only.
 
 ## 🔗 Repository
 
-**GitHub Repository**: [Your Repository URL]
+**GitHub Repository**: (https://github.com/Lliane03/DAALab-AY225-MANGUBAT.git)
 
 ---
 
@@ -296,4 +301,5 @@ This project is submitted as academic work for educational purposes only.
 ---
 
 **Last Updated**: February 4, 2026
+
 **Version**: 1.0
