@@ -1,4 +1,4 @@
-# Sorting Algorithm Stress Test - Prelim Exam
+# The Sorting Algorithm Stress Test - Prelim Exam
 
 A comprehensive benchmarking tool for analyzing sorting algorithm performance on large datasets with structured CSV data.
 
@@ -263,7 +263,7 @@ This approach ensures:
 
 **Degree Program**: Bachelor of Science in Computer Science with Specialization in Data Science 
 
-**Course**: BSCS 2206L Design, Analysis, and Algorithm Technologies - Lab (9407-AY225)
+**Course & Section**: BSCS 2206L Design, Analysis, and Algorithm Technologies - Lab (9407-AY225)
 
 **Instructor**: Engr. Val Patrick F. Fabregas, MTA
 
