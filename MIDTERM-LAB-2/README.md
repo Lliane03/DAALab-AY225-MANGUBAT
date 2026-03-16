@@ -74,17 +74,29 @@ Open `MidtermLab2-Mangubat.html` in any modern browser.
 
 ## Challenges Faced
 
-1. **Graph directionality** – The original table lists directed edges, but
-   treating the graph as undirected gives more realistic routing. Both modes
-   are supported in the HTML version via a toggle.
+As a computer science student implementing Dijkstra's algorithm for a real-world network application, I encountered several technical and conceptual challenges that tested my understanding of graph theory, algorithm design, and software development:
 
-2. **Multi-criteria optimization** – Dijkstra natively handles one weight.
-   Switching criteria rebuilds the priority key dynamically so all three
-   metrics can be optimized independently.
+1. **Graph Representation and Data Structures** – Choosing the right way to represent the Cavite network was crucial. I initially struggled with adjacency lists vs. matrices, and had to implement a custom graph class that could handle multiple edge weights (distance, time, fuel) efficiently. The challenge was ensuring the data structure scaled well while remaining easy to modify for different routing criteria.
 
-3. **Tie-breaking** – When two paths have equal primary cost, the algorithm
-   picks whichever is expanded first from the heap. Secondary sorting by
-   node name ensures deterministic, reproducible results.
+2. **Graph Directionality and Realism** – The original network data provided directed edges, but real-world road networks are typically undirected. I had to implement both directed and undirected modes, with a toggle in the HTML version. This required careful consideration of how to handle bidirectional travel while maintaining accurate cost calculations for each direction.
+
+3. **Multi-Criteria Optimization with Dijkstra's Algorithm** – Dijkstra's algorithm is designed for single-weight optimization, but this project required optimizing for three different criteria (distance, time, fuel). I solved this by dynamically rebuilding the priority queue keys when switching criteria, but this introduced complexity in maintaining algorithm correctness and efficiency. Understanding how to adapt a single-criterion algorithm for multi-criterion problems was a significant learning curve.
+
+4. **Priority Queue Implementation and Performance** – Implementing a proper min-heap (priority queue) in Python was challenging, especially ensuring it handled the custom comparison logic for different criteria. I had to balance between using Python's heapq module and implementing a custom solution that could handle tie-breaking consistently.
+
+5. **Tie-Breaking and Deterministic Results** – When multiple paths have equal cost, Dijkstra's algorithm doesn't guarantee which path will be chosen. I implemented secondary sorting by node name to ensure reproducible results, but this required deep understanding of how the priority queue orders elements and how to implement stable sorting in the algorithm.
+
+6. **HTML Canvas Visualization** – Creating an interactive node map using HTML5 Canvas was new territory. Positioning nodes accurately, drawing edges with proper curvature, and implementing click interactions required learning Canvas API fundamentals. Animating the path highlighting and displaying real-time statistics added another layer of complexity to the web interface.
+
+7. **Data Validation and Error Handling** – Ensuring the program handled invalid inputs (non-existent nodes, disconnected graphs) gracefully was important for a robust application. I had to implement comprehensive input validation and provide meaningful error messages to users.
+
+8. **Balancing CLI and GUI Implementations** – Maintaining feature parity between the Python CLI version and HTML web version required careful planning. Each platform had different constraints and capabilities, forcing me to think about cross-platform compatibility and user experience design.
+
+9. **Algorithm Time Complexity Understanding** – While implementing O((V + E) log V) complexity theoretically, seeing it in practice with different graph sizes helped solidify my understanding of algorithmic analysis. The dramatic performance differences when scaling from small to larger networks was eye-opening.
+
+10. **Integration of Multiple Technologies** – Combining Python for backend logic, HTML/CSS/JavaScript for frontend visualization, and understanding how to structure a project with multiple deliverables (CLI script, web app, documentation) required learning project organization and version control best practices.
+
+These challenges helped me grow significantly as a developer, from theoretical algorithm knowledge to practical implementation skills, and from console programming to interactive web applications.
 
 ---
 
