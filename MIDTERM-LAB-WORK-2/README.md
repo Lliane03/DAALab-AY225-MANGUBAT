@@ -44,7 +44,7 @@ both directions with the same cost.
 ## How to Run (Python CLI)
 
 ```bash
-python MidtermLab2-Student.py
+python MidtermLab2-Mangubat.py
 ```
 
 Follow the prompts:
@@ -65,7 +65,7 @@ Shortest Path (distance) from IMUS to SILANG:
 
 ## How to Run (Browser / HTML)
 
-Open `MidtermLab2-Student.html` in any modern browser.  
+Open `MidtermLab2-Mangubat.html` in any modern browser.  
 - The interactive **node map** is drawn with Canvas/SVG.  
 - Select source, destination, and criterion, then click **Find Path**.  
 - The shortest path is highlighted on the map with full stats.
@@ -88,6 +88,8 @@ Open `MidtermLab2-Student.html` in any modern browser.
 
 ---
 
-## References
-- Dijkstra, E.W. (1959). *A note on two problems in connexion with graphs.*
-- Cormen et al., *Introduction to Algorithms*, Chapter 24.
+## Contact
+
+For questions or feedback regarding this project:
+- **Email**: angeljullianemangubat@gmail.com
+- **GitHub**: Lliane03
