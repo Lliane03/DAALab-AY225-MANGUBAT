@@ -1,0 +1,656 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MidtermLab2 – Cavite Network Pathfinder</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap');
+
+  :root {
+    --bg:      #0a0e1a;
+    --panel:   #111827;
+    --border:  #1e2d45;
+    --accent:  #00e5ff;
+    --accent2: #ff6b35;
+    --accent3: #7c3aed;
+    --node-fill:    #1a2744;
+    --node-stroke:  #2563eb;
+    --node-hover:   #3b82f6;
+    --edge-default: #1e3a5f;
+    --edge-path:    #00e5ff;
+    --text-main:  #e2e8f0;
+    --text-muted: #64748b;
+    --success:  #10b981;
+    --mono: 'Space Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-main);
+    font-family: var(--sans);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    padding: 18px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: linear-gradient(90deg, #0d1b2a 0%, #0a0e1a 100%);
+  }
+  header .badge {
+    background: var(--accent3);
+    color: #fff;
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  header h1 {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #fff;
+  }
+  header h1 span { color: var(--accent); }
+
+  .main {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 0;
+    flex: 1;
+  }
+
+  /* ── Canvas area ── */
+  .canvas-wrap {
+    position: relative;
+    padding: 24px;
+    border-right: 1px solid var(--border);
+    background: radial-gradient(ellipse at 30% 40%, #0d1f3c 0%, var(--bg) 70%);
+  }
+  #graph-canvas {
+    width: 100%;
+    height: 520px;
+    display: block;
+  }
+  .canvas-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+  }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    gap: 20px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+  .legend-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+  .legend-line {
+    width: 22px; height: 2px; border-radius: 2px;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+    background: var(--panel);
+  }
+
+  .section-title {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px;
+  }
+
+  select, .btn {
+    width: 100%;
+    font-family: var(--mono);
+    font-size: 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: #0d1424;
+    color: var(--text-main);
+    padding: 9px 12px;
+    outline: none;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+  }
+  select:focus, select:hover { border-color: var(--accent); }
+  select { margin-bottom: 8px; }
+
+  .btn {
+    background: var(--accent3);
+    border-color: var(--accent3);
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .btn:hover { background: #6d28d9; border-color: #6d28d9; }
+  .btn:active { transform: scale(0.98); }
+
+  .btn-reset {
+    background: transparent;
+    border-color: var(--border);
+    color: var(--text-muted);
+    font-weight: 400;
+    margin-top: 0;
+  }
+  .btn-reset:hover { border-color: var(--accent2); color: var(--accent2); background: transparent; }
+
+  /* Criteria radio */
+  .criteria-group { display: flex; flex-direction: column; gap: 6px; }
+  .radio-opt {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+  .radio-opt:hover { border-color: var(--accent); background: #0d1f3c; }
+  .radio-opt input { accent-color: var(--accent); }
+  .radio-opt.active { border-color: var(--accent); background: #091d35; }
+  .radio-icon { font-size: 14px; }
+
+  /* Result box */
+  #result-box {
+    background: #070d1a;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.8;
+    min-height: 120px;
+    color: var(--text-muted);
+    transition: border-color .3s;
+  }
+  #result-box.has-result { border-color: var(--success); }
+  #result-box.has-error  { border-color: var(--accent2); }
+
+  .result-path {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 12px;
+    word-break: break-all;
+    margin-bottom: 8px;
+    line-height: 1.6;
+  }
+  .stat-row { display: flex; justify-content: space-between; }
+  .stat-label { color: var(--text-muted); }
+  .stat-val { color: var(--text-main); font-weight: 700; }
+  .stat-val.highlight { color: var(--accent); }
+
+  /* Edge info tooltip */
+  #tooltip {
+    position: fixed;
+    background: #111827;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-family: var(--mono);
+    font-size: 10px;
+    pointer-events: none;
+    z-index: 999;
+    display: none;
+    line-height: 1.8;
+    color: var(--text-main);
+    box-shadow: 0 4px 20px rgba(0,0,0,.5);
+  }
+
+  /* Edge table */
+  .edge-table-wrap { overflow-x: auto; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--mono);
+    font-size: 10px;
+  }
+  th {
+    text-align: left;
+    padding: 5px 6px;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  td {
+    padding: 4px 6px;
+    border-bottom: 1px solid #0e1a2e;
+    color: var(--text-main);
+  }
+  tr:hover td { background: #0d1424; }
+  td:nth-child(3), td:nth-child(4), td:nth-child(5) { text-align: right; }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="badge">Midterm Lab 2</span>
+  <h1>Cavite Network <span>Pathfinder</span></h1>
+</header>
+
+<div class="main">
+  <!-- Graph Canvas -->
+  <div class="canvas-wrap">
+    <div class="canvas-label">Node Map – Cavite Region</div>
+    <canvas id="graph-canvas"></canvas>
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#2563eb;border:2px solid #60a5fa"></div> Node
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#00e5ff"></div> Selected / Path Node
+      </div>
+      <div class="legend-item">
+        <div class="legend-line" style="background:#1e3a5f"></div> Edge
+      </div>
+      <div class="legend-item">
+        <div class="legend-line" style="background:#00e5ff; height:3px"></div> Shortest Path
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <!-- Controls -->
+    <div>
+      <div class="section-title">Pathfinding Controls</div>
+      <select id="sel-start">
+        <option value="">— Start Node —</option>
+      </select>
+      <select id="sel-end">
+        <option value="">— End Node —</option>
+      </select>
+    </div>
+
+    <div>
+      <div class="section-title">Optimization Criterion</div>
+      <div class="criteria-group" id="criteria-group">
+        <label class="radio-opt active">
+          <input type="radio" name="criterion" value="distance" checked>
+          <span class="radio-icon">📏</span> Distance (km)
+        </label>
+        <label class="radio-opt">
+          <input type="radio" name="criterion" value="time">
+          <span class="radio-icon">⏱</span> Time (mins)
+        </label>
+        <label class="radio-opt">
+          <input type="radio" name="criterion" value="fuel">
+          <span class="radio-icon">⛽</span> Fuel (Liters)
+        </label>
+      </div>
+    </div>
+
+    <div>
+      <button class="btn" onclick="findPath()">▶ Find Shortest Path</button>
+      <button class="btn btn-reset" onclick="resetAll()" style="margin-top:6px">↺ Reset</button>
+    </div>
+
+    <div>
+      <div class="section-title">Result</div>
+      <div id="result-box">Select start & end nodes, choose a criterion, then click Find.</div>
+    </div>
+
+    <!-- Edge list -->
+    <div>
+      <div class="section-title">All Edges</div>
+      <div class="edge-table-wrap">
+        <table id="edge-table">
+          <thead>
+            <tr><th>From</th><th>To</th><th>km</th><th>min</th><th>L</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="tooltip"></div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────
+const EDGES_RAW = [
+  ["IMUS",     "BACOOR",   10, 15, 1.2],
+  ["BACOOR",   "DASMA",    12, 25, 1.5],
+  ["DASMA",    "KAWIT",    12, 25, 1.5],
+  ["KAWIT",    "INDANG",   12, 25, 1.2],
+  ["INDANG",   "SILANG",   14, 25, 1.5],
+  ["SILANG",   "GENTRI",   10, 25, 1.3],
+  ["GENTRI",   "NOVELETA", 10, 25, 1.5],
+  ["NOVELETA", "IMUS",     10, 15, 1.2],
+  ["BACOOR",   "SILANG",   10, 25, 1.3],
+  ["DASMA",    "SILANG",   12, 25, 1.5],
+  ["SILANG",   "BACOOR",   10, 25, 1.3],
+  ["NOVELETA", "BACOOR",   10, 15, 1.2],
+  ["SILANG",   "KAWIT",    14, 25, 1.2],
+  ["IMUS",     "NOVELETA", 10, 15, 1.2],
+];
+
+const NODES_POS = {
+  IMUS:     { x: 0.20, y: 0.30 },
+  BACOOR:   { x: 0.38, y: 0.18 },
+  DASMA:    { x: 0.56, y: 0.22 },
+  KAWIT:    { x: 0.72, y: 0.35 },
+  INDANG:   { x: 0.82, y: 0.55 },
+  SILANG:   { x: 0.62, y: 0.60 },
+  GENTRI:   { x: 0.44, y: 0.72 },
+  NOVELETA: { x: 0.22, y: 0.62 },
+};
+
+// Build undirected graph
+const graph = {};
+for (const [f, t, d, tm, fu] of EDGES_RAW) {
+  if (!graph[f]) graph[f] = [];
+  if (!graph[t]) graph[t] = [];
+  graph[f].push({ to: t, d, t: tm, f: fu });
+  graph[t].push({ to: f, d, t: tm, f: fu });
+}
+const NODES = Object.keys(NODES_POS);
+
+// ── POPULATE UI ───────────────────────────────────────────────────────────
+const selStart = document.getElementById("sel-start");
+const selEnd   = document.getElementById("sel-end");
+NODES.forEach(n => {
+  selStart.innerHTML += `<option value="${n}">${n}</option>`;
+  selEnd.innerHTML   += `<option value="${n}">${n}</option>`;
+});
+
+// Edge table
+const tbody = document.querySelector("#edge-table tbody");
+for (const [f, t, d, tm, fu] of EDGES_RAW) {
+  tbody.innerHTML += `<tr><td>${f}</td><td>${t}</td><td>${d}</td><td>${tm}</td><td>${fu}</td></tr>`;
+}
+
+// Radio style
+document.querySelectorAll(".radio-opt input").forEach(inp => {
+  inp.addEventListener("change", () => {
+    document.querySelectorAll(".radio-opt").forEach(el => el.classList.remove("active"));
+    inp.closest(".radio-opt").classList.add("active");
+  });
+});
+
+// ── DIJKSTRA ──────────────────────────────────────────────────────────────
+function dijkstra(start, end, criterion) {
+  const key = { distance: "d", time: "t", fuel: "f" }[criterion];
+  const dist  = {}, prev = {}, totals = {};
+  NODES.forEach(n => { dist[n] = Infinity; totals[n] = { d:0, t:0, f:0 }; });
+  dist[start] = 0;
+
+  const pq = [{ node: start, cost: 0 }];
+  const visited = new Set();
+
+  while (pq.length) {
+    pq.sort((a,b) => a.cost - b.cost);
+    const { node, cost } = pq.shift();
+    if (visited.has(node)) continue;
+    visited.add(node);
+    if (node === end) break;
+
+    for (const edge of (graph[node] || [])) {
+      if (visited.has(edge.to)) continue;
+      const newCost = cost + edge[key];
+      if (newCost < dist[edge.to]) {
+        dist[edge.to] = newCost;
+        prev[edge.to] = node;
+        totals[edge.to] = {
+          d: totals[node].d + edge.d,
+          t: totals[node].t + edge.t,
+          f: totals[node].f + edge.f,
+        };
+        pq.push({ node: edge.to, cost: newCost });
+      }
+    }
+  }
+
+  if (dist[end] === Infinity) return null;
+
+  const path = [];
+  let cur = end;
+  while (cur) { path.unshift(cur); cur = prev[cur]; }
+  return { path, total: totals[end] };
+}
+
+// ── STATE ─────────────────────────────────────────────────────────────────
+let currentPath = [];
+let startNode = "", endNode = "";
+
+function findPath() {
+  startNode = selStart.value;
+  endNode   = selEnd.value;
+  const criterion = document.querySelector("input[name=criterion]:checked").value;
+  const box = document.getElementById("result-box");
+
+  if (!startNode || !endNode) {
+    box.className = "has-error";
+    box.innerHTML = `<span style="color:var(--accent2)">⚠ Please select both start and end nodes.</span>`;
+    currentPath = [];
+    draw();
+    return;
+  }
+  if (startNode === endNode) {
+    box.className = "has-error";
+    box.innerHTML = `<span style="color:var(--accent2)">⚠ Start and end nodes must be different.</span>`;
+    currentPath = [];
+    draw();
+    return;
+  }
+
+  const result = dijkstra(startNode, endNode, criterion);
+
+  if (!result) {
+    box.className = "has-error";
+    box.innerHTML = `<span style="color:var(--accent2)">✗ No path found between ${startNode} and ${endNode}.</span>`;
+    currentPath = [];
+  } else {
+    currentPath = result.path;
+    const { d, t, f } = result.total;
+    const icons = { distance: "📏", time: "⏱", fuel: "⛽" };
+    const labels = { distance: "Distance", time: "Time", fuel: "Fuel" };
+    box.className = "has-result";
+    box.innerHTML = `
+      <div class="result-path">${result.path.join(" → ")}</div>
+      <div class="stat-row"><span class="stat-label">Criterion</span><span class="stat-val">${icons[criterion]} ${labels[criterion]}</span></div>
+      <div class="stat-row"><span class="stat-label">Distance</span><span class="stat-val ${criterion==='distance'?'highlight':''}">${d} km</span></div>
+      <div class="stat-row"><span class="stat-label">Time</span><span class="stat-val ${criterion==='time'?'highlight':''}">${t} mins</span></div>
+      <div class="stat-row"><span class="stat-label">Fuel</span><span class="stat-val ${criterion==='fuel'?'highlight':''}">${f.toFixed(1)} L</span></div>
+      <div class="stat-row" style="margin-top:6px"><span class="stat-label">Hops</span><span class="stat-val">${result.path.length - 1}</span></div>
+    `;
+  }
+  draw();
+}
+
+function resetAll() {
+  selStart.value = ""; selEnd.value = "";
+  currentPath = []; startNode = ""; endNode = "";
+  document.querySelector("input[name=criterion][value=distance]").click();
+  document.getElementById("result-box").className = "";
+  document.getElementById("result-box").textContent = "Select start & end nodes, choose a criterion, then click Find.";
+  draw();
+}
+
+// ── CANVAS DRAW ───────────────────────────────────────────────────────────
+const canvas = document.getElementById("graph-canvas");
+const ctx    = canvas.getContext("2d");
+
+function getPos(name) {
+  const p = NODES_POS[name];
+  return { x: p.x * canvas.width, y: p.y * canvas.height };
+}
+
+function isPathEdge(a, b) {
+  for (let i = 0; i < currentPath.length - 1; i++) {
+    if ((currentPath[i]===a && currentPath[i+1]===b) ||
+        (currentPath[i]===b && currentPath[i+1]===a)) return true;
+  }
+  return false;
+}
+
+// Collect drawn path edges for tooltip hit-test
+const drawnEdges = [];
+
+function draw() {
+  canvas.width  = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight || 520;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawnEdges.length = 0;
+
+  // Draw edges
+  const seen = new Set();
+  for (const [f, t, d, tm, fu] of EDGES_RAW) {
+    const key = [f,t].sort().join("|");
+    if (seen.has(key)) continue;
+    seen.add(key);
+
+    const pf = getPos(f), pt = getPos(t);
+    const onPath = isPathEdge(f, t);
+
+    ctx.beginPath();
+    ctx.moveTo(pf.x, pf.y);
+    ctx.lineTo(pt.x, pt.y);
+
+    if (onPath) {
+      ctx.strokeStyle = "#00e5ff";
+      ctx.lineWidth = 3;
+      ctx.shadowColor = "#00e5ff";
+      ctx.shadowBlur = 10;
+    } else {
+      ctx.strokeStyle = "#1e3a5f";
+      ctx.lineWidth = 1.5;
+      ctx.shadowBlur = 0;
+    }
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // Edge weight label (midpoint)
+    const mx = (pf.x + pt.x) / 2;
+    const my = (pf.y + pt.y) / 2;
+    ctx.font = "9px 'Space Mono', monospace";
+    ctx.fillStyle = onPath ? "#00e5ff" : "#2a4a6b";
+    ctx.textAlign = "center";
+    ctx.fillText(`${d}km`, mx, my - 4);
+
+    drawnEdges.push({ f, t, d, tm, fu, mx, my });
+  }
+
+  // Draw nodes
+  const R = Math.min(canvas.width, canvas.height) * 0.048;
+  for (const name of NODES) {
+    const { x, y } = getPos(name);
+    const isStart = name === startNode;
+    const isEnd   = name === endNode;
+    const onPath  = currentPath.includes(name);
+
+    // Glow
+    if (onPath || isStart || isEnd) {
+      ctx.beginPath();
+      ctx.arc(x, y, R + 8, 0, Math.PI * 2);
+      const grad = ctx.createRadialGradient(x, y, R, x, y, R+8);
+      grad.addColorStop(0, isStart ? "rgba(124,58,237,.5)" : isEnd ? "rgba(255,107,53,.5)" : "rgba(0,229,255,.25)");
+      grad.addColorStop(1, "transparent");
+      ctx.fillStyle = grad;
+      ctx.fill();
+    }
+
+    // Node circle
+    ctx.beginPath();
+    ctx.arc(x, y, R, 0, Math.PI * 2);
+    if (isStart)      ctx.fillStyle = "#4c1d95";
+    else if (isEnd)   ctx.fillStyle = "#7c2d12";
+    else if (onPath)  ctx.fillStyle = "#0e3a5c";
+    else              ctx.fillStyle = "#1a2744";
+    ctx.fill();
+
+    ctx.strokeStyle = isStart ? "#7c3aed" : isEnd ? "#ff6b35" : onPath ? "#00e5ff" : "#2563eb";
+    ctx.lineWidth = onPath || isStart || isEnd ? 2.5 : 1.5;
+    ctx.stroke();
+
+    // Label
+    ctx.font = `bold ${Math.round(R * 0.55)}px 'Syne', sans-serif`;
+    ctx.fillStyle = isStart ? "#c4b5fd" : isEnd ? "#fdba74" : onPath ? "#e0f7fa" : "#93c5fd";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(name, x, y);
+  }
+
+  // Path sequence numbers
+  currentPath.forEach((name, i) => {
+    const { x, y } = getPos(name);
+    ctx.beginPath();
+    ctx.arc(x + R * 0.75, y - R * 0.75, R * 0.35, 0, Math.PI * 2);
+    ctx.fillStyle = "#00e5ff";
+    ctx.fill();
+    ctx.font = `bold ${Math.round(R * 0.38)}px 'Space Mono'`;
+    ctx.fillStyle = "#000";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(i + 1, x + R * 0.75, y - R * 0.75);
+  });
+}
+
+// ── TOOLTIP on hover ─────────────────────────────────────────────────────
+const tooltip = document.getElementById("tooltip");
+canvas.addEventListener("mousemove", e => {
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+
+  for (const ed of drawnEdges) {
+    const dx = mx - ed.mx, dy = my - ed.my;
+    if (Math.sqrt(dx*dx + dy*dy) < 18) {
+      tooltip.style.display = "block";
+      tooltip.style.left = (e.clientX + 14) + "px";
+      tooltip.style.top  = (e.clientY - 10) + "px";
+      tooltip.innerHTML  = `<b>${ed.f} ↔ ${ed.t}</b><br>Distance: ${ed.d} km<br>Time: ${ed.tm} mins<br>Fuel: ${ed.fu} L`;
+      return;
+    }
+  }
+  tooltip.style.display = "none";
+});
+canvas.addEventListener("mouseleave", () => tooltip.style.display = "none");
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+window.addEventListener("resize", draw);
+draw();
+</script>
+</body>
+</html>
