@@ -208,6 +208,46 @@
     box-shadow: 0 6px 24px rgba(167,139,250,.2);
   }
   #tooltip b { color: var(--lilac-d); }
+
+  .alt-routes-section {
+    margin-top: 16px; padding: 14px;
+    background: linear-gradient(135deg, rgba(167,139,250,.06) 0%, rgba(244,114,182,.06) 100%);
+    border: 1.5px solid var(--border); border-radius: 10px;
+    max-height: 500px; overflow-y: auto; display: none;
+  }
+  .alt-routes-section::-webkit-scrollbar { width: 5px; }
+  .alt-routes-section::-webkit-scrollbar-track { background: transparent; }
+  .alt-routes-section::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 5px; }
+  .alt-routes-section::-webkit-scrollbar-thumb:hover { background: var(--lilac); }
+
+  #routes-content { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+  .alt-routes-title { font-family: var(--mono); font-size: 9px; letter-spacing: 1.5px; color: var(--text3); text-transform: uppercase; margin-bottom: 12px; grid-column: 1 / -1; }
+  .alt-routes-title::before { content: '📊'; margin-right: 6px; font-size: 11px; }
+
+  .metric-group { display: flex; flex-direction: column; gap: 8px; padding: 12px; background: rgba(255,255,255,.5); border: 1.5px solid var(--border); border-radius: 10px; }
+  .metric-group-title { font-family: var(--mono); font-size: 8.5px; letter-spacing: 1.3px; color: var(--text3); text-transform: uppercase; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 2px solid; }
+  .metric-group-title::before { display: inline-block; width: 4px; height: 4px; border-radius: 50%; margin-right: 6px; }
+  .metric-group.dist { border-color: #c4b5fd; }
+  .metric-group.dist .metric-group-title { border-bottom-color: #a78bfa; }
+  .metric-group.dist .metric-group-title::before { background: #a78bfa; }
+  .metric-group.time { border-color: #fed7aa; }
+  .metric-group.time .metric-group-title { border-bottom-color: #fb923c; }
+  .metric-group.time .metric-group-title::before { background: #fb923c; }
+  .metric-group.fuel { border-color: #a7f3d0; }
+  .metric-group.fuel .metric-group-title { border-bottom-color: #34d399; }
+  .metric-group.fuel .metric-group-title::before { background: #34d399; }
+
+  .path-item { margin-bottom: 8px; padding: 9px; background: rgba(255,255,255,.7); border: 1px solid var(--border); border-radius: 7px; cursor: pointer; transition: all .2s; font-size: 10px; }
+  .path-item:hover { background: rgba(255,255,255,.95); border-color: var(--lilac); }
+  .path-item.best { border: 2px solid var(--pink); background: var(--pink-l); }
+  .path-best-badge { font-family: var(--mono); font-size: 7px; color: var(--pink-d); font-weight: 800; letter-spacing: 1px; text-transform: uppercase; display: inline-block; margin-bottom: 3px; }
+  .path-route { font-family: var(--mono); color: var(--text2); margin-bottom: 5px; word-break: break-word; font-size: 9px; }
+  .path-route b { color: var(--text); font-weight: 600; }
+  .path-metrics { display: flex; gap: 5px; justify-content: space-between; }
+  .path-val { flex: 1; text-align: center; padding: 3px 5px; background: rgba(167,139,250,.08); border-radius: 4px; font-family: var(--mono); font-size: 8px; color: var(--text3); }
+  .path-val-num { display: block; color: var(--text); font-weight: 600; font-size: 9px; }
+  .path-item.best .path-val { background: rgba(244,114,182,.15); }
 </style>
 </head>
 <body>
@@ -229,6 +269,9 @@
       <div class="leg-item"><div class="leg-dot" style="background:#f97316;border-radius:3px;width:8px;height:8px"></div> End</div>
       <div class="leg-item"><div class="leg-line" style="background:#e8d5f5"></div> Edge</div>
       <div class="leg-item"><div class="leg-line" style="background:#f472b6;height:3px"></div> Shortest Path</div>
+    </div>
+    <div id="alt-routes" class="alt-routes-section">
+      <div id="routes-content"></div>
     </div>
   </div>
 
@@ -343,6 +386,94 @@ function dijkstra(start,end,criterion){
 }
 
 let cp=[],sn="",en="";
+let allPaths=[];
+
+function findAllPaths(start,end,visited=new Set(),currentPath=[],allPathsList=[]){
+  if(start===end){
+    allPathsList.push([...currentPath,end]);
+    return allPathsList;
+  }
+  visited.add(start);
+  for(const edge of(graph[start]||[])){
+    if(!visited.has(edge.to)){
+      findAllPaths(edge.to,end,visited,[...currentPath,start],allPathsList);
+    }
+  }
+  visited.delete(start);
+  return allPathsList;
+}
+
+function calcPathMetrics(path){
+  let d=0,t=0,f=0;
+  for(let i=0;i<path.length-1;i++){
+    const from=path[i],to=path[i+1];
+    const edge=graph[from].find(e=>e.to===to);
+    if(edge){d+=edge.d;t+=edge.t;f+=edge.f;}
+  }
+  return{d,t,f};
+}
+
+function updateAltRoutes(){
+  const ar=document.getElementById("alt-routes");
+  const rc=document.getElementById("routes-content");
+  if(!sn||!en){ar.style.display="none";return;}
+  
+  allPaths=findAllPaths(sn,en);
+  
+  // Remove duplicate paths
+  const uniquePaths=[];
+  const seenPaths=new Set();
+  for(const path of allPaths){
+    const pathStr=path.join("→");
+    if(!seenPaths.has(pathStr)){
+      seenPaths.add(pathStr);
+      uniquePaths.push(path);
+    }
+  }
+  allPaths=uniquePaths;
+  
+  if(allPaths.length===0){ar.style.display="none";return;}
+  
+  let html=`<div class="alt-routes-title">Alternative Paths Comparison</div>`;
+  const shortestByDist=dijkstra(sn,en,"distance");
+  const shortestByTime=dijkstra(sn,en,"time");
+  const shortestByFuel=dijkstra(sn,en,"fuel");
+  
+  const pathMetrics=allPaths.map(p=>({path:p,metrics:calcPathMetrics(p)}));
+  
+  const criteria=[
+    {key:"d",icon:"📏",label:"Distance",unit:"km",best:shortestByDist},
+    {key:"t",icon:"⏱️",label:"Time",unit:"mins",best:shortestByTime},
+    {key:"f",icon:"⛽",label:"Fuel",unit:"L",best:shortestByFuel}
+  ];
+  const critClass={d:"dist",t:"time",f:"fuel"};
+  
+  for(const{key,icon,label,unit,best} of criteria){
+    const sorted=[...pathMetrics].sort((a,b)=>a.metrics[key]-b.metrics[key]);
+    const value=best.total[key];
+    
+    html+=`<div class="metric-group ${critClass[key]}">`;
+    html+=`<div class="metric-group-title">${icon} Shortest ${label}<br><b>${key==='f'?value.toFixed(1):value} ${unit}</b></div>`;
+    
+    for(let i=0;i<sorted.length;i++){
+      const{path,metrics}=sorted[i];
+      const isBestPath=best&&path.join("→")===best.path.join("→");
+      html+=`<div class="path-item ${isBestPath?"best":""}">
+        ${isBestPath?`<div class="path-best-badge">✓ Best</div>`:""}
+        <div class="path-route"><b>${sn}</b> → ${path.slice(1,-1).join(" → ")} → <b>${en}</b></div>
+        <div class="path-metrics">
+          <div class="path-val">📏<span class="path-val-num">${metrics.d}</span>km</div>
+          <div class="path-val">⏱️<span class="path-val-num">${metrics.t}</span>min</div>
+          <div class="path-val">⛽<span class="path-val-num">${metrics.f.toFixed(1)}</span>L</div>
+        </div>
+      </div>`;
+    }
+    html+=`</div>`;
+  }
+  
+  rc.innerHTML=html;
+  ar.style.display="block";
+}
 
 function findPath(){
   sn=ss.value; en=se.value;
@@ -364,6 +495,7 @@ function findPath(){
       <div class="stat-row"><span class="stat-l">Fuel</span><span class="stat-v ${cr==='fuel'?'hi':''}">${f.toFixed(1)} L</span></div>
       <div class="stat-row" style="margin-top:5px"><span class="stat-l">Hops</span><span class="stat-v">${r.path.length-1}</span></div>`;
   }
+  updateAltRoutes();
   draw();
 }
 
@@ -372,6 +504,7 @@ function resetAll(){
   document.querySelector("input[name=criterion][value=distance]").click();
   const b=document.getElementById("result-box");
   b.className="";b.textContent="Select start & end nodes, pick a criterion, then click Find ✨";
+  document.getElementById("alt-routes").style.display="none";
   draw();
 }
 
