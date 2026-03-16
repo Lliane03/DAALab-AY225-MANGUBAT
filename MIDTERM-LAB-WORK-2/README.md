@@ -10,14 +10,15 @@ shortest path between any two nodes based on **Distance**, **Time**, or
 ## Files
 | File | Description |
 |---|---|
-| `MidtermLab2-Student.py` | CLI-based Python program |
-| `MidtermLab2-Student.html` | Interactive browser-based visualization |
+| `MidtermLab2-Mangubat.py` | CLI-based Python program |
+| `MidtermLab2-Mangubat.html` | Interactive browser-based visualization |
 | `README.md` | This file |
 
 ---
 
 ## Nodes in the Network
 IMUS, BACOOR, DASMA, KAWIT, INDANG, SILANG, GENTRI, NOVELETA
+![Node Map](image.png)
 
 ---
 
