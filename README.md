@@ -1,5 +1,4 @@
 # DAALab-AY225
-The DAA-Lab Repo
 
 This repository contains laboratory work for Design, Analysis and Algorithm Technologies (9407-AY225).
 
