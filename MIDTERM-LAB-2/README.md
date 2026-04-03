@@ -70,7 +70,7 @@ Open `MidtermLab2-Mangubat.html` in any modern browser.
 - Select source, destination, and criterion, then click **Find Path**.  
 - The shortest path is highlighted on the map with full stats.
 
-Or click this link: https://lliane03.github.io/DAALab-AY225-MANGUBAT/MIDTERM-LAB-2/MidtermLab2-Mangubat.html
+- Or click this link: https://lliane03.github.io/DAALab-AY225-MANGUBAT/MIDTERM-LAB-2/MidtermLab2-Mangubat.html
 ---
 
 ## Challenges Faced
