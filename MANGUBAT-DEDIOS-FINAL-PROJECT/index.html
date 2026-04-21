@@ -1,15 +1,404 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Faded Without Notice — Customer Churn Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=IM+Fell+English:ital@0;1&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #14171f;
+    --surface2: #1c2030;
+    --border: #638140;
+    --accent: #f2d753;
+    --accent2: #d8aa3c;
+    --accent3: #233d81;
+    --text: #fbe59d;
+    --muted: #3969b3;
+    --pass: #ebc311;
+    --fail: #3969b3;
+    --sepia-overlay: rgba(242, 215, 83, 0.03);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Courier Prime', monospace;
+    font-size: 13px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── FILM GRAIN + SCANLINES ─────────────────────── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grain)' opacity='0.07'/%3E%3C/svg%3E");
+    background-size: 256px 256px;
+    pointer-events: none;
+    opacity: .8;
+  }
+  body::after {
+    content: '';
+    position: fixed; inset: 0; z-index: 1;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+  }
+
+  /* ─── VIGNETTE ───────────────────────────────────── */
+  .vignette {
+    position: fixed; inset: 0; z-index: 2;
+    background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.6) 100%);
+    pointer-events: none;
+  }
+
+  /* ─── HEADER ─────────────────────────────────────── */
+  header {
+    position: relative; z-index: 10;
+    padding: 32px 48px 24px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, rgba(242,215,83,.05) 0%, transparent 100%);
+    text-align: center;
+  }
+
+  .header-top {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .masthead-rule {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), var(--accent2), var(--border), transparent);
+    margin: 10px 0;
+  }
+  .masthead-rule.thin {
+    height: 1px; opacity: .4;
+    margin: 4px 0;
+  }
+
+  .logo-eyebrow {
+    font-family: 'Special Elite', cursive;
+    font-size: 9px; letter-spacing: 5px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 6px;
+    text-align: center;
+  }
+  .logo-mark {
+    font-family: 'Playfair Display', serif;
+    font-size: 42px; font-weight: 700;
+    font-style: italic;
+    color: var(--accent);
+    letter-spacing: -1px;
+    line-height: 1;
+    text-shadow: 0 2px 20px rgba(242,215,83,0.2);
+    display: block; text-align: center;
+  }
+  .logo-sub {
+    font-family: 'Special Elite', cursive;
+    font-size: 9px; color: var(--muted);
+    letter-spacing: 6px; text-transform: uppercase;
+    text-align: center; display: block;
+    margin-top: 4px;
+  }
+  .header-dateline {
+    font-family: 'Special Elite', cursive;
+    font-size: 9px; color: var(--muted);
+    letter-spacing: 2px; text-transform: uppercase;
+  }
+  .header-issue {
+    font-family: 'IM Fell English', serif;
+    font-size: 11px; color: var(--accent2);
+    font-style: italic;
+  }
+  .header-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 8px;
+  }
+
+  /* ─── NAV ─────────────────────────────────────────── */
+  nav {
+    position: relative; z-index: 10;
+    display: flex; justify-content: center; gap: 0;
+    padding: 0 48px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    border-top: 1px solid rgba(99,129,64,0.3);
+  }
+  nav button {
+    background: none; border: none;
+    color: var(--muted); cursor: pointer;
+    font-family: 'Special Elite', cursive;
+    font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+    padding: 14px 22px;
+    position: relative;
+    transition: color .3s;
+  }
+  nav button::before {
+    content: '◆';
+    opacity: 0; position: absolute; left: 8px; top: 50%; transform: translateY(-50%);
+    font-size: 6px; color: var(--accent);
+    transition: opacity .2s;
+  }
+  nav button:hover { color: var(--text); }
+  nav button:hover::before { opacity: .5; }
+  nav button.active { color: var(--accent); }
+  nav button.active::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  }
+
+  /* ─── MAIN ───────────────────────────────────────── */
+  main {
+    position: relative; z-index: 5;
+    padding: 40px 48px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ─── SECTION TITLE ──────────────────────────────── */
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 4px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 20px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .section-title::before { content: '§'; color: var(--accent2); font-style: italic; }
+  .section-title::after {
+    content: ''; flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+  }
+
+  /* ─── CHART CARD ─────────────────────────────────── */
+  .chart-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 24px;
+    position: relative;
+  }
+  .chart-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at top right, rgba(242,215,83,.02), transparent 60%);
+    pointer-events: none;
+  }
+  .chart-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 20px;
+    font-style: italic;
+  }
+  .chart-container { position: relative; }
+
+  /* ─── STATS ──────────────────────────────────────── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px; margin-bottom: 20px;
+  }
+  .stat-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 24px;
+  }
+  .stat-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(99,129,64,.1);
+  }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-key {
+    font-family: 'Special Elite', cursive;
+    font-size: 10px; color: var(--muted); letter-spacing: 1px;
+  }
+  .stat-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px; font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* ─── CORRELATION ───────────────────────────────── */
+  .corr-bar-row { margin-bottom: 16px; }
+  .corr-label {
+    display: flex; justify-content: space-between;
+    font-size: 10px; margin-bottom: 5px;
+    font-family: 'Special Elite', cursive;
+    letter-spacing: 1px;
+  }
+  .corr-label span:last-child { color: var(--accent); }
+  .corr-bar { height: 5px; background: rgba(99,129,64,.2); border-radius: 1px; overflow: hidden; }
+  .corr-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+  }
+
+  /* ─── REGRESSION ─────────────────────────────────── */
+  .reg-formula {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 16px 20px;
+    border-radius: 0 2px 2px 0;
+    font-size: 14px; margin-bottom: 16px;
+    font-style: italic;
+    font-family: 'IM Fell English', serif;
+    color: var(--accent);
+  }
+  .pred-input-row {
+    display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+  }
+  .pred-input-row input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Courier Prime', monospace;
+    font-size: 12px;
+    padding: 7px 12px; border-radius: 1px;
+    outline: none; width: 140px;
+    transition: border-color .2s;
+  }
+  .pred-input-row input:focus { border-color: var(--accent); }
+  .pred-input-row label {
+    font-family: 'Special Elite', cursive;
+    font-size: 10px; color: var(--muted); letter-spacing: 1px;
+  }
+  .pred-result {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; font-weight: 700;
+    color: var(--accent2);
+  }
+
+  /* ─── INSIGHTS ───────────────────────────────────── */
+  .insight-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+  }
+  .insight-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 28px;
+    position: relative; overflow: hidden;
+  }
+  .insight-card::before {
+    content: attr(data-num);
+    position: absolute; right: 18px; top: 12px;
+    font-family: 'Playfair Display', serif;
+    font-size: 72px; font-weight: 700; font-style: italic;
+    color: rgba(242,215,83,.04);
+    line-height: 1;
+  }
+  .insight-tag {
+    display: inline-block;
+    background: rgba(242,215,83,.08);
+    border: 1px solid rgba(242,215,83,.18);
+    color: var(--accent2);
+    font-family: 'Special Elite', cursive;
+    font-size: 8px; letter-spacing: 3px; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 1px;
+    margin-bottom: 14px;
+  }
+  .insight-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px; font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+  .insight-body {
+    font-family: 'IM Fell English', serif;
+    font-size: 13px; line-height: 1.75;
+    color: #a0a8c0;
+  }
+  .insight-body strong {
+    color: var(--accent2); font-style: italic;
+    font-family: 'IM Fell English', serif;
+  }
+
+  /* ─── RECORD COUNT ───────────────────────────────── */
+  .record-count {
+    margin-top: 10px;
+    font-family: 'IM Fell English', serif;
+    font-size: 11px; color: var(--muted);
+    font-style: italic;
+  }
+
+  /* ─── ANIMATIONS ─────────────────────────────────── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .section.active > * { animation: fadeUp .4s ease both; }
+  .section.active > *:nth-child(2) { animation-delay: .06s; }
+  .section.active > *:nth-child(3) { animation-delay: .12s; }
+  .section.active > *:nth-child(4) { animation-delay: .18s; }
+  .section.active > *:nth-child(5) { animation-delay: .24s; }
+
+  /* ─── DECORATIVE ──────────────────────────────────── */
+  .ornament {
+    text-align: center;
+    font-family: 'IM Fell English', serif;
+    font-size: 14px; color: var(--border);
+    letter-spacing: 6px;
+    margin: 0 0 32px;
+  }
+
+  @media (max-width: 900px) {
+    header, nav { padding-left: 20px; padding-right: 20px; }
+    main { padding: 24px 20px; }
+    .header-top { flex-direction: column; gap: 8px; text-align: center; }
+    .summary-grid { grid-template-columns: 1fr 1fr; }
+    .chart-grid, .stats-grid, .insight-grid { grid-template-columns: 1fr; }
+    .logo-mark { font-size: 30px; }
+  }
+</style>
 </head>
 <body>
-    HELLLOOO
+<div class="vignette"></div>
 
+<header>
+  <div class="masthead-rule"></div>
+  <div class="logo-eyebrow">Customer Intelligence Report</div>
+  <span class="logo-mark">Faded Without Notice</span>
+  <span class="logo-sub">A Chronicle of Departures &amp; Retained Souls</span>
+  <div class="masthead-rule thin"></div>
+  <div class="header-meta">
+    <span class="header-dateline">Est. Vol. I · Issue No. 1</span>
+    <span class="header-issue">The ones who left without a word</span>
+    <span class="header-dateline">AY 2024–25 · 20 Records</span>
+  </div>
+  <div class="masthead-rule"></div>
+</header>
 
-    HIIIIII
+<nav>
+  <button class="active" onclick="showSection('explorer', this)">The Registry</button>
+  <button onclick="showSection('visualizations', this)">Illustrations</button>
+  <button onclick="showSection('analysis', this)">The Ledger</button>
+  <button onclick="showSection('insights', this)">Dispatches</button>
+</nav>
+
 
 </body>
 </html>
