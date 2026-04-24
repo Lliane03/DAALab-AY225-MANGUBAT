@@ -527,3 +527,76 @@
   <button onclick="showSection('analysis', this)">The Ledger</button>
   <button onclick="showSection('insights', this)">Dispatches</button>
 </nav>
+
+<main>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 1: DATASET EXPLORER -- STUDENT 1
+  ══════════════════════════════════════════════ -->
+  <section id="explorer" class="section active">
+    <div class="ornament">— ✦ —</div>
+    <div class="summary-grid" id="summaryCards"></div>
+
+    <div class="section-title">Customer Records</div>
+    <div class="filter-bar">
+      <input type="text" id="searchInput" placeholder="Search name or ID…" oninput="applyFilters()"/>
+      <select id="subFilter" onchange="applyFilters()">
+        <option value="">All Subscriptions</option>
+        <option value="Basic">Basic</option>
+        <option value="Standard">Standard</option>
+        <option value="Premium">Premium</option>
+      </select>
+      <select id="statusFilter" onchange="applyFilters()">
+        <option value="">All Status</option>
+        <option value="Churned">Churned</option>
+        <option value="Retained">Retained</option>
+      </select>
+      <select id="contractFilter" onchange="applyFilters()">
+        <option value="">All Contracts</option>
+        <option value="Monthly">Monthly</option>
+        <option value="Quarterly">Quarterly</option>
+        <option value="Annual">Annual</option>
+      </select>
+      <select id="sortField" onchange="applyFilters()">
+        <option value="">Sort by…</option>
+        <option value="totalSpend">Total Spend</option>
+        <option value="tenure">Tenure</option>
+        <option value="age">Age</option>
+        <option value="supportCalls">Support Calls</option>
+      </select>
+      <select id="sortDir" onchange="applyFilters()">
+        <option value="desc">Desc</option>
+        <option value="asc">Asc</option>
+      </select>
+      <button class="btn" onclick="resetFilters()">Reset</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Age</th>
+            <th>Gender</th>
+            <th>Tenure (mo)</th>
+            <th>Usage Freq</th>
+            <th>Support Calls</th>
+            <th>Pay Delay</th>
+            <th>Subscription</th>
+            <th>Contract</th>
+            <th>Total Spend</th>
+            <th>Last Interact</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+    <div class="record-count" id="recordCount"></div>
+  </section>
+
+    <!-- ══════════════════════════════════════════════
+         SECTION 2: VISUALIZATIONS -- STUDENT 2
+    ══════════════════════════════════════════════ -->
+    
+</main>
