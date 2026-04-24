@@ -630,4 +630,102 @@ const CUSTOMERS = [
 
 // ── HELPERS ──────────────────────────────────────────
 
+// ── SUMMARY CARDS ───────────────────────────────────── STUDENT 1
+function buildSummaryCards() {
+  const container = document.getElementById('summaryCards');
+  container.innerHTML = `
+    <div class="summary-card">
+      <div class="card-label">Churn Rate</div>
+      <div class="card-value" style="color:var(--fail)">${churnRate}<span style="font-size:18px">%</span></div>
+      <div class="card-sub">${churnedCount} departed · ${retainedCount} remain</div>
+    </div>
+    <div class="summary-card">
+      <div class="card-label">Avg Total Spend</div>
+      <div class="card-value" style="color:var(--accent); font-size:26px; padding-top:4px;">$${parseFloat(avgSpend).toFixed(0)}</div>
+      <div class="card-sub">across all 20 accounts</div>
+    </div>
+    <div class="summary-card">
+      <div class="card-label">Avg Tenure</div>
+      <div class="card-value" style="color:var(--accent2)">${avgTenure}</div>
+      <div class="card-sub">months before departure</div>
+    </div>
+    <div class="summary-card">
+      <div class="card-label">Top Spender</div>
+      <div class="card-value" style="color:#7b8ef5; font-size:20px; padding-top:6px;">${topSpender.id}</div>
+      <div class="card-sub">$${topSpender.totalSpend} · ${getStatus(topSpender)}</div>
+    </div>
+  `;
+}
+
+// ── TABLE ───────────────────────────────────────────── STUDENT 1
+function renderTable(data) {
+  document.getElementById('recordCount').textContent = `Showing ${data.length} of ${CUSTOMERS.length} records in the registry`;
+  const tbody = document.getElementById('tableBody');
+  if (!data.length) {
+    tbody.innerHTML = `<tr><td colspan="12" style="text-align:center;color:var(--muted);padding:40px;font-family:'IM Fell English',serif;font-style:italic;">No records match your inquiry.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = data.map(c => {
+    const status = getStatus(c);
+    const spendPct = (c.totalSpend/1000*100).toFixed(0);
+    return `
+      <tr>
+        <td style="color:var(--muted)">${c.id}</td>
+        <td>${c.age}</td>
+        <td>${c.gender}</td>
+        <td>${c.tenure}</td>
+        <td>${c.usageFreq}</td>
+        <td style="color:${c.supportCalls>=7?'var(--fail)':c.supportCalls<=2?'var(--pass)':'var(--text)'}">${c.supportCalls}</td>
+        <td style="color:${c.payDelay>=20?'var(--fail)':'var(--text)'}">${c.payDelay}</td>
+        <td>${c.subscription}</td>
+        <td>${c.contract}</td>
+        <td>
+          <div class="spend-bar-wrap">
+            <span style="width:56px">$${c.totalSpend.toFixed(0)}</span>
+            <div class="spend-bar"><div class="spend-bar-fill" style="width:${spendPct}%"></div></div>
+          </div>
+        </td>
+        <td>${c.lastInteract} days</td>
+        <td><span class="badge badge-${status.toLowerCase()}">${status}</span></td>
+      </tr>`;
+  }).join('');
+}
+
+function applyFilters() {
+  const search  = document.getElementById('searchInput').value.toLowerCase();
+  const sub     = document.getElementById('subFilter').value;
+  const status  = document.getElementById('statusFilter').value;
+  const contract= document.getElementById('contractFilter').value;
+  const sortF   = document.getElementById('sortField').value;
+  const sortD   = document.getElementById('sortDir').value;
+
+  let data = CUSTOMERS.filter(c => {
+    const matchSearch   = c.id.toLowerCase().includes(search) || c.gender.toLowerCase().includes(search);
+    const matchSub      = !sub      || c.subscription === sub;
+    const matchStatus   = !status   || getStatus(c) === status;
+    const matchContract = !contract || c.contract === contract;
+    return matchSearch && matchSub && matchStatus && matchContract;
+  });
+
+  if (sortF) {
+    data.sort((a,b) => sortD==='asc' ? a[sortF]-b[sortF] : b[sortF]-a[sortF]);
+  }
+
+  filteredData = data;
+  renderTable(data);
+}
+
+function resetFilters() {
+  ['searchInput','subFilter','statusFilter','contractFilter'].forEach(id => {
+    const el = document.getElementById(id);
+    el.value = '';
+  });
+  document.getElementById('sortField').value = '';
+  document.getElementById('sortDir').value = 'desc';
+  filteredData = [...CUSTOMERS];
+  renderTable(filteredData);
+}
+
+// ── SECTION SWITCH ────────────────────────────────────
+
 </script>
