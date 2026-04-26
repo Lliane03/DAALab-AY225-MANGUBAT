@@ -898,5 +898,89 @@ function buildCharts() {
   });
 }
 
+// ── ANALYSIS ──────────────────────────────────────────
+function buildAnalysis() {
+  if (document.getElementById('spendStats').innerHTML) return;
+
+  function statsHTML(label, arr, color) {
+    const mn=mean(arr), sd=stdDev(arr), v=variance(arr);
+    const sorted=[...arr].sort((a,b)=>a-b);
+    const med=sorted[Math.floor(arr.length/2)];
+    return `
+      <div class="chart-title" style="color:${color};margin-bottom:16px;">${label}</div>
+      ${[['Min',Math.min(...arr)],['Max',Math.max(...arr)],['Mean',mn.toFixed(2)],
+         ['Median',med],['Variance',v.toFixed(2)],['Std Dev',sd.toFixed(2)],
+         ['Range',Math.max(...arr)-Math.min(...arr)]]
+        .map(([k,v])=>`<div class="stat-row"><span class="stat-key">${k}</span><span class="stat-val" style="color:${color}">${v}</span></div>`).join('')}
+    `;
+  }
+  document.getElementById('spendStats').innerHTML  = statsHTML('Total Spend ($)', spends, 'var(--accent)');
+  document.getElementById('tenureStats').innerHTML = statsHTML('Tenure (months)', tenures, 'var(--accent2)');
+  document.getElementById('ageStats').innerHTML    = statsHTML('Customer Age', ages, '#7b8ef5');
+
+  // Correlation bars
+  const corrs = [
+    ['Tenure vs Churn',       Math.abs(corrTenure)],
+    ['Support Calls vs Churn',Math.abs(corrSupport)],
+    ['Pay Delay vs Churn',    Math.abs(corrDelay)],
+    ['Usage Freq vs Churn',   Math.abs(corrUsage)],
+    ['Total Spend vs Churn',  Math.abs(corrSpend)],
+  ];
+  const rawCorrs = [corrTenure, corrSupport, corrDelay, corrUsage, corrSpend];
+  document.getElementById('corrBars').innerHTML = corrs.map(([label,r],i)=>`
+    <div class="corr-bar-row">
+      <div class="corr-label"><span>${label}</span><span>r = ${rawCorrs[i].toFixed(3)}</span></div>
+      <div class="corr-bar"><div class="corr-fill" style="width:${r*100}%"></div></div>
+    </div>
+  `).join('');
+
+  const SPFONT = "'Special Elite', cursive";
+  new Chart(document.getElementById('heatmapChart'), {
+    type:'bar',
+    data:{
+      labels:['Tenure','Support Calls','Pay Delay','Usage Freq','Spend'],
+      datasets:[{
+        label:'|Correlation| with Churn',
+        data:[Math.abs(corrTenure),Math.abs(corrSupport),Math.abs(corrDelay),Math.abs(corrUsage),Math.abs(corrSpend)],
+        backgroundColor:['rgba(235,195,17,.6)','rgba(57,105,179,.6)','rgba(216,170,60,.6)','rgba(90,111,163,.6)','rgba(242,215,83,.6)'],
+        borderWidth:0, borderRadius:1
+      }]
+    },
+    options:{
+      responsive:true, indexAxis:'y',
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{min:0,max:1,ticks:{color:'#3969b3',font:{family:SPFONT,size:9}},grid:{color:'rgba(99,129,64,.12)'}},
+        y:{ticks:{color:'#3969b3',font:{family:SPFONT,size:9}},grid:{display:false}}
+      }
+    }
+  });
+
+  document.getElementById('regFormula').textContent =
+    `Churn = ${regTenure.slope.toFixed(4)} × Tenure + ${regTenure.intercept.toFixed(4)}`;
+  document.getElementById('r2val').textContent =
+    `R² = ${r2Tenure.toFixed(4)}  ·  Explains ${(r2Tenure*100).toFixed(1)}% of churn variance via tenure alone`;
+}
+
+function predict() {
+  const t = parseFloat(document.getElementById('predTenure').value);
+  const s = parseFloat(document.getElementById('predCalls').value);
+  const el = document.getElementById('predResult');
+  if (isNaN(t) && isNaN(s)) { el.textContent='—'; return; }
+
+  let risk;
+  if (!isNaN(t) && isNaN(s)) {
+    risk = regTenure.slope*t + regTenure.intercept;
+  } else {
+    const regC = linReg(supportCalls, churnVals);
+    const rT = regTenure.slope*t + regTenure.intercept;
+    const rC = regC.slope*s + regC.intercept;
+    risk = (rT*Math.abs(corrTenure) + rC*Math.abs(corrSupport)) / (Math.abs(corrTenure)+Math.abs(corrSupport));
+  }
+  const pct = Math.max(0, Math.min(1, risk));
+  el.textContent = (pct*100).toFixed(1) + '%';
+  el.style.color = pct > 0.5 ? 'var(--fail)' : 'var(--pass)';
+}
+
 
 </script>
