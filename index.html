@@ -33,6 +33,7 @@
     overflow-x: hidden;
   }
 
+  /* ─── FILM GRAIN + SCANLINES ─────────────────────── */
   body::before {
     content: '';
     position: fixed; inset: 0; z-index: 0;
@@ -54,12 +55,14 @@
     pointer-events: none;
   }
 
+  /* ─── VIGNETTE ───────────────────────────────────── */
   .vignette {
     position: fixed; inset: 0; z-index: 2;
     background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.6) 100%);
     pointer-events: none;
   }
 
+  /* ─── HEADER ─────────────────────────────────────── */
   header {
     position: relative; z-index: 10;
     padding: 32px 48px 24px;
@@ -122,6 +125,7 @@
     margin-top: 8px;
   }
 
+  /* ─── NAV ─────────────────────────────────────────── */
   nav {
     position: relative; z-index: 10;
     display: flex; justify-content: center; gap: 0;
@@ -154,6 +158,7 @@
     background: linear-gradient(90deg, transparent, var(--accent), transparent);
   }
 
+  /* ─── MAIN ───────────────────────────────────────── */
   main {
     position: relative; z-index: 5;
     padding: 40px 48px;
@@ -164,6 +169,7 @@
   .section { display: none; }
   .section.active { display: block; }
 
+  /* ─── SECTION TITLE ──────────────────────────────── */
   .section-title {
     font-family: 'Playfair Display', serif;
     font-size: 11px; font-weight: 700;
@@ -178,7 +184,7 @@
     background: linear-gradient(90deg, var(--border), transparent);
   }
 
-
+  /* ─── SUMMARY CARDS ──────────────────────────────── STUDENT 1 */
   .summary-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -225,7 +231,7 @@
     margin-top: 6px; font-style: italic;
   }
 
-
+  /* ─── FILTER BAR ─────────────────────────────────── STUDENT 1 */
   .filter-bar {
     display: flex; gap: 10px; align-items: center;
     margin-bottom: 20px; flex-wrap: wrap;
@@ -258,6 +264,7 @@
   }
   .btn:hover { border-color: var(--accent); color: var(--accent); }
 
+  /* ─── TABLE ──────────────────────────────────────── Student 1*/
   .table-wrap {
     overflow-x: auto;
     border: 1px solid var(--border);
@@ -306,6 +313,7 @@
     background: linear-gradient(90deg, var(--accent2), var(--accent));
   }
 
+  /* ─── CHART CARD ─────────────────────────────────── */
   .chart-grid {
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -334,6 +342,7 @@
   }
   .chart-container { position: relative; }
 
+  /* ─── STATS ──────────────────────────────────────── */
   .stats-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -361,7 +370,7 @@
     color: var(--accent);
   }
 
-
+  /* ─── CORRELATION ───────────────────────────────── */
   .corr-bar-row { margin-bottom: 16px; }
   .corr-label {
     display: flex; justify-content: space-between;
@@ -376,6 +385,7 @@
     background: linear-gradient(90deg, var(--accent2), var(--accent));
   }
 
+  /* ─── REGRESSION ─────────────────────────────────── */
   .reg-formula {
     background: var(--surface2);
     border: 1px solid var(--border);
@@ -411,6 +421,7 @@
     color: var(--accent2);
   }
 
+  /* ─── INSIGHTS ───────────────────────────────────── */
   .insight-grid {
     display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
   }
@@ -455,6 +466,7 @@
     font-family: 'IM Fell English', serif;
   }
 
+  /* ─── RECORD COUNT ───────────────────────────────── */
   .record-count {
     margin-top: 10px;
     font-family: 'IM Fell English', serif;
@@ -462,6 +474,7 @@
     font-style: italic;
   }
 
+  /* ─── ANIMATIONS ─────────────────────────────────── */
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(14px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -472,6 +485,7 @@
   .section.active > *:nth-child(4) { animation-delay: .18s; }
   .section.active > *:nth-child(5) { animation-delay: .24s; }
 
+  /* ─── DECORATIVE ──────────────────────────────────── */
   .ornament {
     text-align: center;
     font-family: 'IM Fell English', serif;
@@ -502,7 +516,7 @@
   <div class="header-meta">
     <span class="header-dateline">Est. Vol. I · Issue No. 1</span>
     <span class="header-issue">The ones who left without a word</span>
-    <span class="header-dateline">AY 2025–2026 · 20 Records</span>
+    <span class="header-dateline">AY 2024–25 · 20 Records</span>
   </div>
   <div class="masthead-rule"></div>
 </header>
@@ -581,9 +595,9 @@
     <div class="record-count" id="recordCount"></div>
   </section>
 
-    <!-- ══════════════════════════════════════════════
-         SECTION 2: VISUALIZATIONS -- STUDENT 2
-    ══════════════════════════════════════════════ -->
+  <!-- ══════════════════════════════════════════════
+       SECTION 2: VISUALIZATIONS
+  ══════════════════════════════════════════════ -->
   <section id="visualizations" class="section">
     <div class="ornament">— ✦ —</div>
     <div class="section-title">Charts &amp; Illustrations</div>
@@ -610,7 +624,8 @@
       </div>
     </div>
   </section>
-<!-- ══════════════════════════════════════════════
+
+  <!-- ══════════════════════════════════════════════
        SECTION 3: STATISTICAL ANALYSIS
   ══════════════════════════════════════════════ -->
   <section id="analysis" class="section">
@@ -689,7 +704,64 @@ const CUSTOMERS = [
 ];
 
 // ── HELPERS ──────────────────────────────────────────
+function getStatus(c) { return c.churn === 1 ? 'Churned' : 'Retained'; }
+function mean(arr)    { return arr.reduce((a,b)=>a+b,0)/arr.length; }
+function variance(arr){ const m=mean(arr); return mean(arr.map(x=>(x-m)**2)); }
+function stdDev(arr)  { return Math.sqrt(variance(arr)); }
+function pearson(x,y) {
+  const mx=mean(x), my=mean(y);
+  const num=x.reduce((s,xi,i)=>s+(xi-mx)*(y[i]-my),0);
+  const den=Math.sqrt(x.reduce((s,xi)=>s+(xi-mx)**2,0)*y.reduce((s,yi)=>s+(yi-my)**2,0));
+  return den===0?0:num/den;
+}
+function linReg(x,y) {
+  const mx=mean(x), my=mean(y);
+  const num=x.reduce((s,xi,i)=>s+(xi-mx)*(y[i]-my),0);
+  const den=x.reduce((s,xi)=>s+(xi-mx)**2,0);
+  const slope=den===0?0:num/den;
+  return {slope, intercept:my-slope*mx};
+}
+function r2score(x,y,slope,intercept) {
+  const my=mean(y);
+  const ss_res=y.reduce((s,yi,i)=>s+(yi-(slope*x[i]+intercept))**2,0);
+  const ss_tot=y.reduce((s,yi)=>s+(yi-my)**2,0);
+  return ss_tot===0?0:1-ss_res/ss_tot;
+}
 
+// ── COMPUTED ─────────────────────────────────────────
+const churnVals    = CUSTOMERS.map(c=>c.churn);
+const tenures      = CUSTOMERS.map(c=>c.tenure);
+const spends       = CUSTOMERS.map(c=>c.totalSpend);
+const ages         = CUSTOMERS.map(c=>c.age);
+const supportCalls = CUSTOMERS.map(c=>c.supportCalls);
+const payDelays    = CUSTOMERS.map(c=>c.payDelay);
+const usageFreqs   = CUSTOMERS.map(c=>c.usageFreq);
+
+const churnedCount   = CUSTOMERS.filter(c=>c.churn===1).length;
+const retainedCount  = CUSTOMERS.length - churnedCount;
+const churnRate      = (churnedCount/CUSTOMERS.length*100).toFixed(1);
+const avgSpend       = mean(spends).toFixed(2);
+const avgTenure      = mean(tenures).toFixed(1);
+const topSpender     = CUSTOMERS.reduce((a,b)=>a.totalSpend>b.totalSpend?a:b);
+
+const corrTenure  = pearson(tenures, churnVals);
+const corrSupport = pearson(supportCalls, churnVals);
+const corrDelay   = pearson(payDelays, churnVals);
+const corrUsage   = pearson(usageFreqs, churnVals);
+const corrSpend   = pearson(spends, churnVals);
+
+const regTenure   = linReg(tenures, churnVals);
+const r2Tenure    = r2score(tenures, churnVals, regTenure.slope, regTenure.intercept);
+
+let filteredData = [...CUSTOMERS];
+let charts = {};
+
+// ── INIT ─────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  buildSummaryCards();
+  renderTable(filteredData);
+  buildInsights();
+});
 
 // ── SUMMARY CARDS ───────────────────────────────────── STUDENT 1
 function buildSummaryCards() {
