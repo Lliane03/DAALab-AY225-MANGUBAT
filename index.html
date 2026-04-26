@@ -982,5 +982,61 @@ function predict() {
   el.style.color = pct > 0.5 ? 'var(--fail)' : 'var(--pass)';
 }
 
+// ── INSIGHTS ──────────────────────────────────────────
+function buildInsights() {
+  const churnedAvgTenure  = mean(CUSTOMERS.filter(c=>c.churn===1).map(c=>c.tenure)).toFixed(1);
+  const retainedAvgTenure = mean(CUSTOMERS.filter(c=>c.churn===0).map(c=>c.tenure)).toFixed(1);
+  const churnedAvgCalls   = mean(CUSTOMERS.filter(c=>c.churn===1).map(c=>c.supportCalls)).toFixed(1);
+  const retainedAvgCalls  = mean(CUSTOMERS.filter(c=>c.churn===0).map(c=>c.supportCalls)).toFixed(1);
+  const premiumChurn      = CUSTOMERS.filter(c=>c.subscription==='Premium'&&c.churn===1).length;
+  const basicChurn        = CUSTOMERS.filter(c=>c.subscription==='Basic'&&c.churn===1).length;
+  const monthlyChurn      = (CUSTOMERS.filter(c=>c.contract==='Monthly'&&c.churn===1).length / CUSTOMERS.filter(c=>c.contract==='Monthly').length * 100).toFixed(0);
+  const annualChurn       = (CUSTOMERS.filter(c=>c.contract==='Annual'&&c.churn===1).length / CUSTOMERS.filter(c=>c.contract==='Annual').length * 100).toFixed(0);
+  const highDelayChurn    = CUSTOMERS.filter(c=>c.payDelay>=20&&c.churn===1).length;
+  const churnedAvgSpend   = mean(CUSTOMERS.filter(c=>c.churn===1).map(c=>c.totalSpend)).toFixed(2);
+  const retainedAvgSpend  = mean(CUSTOMERS.filter(c=>c.churn===0).map(c=>c.totalSpend)).toFixed(2);
 
+  const insightData = [
+    {
+      tag:'Churn Overview',
+      title:`${churnRate}% of Accounts Slipped Away`,
+      body:`Of 20 customers observed, <strong>${churnedCount} have churned</strong> and <strong>${retainedCount} remain</strong>. The data tells a quiet story of customers who faded without notice — no fanfare, no farewell. Early patterns in tenure and engagement signal their departures long before they happen.`
+    },
+    {
+      tag:'Tenure Factor',
+      title:'Short Tenures End in Departure',
+      body:`Churned customers averaged only <strong>${churnedAvgTenure} months</strong> compared to <strong>${retainedAvgTenure} months</strong> for those retained. The correlation of r = <strong>${corrTenure.toFixed(2)}</strong> suggests that customers who stay longer build inertia — the relationship deepens, making departure less likely.`
+    },
+    {
+      tag:'Support Distress',
+      title:'High Call Volume Precedes Exit',
+      body:`Churned customers placed an average of <strong>${churnedAvgCalls} support calls</strong>, nearly double the <strong>${retainedAvgCalls} calls</strong> made by retained accounts. Unresolved frustration compounds silently until the customer simply stops returning — the strongest behavioral signal of impending churn.`
+    },
+    {
+      tag:'Contract Length',
+      title:`Monthly Plans Churn at ${monthlyChurn}% vs Annual at ${annualChurn}%`,
+      body:`Customers on <strong>monthly contracts churn at ${monthlyChurn}%</strong> compared to <strong>${annualChurn}% for annual plans</strong>. The commitment of a longer contract appears to anchor customers, reducing the temptation to leave during periods of dissatisfaction.`.replace('${monthlyChurn}%',monthlyChurn+'%').replace('${annualChurn}%',annualChurn+'%')
+    },
+    {
+      tag:'Payment Behavior',
+      title:'Late Payments as a Departure Signal',
+      body:`<strong>${highDelayChurn} churned customers</strong> had payment delays of 20+ days. Late payment is not merely a billing problem — it is a disengagement signal. Customers who delay payments are already mentally checking out, their wallets the last part of them to admit it.`
+    },
+    {
+      tag:'Spending Paradox',
+      title:'Churned Customers Spent Less on Average',
+      body:`Retained customers averaged <strong>$${retainedAvgSpend}</strong> in total spend versus <strong>$${churnedAvgSpend}</strong> for those who churned. Higher-value customers appear more committed, while lower-spend accounts show the most vulnerability — suggesting that spend-tier incentives could meaningfully shift retention outcomes.`
+    },
+  ];
+
+  document.getElementById('insightGrid').innerHTML = insightData.map((ins,i)=>`
+    <div class="insight-card" data-num="${String(i+1).padStart(2,'0')}">
+      <div class="insight-tag">${ins.tag}</div>
+      <div class="insight-title">${ins.title}</div>
+      <p class="insight-body">${ins.body}</p>
+    </div>
+  `).join('');
+}
 </script>
+</body>
+</html>
