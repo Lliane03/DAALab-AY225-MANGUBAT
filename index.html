@@ -610,6 +610,54 @@
       </div>
     </div>
   </section>
+<!-- ══════════════════════════════════════════════
+       SECTION 3: STATISTICAL ANALYSIS
+  ══════════════════════════════════════════════ -->
+  <section id="analysis" class="section">
+    <div class="ornament">— ✦ —</div>
+    <div class="section-title">Descriptive Statistics</div>
+    <div class="stats-grid">
+      <div class="stat-block" id="spendStats"></div>
+      <div class="stat-block" id="tenureStats"></div>
+      <div class="stat-block" id="ageStats"></div>
+    </div>
+
+    <div class="section-title">Correlation Analysis</div>
+    <div class="chart-grid" style="grid-template-columns:1fr 1fr; margin-bottom:20px;">
+      <div class="stat-block">
+        <div class="chart-title" style="margin-bottom:20px;">Pearson Correlation with Churn</div>
+        <div id="corrBars"></div>
+      </div>
+      <div class="stat-block">
+        <div class="chart-title" style="margin-bottom:20px;">Correlation Heatmap</div>
+        <canvas id="heatmapChart" style="max-height:220px;"></canvas>
+      </div>
+    </div>
+
+    <div class="section-title">Linear Regression Model</div>
+    <div class="stat-block">
+      <div class="chart-title" style="margin-bottom:16px;">Predict Churn Risk from Tenure &amp; Support Calls</div>
+      <div class="reg-formula" id="regFormula"></div>
+      <div style="margin-bottom:20px; font-family:'Special Elite',cursive; font-size:10px; color:var(--muted); letter-spacing:1px;" id="r2val"></div>
+      <div class="pred-input-row">
+        <label>Tenure (months):</label>
+        <input type="number" id="predTenure" min="0" max="72" step="1" placeholder="e.g. 24" oninput="predict()"/>
+        <label>Support Calls:</label>
+        <input type="number" id="predCalls" min="0" max="15" step="1" placeholder="e.g. 4" oninput="predict()"/>
+        <span style="font-family:'IM Fell English',serif; font-size:12px; color:var(--muted); font-style:italic;">→ Churn Risk:</span>
+        <span class="pred-result" id="predResult">—</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 4: INSIGHTS
+  ══════════════════════════════════════════════ -->
+  <section id="insights" class="section">
+    <div class="ornament">— ✦ —</div>
+    <div class="section-title">Dispatches from the Data</div>
+    <div class="insight-grid" id="insightGrid"></div>
+  </section>
 
 </main>
 
