@@ -796,4 +796,107 @@ function showSection(id, btn) {
   if (id==='visualizations') buildCharts();
   if (id==='analysis')       buildAnalysis();
 }
+
+// ── CHARTS ────────────────────────────────────────────
+function buildCharts() {
+  if (charts.bar) return;
+
+  const FONT  = "'Courier Prime', monospace";
+  const SPFONT = "'Special Elite', cursive";
+  const TICK  = { color:'#3969b3', font:{family:SPFONT, size:10} };
+  const GRID  = { color:'rgba(99,129,64,.12)' };
+
+  // Top 10 by spend
+  const top10 = [...CUSTOMERS].sort((a,b)=>b.totalSpend-a.totalSpend).slice(0,10);
+  charts.bar = new Chart(document.getElementById('barChart'), {
+    type:'bar',
+    data:{
+      labels: top10.map(c=>c.id),
+      datasets:[{
+        label:'Total Spend',
+        data: top10.map(c=>c.totalSpend),
+        backgroundColor: top10.map(c=>c.churn===1?'rgba(57,105,179,.55)':'rgba(235,195,17,.55)'),
+        borderColor: top10.map(c=>c.churn===1?'#3969b3':'#ebc311'),
+        borderWidth:1, borderRadius:1
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false},
+        tooltip:{ callbacks:{ label: ctx=>`$${ctx.raw.toFixed(2)} · ${getStatus(top10[ctx.dataIndex])}` }} },
+      scales:{
+        x:{ ticks:{...TICK}, grid:{...GRID} },
+        y:{ ticks:{...TICK, callback:v=>`$${v}`}, grid:{...GRID} }
+      }
+    }
+  });
+
+  // Doughnut — churn by sub type
+  const subTypes = ['Basic','Standard','Premium'];
+  const churnBySub = subTypes.map(s=>CUSTOMERS.filter(c=>c.subscription===s&&c.churn===1).length);
+  charts.doughnut = new Chart(document.getElementById('doughnutChart'), {
+    type:'doughnut',
+    data:{
+      labels:['Basic Churned','Standard Churned','Premium Churned'],
+      datasets:[{
+        data:churnBySub,
+        backgroundColor:['rgba(235,195,17,.75)','rgba(216,170,60,.75)','rgba(57,105,179,.75)'],
+        borderColor:'#14171f', borderWidth:3, hoverOffset:8
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ position:'bottom', labels:{ color:'#3969b3', font:{family:SPFONT,size:10}, padding:12 } } },
+      cutout:'62%'
+    }
+  });
+
+  // Scatter: tenure vs spend, color by churn
+  const regLine = (() => {
+    const r = linReg(tenures, spends);
+    return [
+      {x:Math.min(...tenures), y:r.slope*Math.min(...tenures)+r.intercept},
+      {x:Math.max(...tenures), y:r.slope*Math.max(...tenures)+r.intercept}
+    ];
+  })();
+
+  charts.scatter = new Chart(document.getElementById('scatterChart'), {
+    type:'scatter',
+    data:{
+      datasets:[
+        {
+          label:'Churned',
+          data: CUSTOMERS.filter(c=>c.churn===1).map(c=>({x:c.tenure,y:c.totalSpend,id:c.id})),
+          backgroundColor:'rgba(57,105,179,.65)', borderColor:'#3969b3',
+          borderWidth:1, pointRadius:7, pointHoverRadius:9
+        },
+        {
+          label:'Retained',
+          data: CUSTOMERS.filter(c=>c.churn===0).map(c=>({x:c.tenure,y:c.totalSpend,id:c.id})),
+          backgroundColor:'rgba(235,195,17,.65)', borderColor:'#ebc311',
+          borderWidth:1, pointRadius:7, pointHoverRadius:9
+        },
+        {
+          label:'Trend Line',
+          data: regLine, type:'line',
+          borderColor:'rgba(242,215,83,.4)', borderWidth:2,
+          pointRadius:0, fill:false, tension:0
+        }
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{ labels:{ color:'#3969b3', font:{family:SPFONT,size:10} } },
+        tooltip:{ callbacks:{ label: ctx=>ctx.raw.id?`${ctx.raw.id}: ${ctx.raw.x}mo · $${ctx.raw.y}`:`Trend` } }
+      },
+      scales:{
+        x:{ title:{display:true,text:'Tenure (months)',color:'#3969b3',font:{family:SPFONT,size:10}}, ticks:{...TICK}, grid:{...GRID} },
+        y:{ title:{display:true,text:'Total Spend ($)',color:'#3969b3',font:{family:SPFONT,size:10}}, ticks:{...TICK,callback:v=>`$${v}`}, grid:{...GRID} }
+      }
+    }
+  });
+}
+
+
 </script>
