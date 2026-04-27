@@ -231,7 +231,23 @@
 <body>
 <div class="vignette"></div>
 
-
+<!-- LOADING -->
+<div id="ld">
+  <div class="ld-title">Faded Without Notice</div>
+  <div class="ld-sub">Retrieving lost records…</div>
+  <div class="ld-file">customer_churn.csv</div>
+  <div class="ld-bar-wrap"><div class="ld-bar" id="ldBar"></div></div>
+  <div class="ld-pct" id="ldPct"></div>
+  <div class="ld-msg" id="ldMsg">Leafing through the archives…</div>
+  <div id="uploadPrompt">
+    <div class="upload-zone" onclick="document.getElementById('csvIn').click()">
+      <input type="file" id="csvIn" accept=".csv" onchange="handleUpload(event)"/>
+      <div class="upload-label">The file was not found in its usual place.<br/>Provide it manually to proceed.</div>
+      <div class="upload-hint">customer_churn.csv · click to select</div>
+    </div>
+    <button class="upload-btn" onclick="document.getElementById('csvIn').click()">Open from Archive</button>
+  </div>
+</div>
 
 <header>
   <div class="mr"></div>
@@ -241,15 +257,21 @@
   <div class="mr thin"></div>
   <div class="hdr-meta">
     <span class="hdr-date">DE DIOS  |  MANGUBAT</span>
-    <span class="hdr-issue">This reflects the customer churn patterns observed in the dataset <a href="https://www.kaggle.com/datasets/somiel20/customer-churn-data" target="_blank">here</a></span>
+    <span class="hdr-issue">This reflects the customer churn patterns observed in the dataset https://www.kaggle.com/datasets/somiel20/customer-churn-data</span>
     <span class="hdr-date" id="hdrCount">—</span>
   </div>
   <div class="mr"></div>
 </header>
 
-
+<nav>
+  <button class="active" onclick="showSec('explorer',this)">The Registry</button>
+  <button onclick="showSec('visualizations',this)">Illustrations</button>
+  <button onclick="showSec('analysis',this)">The Ledger</button>
+  <button onclick="showSec('insights',this)">Dispatches</button>
+</nav>
 
 <main>
+
   <!-- S1: REGISTRY -->
   <section id="explorer" class="section active">
     <div class="orn">— ✦ —</div>
@@ -313,6 +335,77 @@
     </div>
     <div class="rc" id="rc"></div>
   </section>
+
+  <!-- S2: ILLUSTRATIONS -->
+  <section id="visualizations" class="section">
+    <div class="orn">— ✦ —</div>
+    <div class="sec-title">Charts &amp; Illustrations</div>
+    <div style="font-family:var(--font-ui);font-size:12px;color:var(--muted);margin-bottom:18px;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:2px;">
+      ↻ Charts reflect the rows currently visible in The Registry. Change filters or row count to update.
+    </div>
+    <div class="cg" style="margin-bottom:18px">
+      <div class="cc">
+        <div class="ctitle">Top 10 by Total Spend</div>
+        <div style="height:290px"><canvas id="barChart"></canvas></div>
+      </div>
+      <div class="cc">
+        <div class="ctitle">Churn by Subscription</div>
+        <div style="height:290px;display:flex;align-items:center;justify-content:center">
+          <canvas id="dnutChart" style="max-height:270px"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="cc">
+      <div class="ctitle">Tenure vs Total Spend — Scatter with Trend Line</div>
+      <div style="height:310px"><canvas id="scatterChart"></canvas></div>
+    </div>
+  </section>
+
+  <!-- S3: LEDGER — always full dataset -->
+  <section id="analysis" class="section">
+    <div class="orn">— ✦ —</div>
+    <div class="full-data-badge">Full Dataset · All <span id="totalCount">—</span> Records</div>
+    <div class="sec-title">Descriptive Statistics</div>
+    <div class="sg">
+      <div class="sb" id="spendSt"></div>
+      <div class="sb" id="tenureSt"></div>
+      <div class="sb" id="ageSt"></div>
+    </div>
+    <div class="sec-title">Correlation Analysis</div>
+    <div class="cg" style="grid-template-columns:1fr 1fr;margin-bottom:18px">
+      <div class="sb">
+        <div class="ctitle" style="margin-bottom:16px">Pearson Correlation with Churn</div>
+        <div id="corrBars"></div>
+      </div>
+      <div class="sb">
+        <div class="ctitle" style="margin-bottom:16px">Correlation Heatmap</div>
+        <canvas id="hmChart" style="max-height:210px"></canvas>
+      </div>
+    </div>
+    <div class="sec-title">Linear Regression Model</div>
+    <div class="sb">
+      <div class="ctitle" style="margin-bottom:14px">Predict Churn Risk from Tenure &amp; Support Calls</div>
+      <div class="reg-f" id="regF"></div>
+      <div class="r2-note" style="margin-bottom:18px" id="r2v"></div>
+      <div class="pred-row">
+        <label>Tenure (months):</label>
+        <input type="number" id="pTen" min="0" max="72" step="1" placeholder="e.g. 24" oninput="predict()"/>
+        <label>Support Calls:</label>
+        <input type="number" id="pCall" min="0" max="15" step="1" placeholder="e.g. 4" oninput="predict()"/>
+        <span style="font-family:var(--font-prose);font-size:13px;color:var(--muted);font-style:italic">→ Churn Risk:</span>
+        <span class="pred-res" id="predRes">—</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- S4: DISPATCHES — always full dataset -->
+  <section id="insights" class="section">
+    <div class="orn">— ✦ —</div>
+    <div class="full-data-badge">Full Dataset · All <span id="totalCount2">—</span> Records</div>
+    <div class="sec-title">Dispatches from the Data</div>
+    <div class="ig" id="igrid"></div>
+  </section>
+
 </main>
   
 <script>
