@@ -670,260 +670,272 @@ function renderTable(visible,totalMatched){
   }).join('');
 }
 
+// ── FILTER + CHART UPDATE ─────────────────────────────────────
+function applyF(){
+  const srch=document.getElementById('srch').value.toLowerCase();
+  const sub=document.getElementById('fSub').value;
+  const stat=document.getElementById('fStat').value;
+  const con=document.getElementById('fCon').value;
+  const sortF=document.getElementById('fSort').value;
+  const order=document.getElementById('rowOrd').value;
+  const limit=parseInt(document.getElementById('rowLim').value);
 
-// The dataset explorer, table rendering, and summary statistics are well implemented and provide clear insights. The filtering system is functional and intuitive, and the structure of the dataset is easy to follow. //
+  let data=S.rawBuf.filter(c=>
+    (!srch||c.id.toLowerCase().includes(srch)||c.gender.toLowerCase().includes(srch))&&
+    (!sub||c.subscription===sub)&&
+    (!stat||String(c.churn)===stat)&&
+    (!con||c.contract===con)
+  );
+  const totalMatched=data.length;
 
+  if(sortF) data.sort((a,b)=>order==='asc'?a[sortF]-b[sortF]:b[sortF]-a[sortF]);
+  else if(order==='desc') data=[...data].reverse();
 
-// ── SECTION SWITCH ────────────────────────────────────
-function showSection(id, btn) {
+  VISIBLE=data.slice(0,limit);
+  renderTable(VISIBLE,totalMatched);
+  refreshCharts(VISIBLE);
+}
+
+function resetF(){
+  ['srch','fSub','fStat','fCon','fSort'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('rowLim').value='50';
+  document.getElementById('rowOrd').value='asc';
+  applyF();
+}
+
+// ── CHART HELPERS ─────────────────────────────────────────────
+function visStats(rows){
+  const top10=[...rows].sort((a,b)=>b.totalSpend-a.totalSpend).slice(0,10);
+  const subC={Basic:0,Standard:0,Premium:0};
+  const subCh={Basic:0,Standard:0,Premium:0};
+  rows.forEach(c=>{
+    if(subC[c.subscription]!==undefined){subC[c.subscription]++;if(c.churn===1)subCh[c.subscription]++;}
+  });
+  const step=rows.length>600?Math.ceil(rows.length/600):1;
+  const scatter=rows.filter((_,i)=>i%step===0).map(c=>({x:c.tenure,y:c.totalSpend,churn:c.churn,id:c.id}));
+  let n=0,sx=0,sy=0,sx2=0,sxy=0;
+  rows.forEach(c=>{n++;sx+=c.tenure;sy+=c.totalSpend;sx2+=c.tenure*c.tenure;sxy+=c.tenure*c.totalSpend;});
+  const den=n*sx2-sx*sx;
+  const slope=den===0?0:(n*sxy-sx*sy)/den;
+  const intercept=sy/n-slope*(sx/n);
+  const tenMin=n?Math.min(...rows.map(c=>c.tenure)):0;
+  const tenMax=n?Math.max(...rows.map(c=>c.tenure)):60;
+  return{top10,subCh,scatter,slope,intercept,tenMin,tenMax};
+}
+
+const SF="'Inter', system-ui, sans-serif";
+const TICK={color:'#7a9fd4',font:{family:SF,size:11}};
+const GRID={color:'rgba(99,129,64,.1)'};
+
+function refreshCharts(rows){
+  if(!rows||!rows.length) return;
+  const vs=visStats(rows);
+
+  if(!charts.bar){
+    charts.bar=new Chart(document.getElementById('barChart'),{
+      type:'bar',
+      data:{
+        labels:vs.top10.map(c=>c.id),
+        datasets:[{
+          label:'Total Spend',
+          data:vs.top10.map(c=>c.totalSpend),
+          backgroundColor:vs.top10.map(c=>c.churn===1?'rgba(91,141,217,.55)':'rgba(235,195,17,.55)'),
+          borderColor:vs.top10.map(c=>c.churn===1?'#5b8dd9':'#ebc311'),
+          borderWidth:1,borderRadius:2
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{
+          legend:{display:false},
+          tooltip:{callbacks:{label:ctx=>`$${ctx.raw.toFixed(2)} · ${vs.top10[ctx.dataIndex].churn===1?'Churned':'Retained'}`}}
+        },
+        scales:{
+          x:{ticks:{...TICK},grid:{...GRID}},
+          y:{ticks:{...TICK,callback:v=>`$${v}`},grid:{...GRID}}
+        }
+      }
+    });
+
+    charts.dnut=new Chart(document.getElementById('dnutChart'),{
+      type:'doughnut',
+      data:{
+        labels:['Basic Churned','Standard Churned','Premium Churned'],
+        datasets:[{
+          data:[vs.subCh.Basic,vs.subCh.Standard,vs.subCh.Premium],
+          backgroundColor:['rgba(235,195,17,.75)','rgba(216,170,60,.75)','rgba(91,141,217,.75)'],
+          borderColor:'#14171f',borderWidth:3,hoverOffset:8
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,cutout:'62%',
+        plugins:{legend:{position:'bottom',labels:{color:'#7a9fd4',font:{family:SF,size:12},padding:12}}}
+      }
+    });
+
+    charts.scatter=new Chart(document.getElementById('scatterChart'),{
+      type:'scatter',
+      data:{datasets:[
+        {label:'Churned',data:vs.scatter.filter(p=>p.churn===1).map(p=>({x:p.x,y:p.y,id:p.id})),
+          backgroundColor:'rgba(91,141,217,.4)',borderColor:'#5b8dd9',borderWidth:1,pointRadius:3,pointHoverRadius:5},
+        {label:'Retained',data:vs.scatter.filter(p=>p.churn===0).map(p=>({x:p.x,y:p.y,id:p.id})),
+          backgroundColor:'rgba(235,195,17,.4)',borderColor:'#ebc311',borderWidth:1,pointRadius:3,pointHoverRadius:5},
+        {label:'Trend',data:[{x:vs.tenMin,y:vs.slope*vs.tenMin+vs.intercept},{x:vs.tenMax,y:vs.slope*vs.tenMax+vs.intercept}],
+          type:'line',borderColor:'rgba(242,215,83,.5)',borderWidth:2,pointRadius:0,fill:false,tension:0}
+      ]},
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{
+          legend:{labels:{color:'#7a9fd4',font:{family:SF,size:12}}},
+          tooltip:{callbacks:{label:ctx=>ctx.raw.id?`${ctx.raw.id}: ${ctx.raw.x}mo · $${ctx.raw.y.toFixed(0)}`:'Trend'}}
+        },
+        scales:{
+          x:{title:{display:true,text:'Tenure (months)',color:'#7a9fd4',font:{family:SF,size:12}},ticks:{...TICK},grid:{...GRID}},
+          y:{title:{display:true,text:'Total Spend ($)',color:'#7a9fd4',font:{family:SF,size:12}},ticks:{...TICK,callback:v=>`$${v}`},grid:{...GRID}}
+        }
+      }
+    });
+
+  } else {
+    const b=charts.bar;
+    b.data.labels=vs.top10.map(c=>c.id);
+    b.data.datasets[0].data=vs.top10.map(c=>c.totalSpend);
+    b.data.datasets[0].backgroundColor=vs.top10.map(c=>c.churn===1?'rgba(91,141,217,.55)':'rgba(235,195,17,.55)');
+    b.data.datasets[0].borderColor=vs.top10.map(c=>c.churn===1?'#5b8dd9':'#ebc311');
+    b._top10=vs.top10;
+    b.options.plugins.tooltip.callbacks.label=ctx=>`$${ctx.raw.toFixed(2)} · ${(b._top10[ctx.dataIndex]||{}).churn===1?'Churned':'Retained'}`;
+    b.update('none');
+
+    const d=charts.dnut;
+    d.data.datasets[0].data=[vs.subCh.Basic,vs.subCh.Standard,vs.subCh.Premium];
+    d.update('none');
+
+    const sc=charts.scatter;
+    sc.data.datasets[0].data=vs.scatter.filter(p=>p.churn===1).map(p=>({x:p.x,y:p.y,id:p.id}));
+    sc.data.datasets[1].data=vs.scatter.filter(p=>p.churn===0).map(p=>({x:p.x,y:p.y,id:p.id}));
+    sc.data.datasets[2].data=[{x:vs.tenMin,y:vs.slope*vs.tenMin+vs.intercept},{x:vs.tenMax,y:vs.slope*vs.tenMax+vs.intercept}];
+    sc.update('none');
+  }
+}
+
+// ── SECTION SWITCH ─────────────────────────────────────────────
+function showSec(id,btn){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   btn.classList.add('active');
-  if (id==='visualizations') buildCharts();
-  if (id==='analysis')       buildAnalysis();
+  if(id==='visualizations') refreshCharts(VISIBLE);
+  if(id==='analysis')       buildAnalysis();
 }
 
-// ── CHARTS ────────────────────────────────────────────
-function buildCharts() {
-  if (charts.bar) return;
+// ── ANALYSIS — always full dataset via S ───────────────────────
+function buildAnalysis(){
+  if(analysisBuilt) return;
+  analysisBuilt=true;
+  const{spend,tenure,age,spendMed,tenureMed,ageMed,
+        corrTenure,corrSupport,corrDelay,corrUsage,corrSpend,
+        regTen,r2Ten}=S;
 
-  const FONT  = "'Courier Prime', monospace";
-  const SPFONT = "'Special Elite', cursive";
-  const TICK  = { color:'#3969b3', font:{family:SPFONT, size:10} };
-  const GRID  = { color:'rgba(99,129,64,.12)' };
-
-  // Top 10 by spend
-  const top10 = [...CUSTOMERS].sort((a,b)=>b.totalSpend-a.totalSpend).slice(0,10);
-  charts.bar = new Chart(document.getElementById('barChart'), {
-    type:'bar',
-    data:{
-      labels: top10.map(c=>c.id),
-      datasets:[{
-        label:'Total Spend',
-        data: top10.map(c=>c.totalSpend),
-        backgroundColor: top10.map(c=>c.churn===1?'rgba(57,105,179,.55)':'rgba(235,195,17,.55)'),
-        borderColor: top10.map(c=>c.churn===1?'#3969b3':'#ebc311'),
-        borderWidth:1, borderRadius:1
-      }]
-    },
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false},
-        tooltip:{ callbacks:{ label: ctx=>`$${ctx.raw.toFixed(2)} · ${getStatus(top10[ctx.dataIndex])}` }} },
-      scales:{
-        x:{ ticks:{...TICK}, grid:{...GRID} },
-        y:{ ticks:{...TICK, callback:v=>`$${v}`}, grid:{...GRID} }
-      }
-    }
-  });
-
-  // Doughnut — churn by sub type
-  const subTypes = ['Basic','Standard','Premium'];
-  const churnBySub = subTypes.map(s=>CUSTOMERS.filter(c=>c.subscription===s&&c.churn===1).length);
-  charts.doughnut = new Chart(document.getElementById('doughnutChart'), {
-    type:'doughnut',
-    data:{
-      labels:['Basic Churned','Standard Churned','Premium Churned'],
-      datasets:[{
-        data:churnBySub,
-        backgroundColor:['rgba(235,195,17,.75)','rgba(216,170,60,.75)','rgba(57,105,179,.75)'],
-        borderColor:'#14171f', borderWidth:3, hoverOffset:8
-      }]
-    },
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{ position:'bottom', labels:{ color:'#3969b3', font:{family:SPFONT,size:10}, padding:12 } } },
-      cutout:'62%'
-    }
-  });
-
-  // Scatter: tenure vs spend, color by churn
-  const regLine = (() => {
-    const r = linReg(tenures, spends);
-    return [
-      {x:Math.min(...tenures), y:r.slope*Math.min(...tenures)+r.intercept},
-      {x:Math.max(...tenures), y:r.slope*Math.max(...tenures)+r.intercept}
-    ];
-  })();
-
-  charts.scatter = new Chart(document.getElementById('scatterChart'), {
-    type:'scatter',
-    data:{
-      datasets:[
-        {
-          label:'Churned',
-          data: CUSTOMERS.filter(c=>c.churn===1).map(c=>({x:c.tenure,y:c.totalSpend,id:c.id})),
-          backgroundColor:'rgba(57,105,179,.65)', borderColor:'#3969b3',
-          borderWidth:1, pointRadius:7, pointHoverRadius:9
-        },
-        {
-          label:'Retained',
-          data: CUSTOMERS.filter(c=>c.churn===0).map(c=>({x:c.tenure,y:c.totalSpend,id:c.id})),
-          backgroundColor:'rgba(235,195,17,.65)', borderColor:'#ebc311',
-          borderWidth:1, pointRadius:7, pointHoverRadius:9
-        },
-        {
-          label:'Trend Line',
-          data: regLine, type:'line',
-          borderColor:'rgba(242,215,83,.4)', borderWidth:2,
-          pointRadius:0, fill:false, tension:0
-        }
-      ]
-    },
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      plugins:{
-        legend:{ labels:{ color:'#3969b3', font:{family:SPFONT,size:10} } },
-        tooltip:{ callbacks:{ label: ctx=>ctx.raw.id?`${ctx.raw.id}: ${ctx.raw.x}mo · $${ctx.raw.y}`:`Trend` } }
-      },
-      scales:{
-        x:{ title:{display:true,text:'Tenure (months)',color:'#3969b3',font:{family:SPFONT,size:10}}, ticks:{...TICK}, grid:{...GRID} },
-        y:{ title:{display:true,text:'Total Spend ($)',color:'#3969b3',font:{family:SPFONT,size:10}}, ticks:{...TICK,callback:v=>`$${v}`}, grid:{...GRID} }
-      }
-    }
-  });
-}
-
-// ── ANALYSIS ──────────────────────────────────────────
-function buildAnalysis() {
-  if (document.getElementById('spendStats').innerHTML) return;
-
-  function statsHTML(label, arr, color) {
-    const mn=mean(arr), sd=stdDev(arr), v=variance(arr);
-    const sorted=[...arr].sort((a,b)=>a-b);
-    const med=sorted[Math.floor(arr.length/2)];
-    return `
-      <div class="chart-title" style="color:${color};margin-bottom:16px;">${label}</div>
-      ${[['Min',Math.min(...arr)],['Max',Math.max(...arr)],['Mean',mn.toFixed(2)],
-         ['Median',med],['Variance',v.toFixed(2)],['Std Dev',sd.toFixed(2)],
-         ['Range',Math.max(...arr)-Math.min(...arr)]]
-        .map(([k,v])=>`<div class="stat-row"><span class="stat-key">${k}</span><span class="stat-val" style="color:${color}">${v}</span></div>`).join('')}
-    `;
+  function statsHTML(label,res,med,color){
+    return`<div class="ctitle" style="color:${color};margin-bottom:14px">${label}</div>`+
+      [['Min',res.min.toFixed(2)],['Max',res.max.toFixed(2)],['Mean',res.mean.toFixed(2)],
+       ['Median',typeof med==='number'?med.toFixed(2):med],['Variance',res.variance.toFixed(2)],
+       ['Std Dev',res.stdDev.toFixed(2)],['Range',res.range.toFixed(2)]]
+      .map(([k,v])=>`<div class="sr"><span class="sk">${k}</span><span class="sv" style="color:${color}">${v}</span></div>`).join('');
   }
-  document.getElementById('spendStats').innerHTML  = statsHTML('Total Spend ($)', spends, 'var(--accent)');
-  document.getElementById('tenureStats').innerHTML = statsHTML('Tenure (months)', tenures, 'var(--accent2)');
-  document.getElementById('ageStats').innerHTML    = statsHTML('Customer Age', ages, '#7b8ef5');
+  document.getElementById('spendSt').innerHTML=statsHTML('Total Spend ($)',spend,spendMed,'var(--accent)');
+  document.getElementById('tenureSt').innerHTML=statsHTML('Tenure (months)',tenure,tenureMed,'var(--accent2)');
+  document.getElementById('ageSt').innerHTML=statsHTML('Customer Age',age,ageMed,'#7a9fd4');
 
-  // Correlation bars
-  const corrs = [
-    ['Tenure vs Churn',       Math.abs(corrTenure)],
-    ['Support Calls vs Churn',Math.abs(corrSupport)],
-    ['Pay Delay vs Churn',    Math.abs(corrDelay)],
-    ['Usage Freq vs Churn',   Math.abs(corrUsage)],
-    ['Total Spend vs Churn',  Math.abs(corrSpend)],
-  ];
-  const rawCorrs = [corrTenure, corrSupport, corrDelay, corrUsage, corrSpend];
-  document.getElementById('corrBars').innerHTML = corrs.map(([label,r],i)=>`
-    <div class="corr-bar-row">
-      <div class="corr-label"><span>${label}</span><span>r = ${rawCorrs[i].toFixed(3)}</span></div>
-      <div class="corr-bar"><div class="corr-fill" style="width:${r*100}%"></div></div>
-    </div>
-  `).join('');
+  const cRows=[['Tenure vs Churn',corrTenure],['Support Calls vs Churn',corrSupport],
+               ['Pay Delay vs Churn',corrDelay],['Usage Freq vs Churn',corrUsage],['Spend vs Churn',corrSpend]];
+  document.getElementById('corrBars').innerHTML=cRows.map(([l,r])=>`
+    <div class="crr">
+      <div class="crl"><span>${l}</span><span>r = ${r.toFixed(3)}</span></div>
+      <div class="crb"><div class="crf" style="width:${Math.abs(r)*100}%"></div></div>
+    </div>`).join('');
 
-  const SPFONT = "'Special Elite', cursive";
-  new Chart(document.getElementById('heatmapChart'), {
+  // Destroy existing heatmap chart if any, then rebuild
+  if(charts.hm){ charts.hm.destroy(); charts.hm=null; }
+  charts.hm=new Chart(document.getElementById('hmChart'),{
     type:'bar',
-    data:{
-      labels:['Tenure','Support Calls','Pay Delay','Usage Freq','Spend'],
-      datasets:[{
-        label:'|Correlation| with Churn',
-        data:[Math.abs(corrTenure),Math.abs(corrSupport),Math.abs(corrDelay),Math.abs(corrUsage),Math.abs(corrSpend)],
-        backgroundColor:['rgba(235,195,17,.6)','rgba(57,105,179,.6)','rgba(216,170,60,.6)','rgba(90,111,163,.6)','rgba(242,215,83,.6)'],
-        borderWidth:0, borderRadius:1
-      }]
-    },
-    options:{
-      responsive:true, indexAxis:'y',
+    data:{labels:['Tenure','Support Calls','Pay Delay','Usage Freq','Spend'],
+      datasets:[{label:'|r| with Churn',
+        data:[corrTenure,corrSupport,corrDelay,corrUsage,corrSpend].map(Math.abs),
+        backgroundColor:['rgba(235,195,17,.65)','rgba(91,141,217,.65)','rgba(216,170,60,.65)','rgba(122,159,212,.65)','rgba(242,215,83,.65)'],
+        borderWidth:0,borderRadius:2}]},
+    options:{responsive:true,indexAxis:'y',
       plugins:{legend:{display:false}},
       scales:{
-        x:{min:0,max:1,ticks:{color:'#3969b3',font:{family:SPFONT,size:9}},grid:{color:'rgba(99,129,64,.12)'}},
-        y:{ticks:{color:'#3969b3',font:{family:SPFONT,size:9}},grid:{display:false}}
+        x:{min:0,max:1,ticks:{color:'#7a9fd4',font:{family:SF,size:11}},grid:{color:'rgba(99,129,64,.1)'}},
+        y:{ticks:{color:'#7a9fd4',font:{family:SF,size:11}},grid:{display:false}}
       }
     }
   });
 
-  document.getElementById('regFormula').textContent =
-    `Churn = ${regTenure.slope.toFixed(4)} × Tenure + ${regTenure.intercept.toFixed(4)}`;
-  document.getElementById('r2val').textContent =
-    `R² = ${r2Tenure.toFixed(4)}  ·  Explains ${(r2Tenure*100).toFixed(1)}% of churn variance via tenure alone`;
+  document.getElementById('regF').textContent=
+    `Churn = ${regTen.slope.toFixed(5)} × Tenure + ${regTen.intercept.toFixed(4)}`;
+  document.getElementById('r2v').textContent=
+    `R² ≈ ${r2Ten.toFixed(4)}  ·  Explains ${(r2Ten*100).toFixed(2)}% of churn variance via tenure alone`;
 }
 
-function predict() {
-  const t = parseFloat(document.getElementById('predTenure').value);
-  const s = parseFloat(document.getElementById('predCalls').value);
-  const el = document.getElementById('predResult');
-  if (isNaN(t) && isNaN(s)) { el.textContent='—'; return; }
-
+function predict(){
+  const t=parseFloat(document.getElementById('pTen').value);
+  const s=parseFloat(document.getElementById('pCall').value);
+  const el=document.getElementById('predRes');
+  if(isNaN(t)&&isNaN(s)){el.textContent='—';return;}
+  const{regTen,regSupp,corrTenure,corrSupport,tenure}=S;
   let risk;
-  if (!isNaN(t) && isNaN(s)) {
-    risk = regTenure.slope*t + regTenure.intercept;
-  } else {
-    const regC = linReg(supportCalls, churnVals);
-    const rT = regTenure.slope*t + regTenure.intercept;
-    const rC = regC.slope*s + regC.intercept;
-    risk = (rT*Math.abs(corrTenure) + rC*Math.abs(corrSupport)) / (Math.abs(corrTenure)+Math.abs(corrSupport));
+  if(!isNaN(t)&&isNaN(s)){
+    risk=regTen.slope*t+regTen.intercept;
+  }else{
+    const rT=regTen.slope*(isNaN(t)?tenure.mean:t)+regTen.intercept;
+    const rS=regSupp.slope*s+regSupp.intercept;
+    risk=(rT*Math.abs(corrTenure)+rS*Math.abs(corrSupport))/(Math.abs(corrTenure)+Math.abs(corrSupport));
   }
-  const pct = Math.max(0, Math.min(1, risk));
-  el.textContent = (pct*100).toFixed(1) + '%';
-  el.style.color = pct > 0.5 ? 'var(--fail)' : 'var(--pass)';
+  const pct=Math.max(0,Math.min(1,risk));
+  el.textContent=(pct*100).toFixed(1)+'%';
+  el.style.color=pct>0.5?'#e87a7a':'var(--pass)';
 }
 
-// ── INSIGHTS ──────────────────────────────────────────
-function buildInsights() {
-  const churnedAvgTenure  = mean(CUSTOMERS.filter(c=>c.churn===1).map(c=>c.tenure)).toFixed(1);
-  const retainedAvgTenure = mean(CUSTOMERS.filter(c=>c.churn===0).map(c=>c.tenure)).toFixed(1);
-  const churnedAvgCalls   = mean(CUSTOMERS.filter(c=>c.churn===1).map(c=>c.supportCalls)).toFixed(1);
-  const retainedAvgCalls  = mean(CUSTOMERS.filter(c=>c.churn===0).map(c=>c.supportCalls)).toFixed(1);
-  const premiumChurn      = CUSTOMERS.filter(c=>c.subscription==='Premium'&&c.churn===1).length;
-  const basicChurn        = CUSTOMERS.filter(c=>c.subscription==='Basic'&&c.churn===1).length;
-  const monthlyChurn      = (CUSTOMERS.filter(c=>c.contract==='Monthly'&&c.churn===1).length / CUSTOMERS.filter(c=>c.contract==='Monthly').length * 100).toFixed(0);
-  const annualChurn       = (CUSTOMERS.filter(c=>c.contract==='Annual'&&c.churn===1).length / CUSTOMERS.filter(c=>c.contract==='Annual').length * 100).toFixed(0);
-  const highDelayChurn    = CUSTOMERS.filter(c=>c.payDelay>=20&&c.churn===1).length;
-  const churnedAvgSpend   = mean(CUSTOMERS.filter(c=>c.churn===1).map(c=>c.totalSpend)).toFixed(2);
-  const retainedAvgSpend  = mean(CUSTOMERS.filter(c=>c.churn===0).map(c=>c.totalSpend)).toFixed(2);
+// ── INSIGHTS — full dataset group averages from S ──────────────
+function buildInsights(){
+  const{
+    churnRate,churnedCount,retainedCount,total,
+    corrTenure,corrSupport,highDelayChurn,conChurn,conTotal,
+    churnedAvgTenure,retainedAvgTenure,
+    churnedAvgSupp,retainedAvgSupp,
+    churnedAvgSpend,retainedAvgSpend
+  }=S;
 
-  const insightData = [
-    {
-      tag:'Churn Overview',
-      title:`${churnRate}% of Accounts Slipped Away`,
-      body:`Of 20 customers observed, <strong>${churnedCount} have churned</strong> and <strong>${retainedCount} remain</strong>. The data tells a quiet story of customers who faded without notice — no fanfare, no farewell. Early patterns in tenure and engagement signal their departures long before they happen.`
-    },
-    {
-      tag:'Tenure Factor',
-      title:'Short Tenures End in Departure',
-      body:`Churned customers averaged only <strong>${churnedAvgTenure} months</strong> compared to <strong>${retainedAvgTenure} months</strong> for those retained. The correlation of r = <strong>${corrTenure.toFixed(2)}</strong> suggests that customers who stay longer build inertia — the relationship deepens, making departure less likely.`
-    },
-    {
-      tag:'Support Distress',
-      title:'High Call Volume Precedes Exit',
-      body:`Churned customers placed an average of <strong>${churnedAvgCalls} support calls</strong>, nearly double the <strong>${retainedAvgCalls} calls</strong> made by retained accounts. Unresolved frustration compounds silently until the customer simply stops returning — the strongest behavioral signal of impending churn.`
-    },
-    {
-      tag:'Contract Length',
-      title:`Monthly Plans Churn at ${monthlyChurn}% vs Annual at ${annualChurn}%`,
-      body:`Customers on <strong>monthly contracts churn at ${monthlyChurn}%</strong> compared to <strong>${annualChurn}% for annual plans</strong>. The commitment of a longer contract appears to anchor customers, reducing the temptation to leave during periods of dissatisfaction.`.replace('${monthlyChurn}%',monthlyChurn+'%').replace('${annualChurn}%',annualChurn+'%')
-    },
-    {
-      tag:'Payment Behavior',
-      title:'Late Payments as a Departure Signal',
-      body:`<strong>${highDelayChurn} churned customers</strong> had payment delays of 20+ days. Late payment is not merely a billing problem — it is a disengagement signal. Customers who delay payments are already mentally checking out, their wallets the last part of them to admit it.`
-    },
-    {
-      tag:'Spending Paradox',
-      title:'Churned Customers Spent Less on Average',
-      body:`Retained customers averaged <strong>$${retainedAvgSpend}</strong> in total spend versus <strong>$${churnedAvgSpend}</strong> for those who churned. Higher-value customers appear more committed, while lower-spend accounts show the most vulnerability — suggesting that spend-tier incentives could meaningfully shift retention outcomes.`
-    },
+  const f1=(v)=>isNaN(v)?'N/A':v.toFixed(1);
+  const f2=(v)=>isNaN(v)?'N/A':v.toFixed(2);
+
+  const ins=[
+    {tag:'Churn Overview',title:`${churnRate}% of Accounts Slipped Away`,
+     body:`Of <strong>${total.toLocaleString()} customers</strong> observed, <strong>${churnedCount.toLocaleString()} have churned</strong> and <strong>${retainedCount.toLocaleString()} remain</strong>. The data tells a quiet story — customers who faded without notice, no fanfare, no farewell.`},
+    {tag:'Tenure Factor',title:'Short Tenures End in Departure',
+     body:`Churned customers averaged <strong>${f1(churnedAvgTenure)} months</strong> vs <strong>${f1(retainedAvgTenure)} months</strong> for retained. Correlation r = <strong>${corrTenure.toFixed(3)}</strong> — longer tenure builds inertia that keeps customers from drifting away.`},
+    {tag:'Support Distress',title:'High Call Volume Precedes Exit',
+     body:`Churned accounts averaged <strong>${f1(churnedAvgSupp)} support calls</strong> vs <strong>${f1(retainedAvgSupp)}</strong> for retained customers (r = <strong>${corrSupport.toFixed(3)}</strong>). Unresolved frustration compounds until the customer simply stops returning.`},
+    {tag:'Contract Length',title:`Monthly Plans Churn at ${conTotal.Monthly?(conChurn.Monthly/conTotal.Monthly*100).toFixed(1):'N/A'}% vs Annual at ${conTotal.Annual?(conChurn.Annual/conTotal.Annual*100).toFixed(1):'N/A'}%`,
+     body:`Customers on <strong>monthly contracts</strong> churn far more readily than those on annual plans. The longer commitment anchors customers through periods of dissatisfaction, reducing the impulse to leave.`},
+    {tag:'Payment Behavior',title:'Late Payments as a Departure Signal',
+     body:`<strong>${highDelayChurn.toLocaleString()} churned customers</strong> had payment delays of 20+ days. By the time the wallet hesitates, the heart has already left — late payment is disengagement, not merely a billing issue.`},
+    {tag:'Spending Paradox',title:'Churned Customers Spent Less on Average',
+     body:`Retained customers averaged <strong>$${f2(retainedAvgSpend)}</strong> in total spend versus <strong>$${f2(churnedAvgSpend)}</strong> for churned accounts. Higher-value customers appear more committed — spend-tier loyalty incentives could meaningfully shift retention.`},
   ];
 
-  document.getElementById('insightGrid').innerHTML = insightData.map((ins,i)=>`
-    <div class="insight-card" data-num="${String(i+1).padStart(2,'0')}">
-      <div class="insight-tag">${ins.tag}</div>
-      <div class="insight-title">${ins.title}</div>
-      <p class="insight-body">${ins.body}</p>
-    </div>
-  `).join('');
+  document.getElementById('igrid').innerHTML=ins.map((x,i)=>`
+    <div class="ic" data-num="${String(i+1).padStart(2,'0')}">
+      <div class="i-tag">${x.tag}</div>
+      <div class="i-title">${x.title}</div>
+      <p class="i-body">${x.body}</p>
+    </div>`).join('');
 }
+
+// ── BOOT ──────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', autoFetch);
 </script>
 </body>
 </html>
