@@ -51,6 +51,74 @@
     .section{display:none}
     .section.active{display:block}
 
+    .sec-title{
+      font-family:var(--font-display);font-size:12px;font-weight:700;font-style:italic;
+      letter-spacing:3px;text-transform:uppercase;
+      color:var(--muted2);margin-bottom:20px;
+      display:flex;align-items:center;gap:14px}
+    .sec-title::before{content:'§';color:var(--accent2);font-style:normal;font-size:14px}
+    .sec-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
+
+    /* badge indicating full-dataset */
+    .full-data-badge{
+      display:inline-flex;align-items:center;gap:6px;
+      background:rgba(242,215,83,.08);border:1px solid rgba(242,215,83,.2);
+      color:var(--accent2);font-family:var(--font-ui);font-size:11px;font-weight:600;
+      letter-spacing:1px;text-transform:uppercase;padding:5px 12px;border-radius:2px;
+      margin-bottom:18px}
+    .full-data-badge::before{content:'◈';font-size:10px;color:var(--accent)}
+
+    .sum-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:32px}
+    .sum-card{background:var(--surface);border:1px solid var(--border);border-radius:3px;
+      padding:20px 22px;position:relative;overflow:hidden;transition:border-color .25s}
+    .sum-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+    .sum-card:nth-child(1)::before{background:var(--accent)}
+    .sum-card:nth-child(2)::before{background:var(--accent2)}
+    .sum-card:nth-child(3)::before{background:#4a6eb5}
+    .sum-card:nth-child(4)::before{background:#5a6fa3}
+    .sum-card:hover{border-color:#7aad50}
+    .c-lbl{font-family:var(--font-stamp);font-size:10px;color:var(--muted);letter-spacing:2px;
+      text-transform:uppercase;margin-bottom:10px}
+    .c-val{font-family:var(--font-display);font-size:34px;font-weight:700;line-height:1;color:var(--text)}
+    .c-sub{font-family:var(--font-ui);font-size:12px;color:var(--muted2);margin-top:6px;font-weight:400}
+
+    .fbar{display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+    .fbar input,.fbar select{
+      background:var(--surface2);border:1px solid var(--border);
+      color:var(--text);font-family:var(--font-ui);font-size:13px;font-weight:400;
+      padding:7px 11px;border-radius:2px;outline:none;transition:border-color .2s;appearance:none}
+    .fbar input:focus,.fbar select:focus{border-color:var(--accent)}
+    .fbar input{width:160px}
+    .fbar select{cursor:pointer}
+    .fsep{width:1px;height:24px;background:var(--border);opacity:.35;margin:0 2px}
+    .flbl{font-family:var(--font-ui);font-size:11px;color:var(--muted);font-weight:500;white-space:nowrap;letter-spacing:.5px}
+    .btn{background:none;border:1px solid var(--border);color:var(--muted);
+      font-family:var(--font-stamp);font-size:11px;letter-spacing:2px;text-transform:uppercase;
+      padding:7px 15px;border-radius:2px;cursor:pointer;transition:all .2s}
+    .btn:hover{border-color:var(--accent);color:var(--accent)}
+
+    .tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:3px;
+      background:var(--surface);max-height:520px;overflow-y:auto}
+    table{width:100%;border-collapse:collapse}
+    thead tr{background:var(--surface2);border-bottom:1px solid var(--border);
+      position:sticky;top:0;z-index:2}
+    th{padding:11px 14px;text-align:left;
+      font-family:var(--font-ui);font-size:11px;font-weight:600;
+      letter-spacing:.5px;text-transform:uppercase;color:var(--muted2);
+      cursor:pointer;user-select:none;white-space:nowrap;transition:color .2s}
+    th:hover{color:var(--accent)}
+    td{padding:8px 14px;border-bottom:1px solid rgba(99,129,64,.1);
+      font-family:var(--font-ui);font-size:13px;font-weight:400;white-space:nowrap;color:var(--text)}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:rgba(242,215,83,.025)}
+    .badge{display:inline-block;padding:3px 10px;border-radius:2px;
+      font-family:var(--font-ui);font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+    .b-ch{background:rgba(91,141,217,.15);color:#7aadee;border:1px solid rgba(91,141,217,.3)}
+    .b-re{background:rgba(235,195,17,.1);color:#ebc311;border:1px solid rgba(235,195,17,.25)}
+    .sp-wrap{display:flex;align-items:center;gap:7px}
+    .sp-bar{width:46px;height:3px;background:rgba(99,129,64,.2);border-radius:2px;overflow:hidden}
+    .sp-fill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:2px}
+
   </style>
 </head>
 <body>
