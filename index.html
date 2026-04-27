@@ -494,84 +494,72 @@
     </div>
     <div class="record-count" id="recordCount"></div>
   </section>
-
-  <!-- ══════════════════════════════════════════════
-       SECTION 2: VISUALIZATIONS
-  ══════════════════════════════════════════════ -->
+ <!-- S2: ILLUSTRATIONS -- Student 2-->
   <section id="visualizations" class="section">
-    <div class="ornament">— ✦ —</div>
-    <div class="section-title">Charts &amp; Illustrations</div>
-
-    <div class="chart-grid" style="margin-bottom:20px;">
-      <div class="chart-card">
-        <div class="chart-title">Top 10 by Total Spend — Bar Chart</div>
-        <div class="chart-container" style="height:300px;">
-          <canvas id="barChart"></canvas>
-        </div>
+    <div class="orn">— ✦ —</div>
+    <div class="sec-title">Charts &amp; Illustrations</div>
+    <div style="font-family:var(--font-ui);font-size:12px;color:var(--muted);margin-bottom:18px;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:2px;">
+      ↻ Charts reflect the rows currently visible in The Registry. Change filters or row count to update.
+    </div>
+    <div class="cg" style="margin-bottom:18px">
+      <div class="cc">
+        <div class="ctitle">Top 10 by Total Spend</div>
+        <div style="height:290px"><canvas id="barChart"></canvas></div>
       </div>
-      <div class="chart-card">
-        <div class="chart-title">Churn by Subscription Type</div>
-        <div class="chart-container" style="height:300px; display:flex; align-items:center; justify-content:center;">
-          <canvas id="doughnutChart" style="max-height:280px;"></canvas>
+      <div class="cc">
+        <div class="ctitle">Churn by Subscription</div>
+        <div style="height:290px;display:flex;align-items:center;justify-content:center">
+          <canvas id="dnutChart" style="max-height:270px"></canvas>
         </div>
       </div>
     </div>
-
-    <div class="chart-card">
-      <div class="chart-title">Tenure vs Total Spend — Scatter (Churned vs Retained)</div>
-      <div class="chart-container" style="height:320px;">
-        <canvas id="scatterChart"></canvas>
-      </div>
+    <div class="cc">
+      <div class="ctitle">Tenure vs Total Spend — Scatter with Trend Line</div>
+      <div style="height:310px"><canvas id="scatterChart"></canvas></div>
     </div>
   </section>
 
-  <!-- ══════════════════════════════════════════════
-       SECTION 3: STATISTICAL ANALYSIS
-  ══════════════════════════════════════════════ -->
+  <!-- S3: LEDGER -->
   <section id="analysis" class="section">
-    <div class="ornament">— ✦ —</div>
-    <div class="section-title">Descriptive Statistics</div>
-    <div class="stats-grid">
-      <div class="stat-block" id="spendStats"></div>
-      <div class="stat-block" id="tenureStats"></div>
-      <div class="stat-block" id="ageStats"></div>
+    <div class="orn">— ✦ —</div>
+    <div class="sec-title">Descriptive Statistics</div>
+    <div class="sg">
+      <div class="sb" id="spendSt"></div>
+      <div class="sb" id="tenureSt"></div>
+      <div class="sb" id="ageSt"></div>
     </div>
-
-    <div class="section-title">Correlation Analysis</div>
-    <div class="chart-grid" style="grid-template-columns:1fr 1fr; margin-bottom:20px;">
-      <div class="stat-block">
-        <div class="chart-title" style="margin-bottom:20px;">Pearson Correlation with Churn</div>
+    <div class="sec-title">Correlation Analysis</div>
+    <div class="cg" style="grid-template-columns:1fr 1fr;margin-bottom:18px">
+      <div class="sb">
+        <div class="ctitle" style="margin-bottom:16px">Pearson Correlation with Churn</div>
         <div id="corrBars"></div>
       </div>
-      <div class="stat-block">
-        <div class="chart-title" style="margin-bottom:20px;">Correlation Heatmap</div>
-        <canvas id="heatmapChart" style="max-height:220px;"></canvas>
+      <div class="sb">
+        <div class="ctitle" style="margin-bottom:16px">Correlation Heatmap</div>
+        <canvas id="hmChart" style="max-height:210px"></canvas>
       </div>
     </div>
-
-    <div class="section-title">Linear Regression Model</div>
-    <div class="stat-block">
-      <div class="chart-title" style="margin-bottom:16px;">Predict Churn Risk from Tenure &amp; Support Calls</div>
-      <div class="reg-formula" id="regFormula"></div>
-      <div style="margin-bottom:20px; font-family:'Special Elite',cursive; font-size:10px; color:var(--muted); letter-spacing:1px;" id="r2val"></div>
-      <div class="pred-input-row">
+    <div class="sec-title">Linear Regression Model</div>
+    <div class="sb">
+      <div class="ctitle" style="margin-bottom:14px">Predict Churn Risk from Tenure &amp; Support Calls</div>
+      <div class="reg-f" id="regF"></div>
+      <div class="r2-note" style="margin-bottom:18px" id="r2v"></div>
+      <div class="pred-row">
         <label>Tenure (months):</label>
-        <input type="number" id="predTenure" min="0" max="72" step="1" placeholder="e.g. 24" oninput="predict()"/>
+        <input type="number" id="pTen" min="0" max="72" step="1" placeholder="e.g. 24" oninput="predict()"/>
         <label>Support Calls:</label>
-        <input type="number" id="predCalls" min="0" max="15" step="1" placeholder="e.g. 4" oninput="predict()"/>
-        <span style="font-family:'IM Fell English',serif; font-size:12px; color:var(--muted); font-style:italic;">→ Churn Risk:</span>
-        <span class="pred-result" id="predResult">—</span>
+        <input type="number" id="pCall" min="0" max="15" step="1" placeholder="e.g. 4" oninput="predict()"/>
+        <span style="font-family:var(--font-prose);font-size:13px;color:var(--muted);font-style:italic">→ Churn Risk:</span>
+        <span class="pred-res" id="predRes">—</span>
       </div>
     </div>
   </section>
 
-  <!-- ══════════════════════════════════════════════
-       SECTION 4: INSIGHTS
-  ══════════════════════════════════════════════ -->
+  <!-- S4: DISPATCHES -->
   <section id="insights" class="section">
-    <div class="ornament">— ✦ —</div>
-    <div class="section-title">Dispatches from the Data</div>
-    <div class="insight-grid" id="insightGrid"></div>
+    <div class="orn">— ✦ —</div>
+    <div class="sec-title">Dispatches from the Data</div>
+    <div class="ig" id="igrid"></div>
   </section>
 
 </main>
