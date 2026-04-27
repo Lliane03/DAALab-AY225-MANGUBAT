@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Faded Without Notice — Customer Churn Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;1,400;1,700&family=Special+Elite&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+  :root {
+    --bg:#303B75; --surface:#14171f; --surface2:#1c2030;
+    --border:#638140; --accent:#f2d753; --accent2:#d8aa3c;
+    --accent3:#233d81; --text:#f0e8c8; --muted:#fff;
+    --muted2:#fff; --pass:#ebc311; --fail:#ffff;
+    --font-ui: 'Inter', system-ui, sans-serif;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-stamp: 'Special Elite', 'Courier New', monospace;
+    --font-prose: 'IM Fell English', Georgia, serif;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+  body {
+    background:var(--bg);
+    color:var(--text);
+    font-family: var(--font-ui);
+    font-size:14px;
+    line-height:1.5;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+
+  body::before{content:'';position:fixed;inset:0;z-index:0;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.04'/%3E%3C/svg%3E");
+    background-size:256px 256px;pointer-events:none;opacity:.6}
+  .vignette{position:fixed;inset:0;z-index:2;
+    background:radial-gradient(ellipse at center,transparent 60%,rgba(0,0,0,.5) 100%);
+    pointer-events:none}
+
+  #ld{position:fixed;inset:0;z-index:200;background:var(--bg);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+  .ld-title{font-family:var(--font-display);font-size:32px;font-weight:700;font-style:italic;color:var(--accent)}
+  .ld-sub{font-family:var(--font-stamp);font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--muted)}
+  .ld-file{font-family:var(--font-ui);font-size:12px;color:var(--accent2);opacity:.8;font-weight:500}
+  .ld-bar-wrap{width:280px;height:3px;background:rgba(99,129,64,.25);border-radius:2px;overflow:hidden}
+  .ld-bar{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));width:0%;transition:width .3s ease}
+  .ld-pct{font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--accent);min-height:32px}
+  .ld-msg{font-family:var(--font-prose);font-size:14px;font-style:italic;color:var(--muted);min-height:22px;text-align:center}
+  #uploadPrompt{display:none;flex-direction:column;align-items:center;gap:14px;margin-top:10px}
+  .upload-zone{border:1px dashed var(--border);border-radius:3px;padding:28px 48px;text-align:center;cursor:pointer;transition:border-color .2s}
+  .upload-zone:hover{border-color:var(--accent)}
+  .upload-zone input{display:none}
+  .upload-label{font-family:var(--font-prose);font-size:14px;font-style:italic;color:var(--muted2);line-height:1.7}
+  .upload-hint{font-family:var(--font-ui);font-size:11px;letter-spacing:1px;color:rgba(122,159,212,.5);margin-top:8px}
+  .upload-btn{background:none;border:1px solid var(--border);color:var(--accent);
+    font-family:var(--font-stamp);font-size:11px;letter-spacing:2px;text-transform:uppercase;
+    padding:9px 22px;cursor:pointer;transition:all .2s;border-radius:2px}
+  .upload-btn:hover{border-color:var(--accent);background:rgba(242,215,83,.06)}
+
+  header{position:relative;z-index:10;padding:28px 48px 20px;
+    border-bottom:1px solid var(--border);
+    background:linear-gradient(180deg,rgba(242,215,83,.05) 0%,transparent 100%);
+    text-align:center}
+  .mr{width:100%;height:1px;background:linear-gradient(90deg,transparent,var(--border),var(--accent2),var(--border),transparent);margin:8px 0}
+  .mr.thin{opacity:.35;margin:4px 0}
+  .logo-eyebrow{font-family:var(--font-stamp);font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .logo-mark{font-family:var(--font-display);font-size:42px;font-weight:700;font-style:italic;
+    color:var(--accent);letter-spacing:-1px;line-height:1;
+    text-shadow:0 2px 24px rgba(242,215,83,.18);display:block}
+  .logo-sub{font-family:var(--font-stamp);font-size:10px;color:var(--muted);letter-spacing:5px;
+    text-transform:uppercase;display:block;margin-top:5px}
+  .hdr-meta{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+  .hdr-date{font-family:var(--font-ui);font-size:11px;color:var(--muted);letter-spacing:1px;font-weight:500}
+  .hdr-issue{font-family:var(--font-prose);font-size:12px;color:var(--accent2);font-style:italic}
+
+  nav{position:relative;z-index:10;display:flex;justify-content:center;padding:0 48px;
+    border-bottom:1px solid var(--border);background:var(--surface);
+    border-top:1px solid rgba(99,129,64,.25)}
+  nav button{background:none;border:none;color:var(--muted);cursor:pointer;
+    font-family:var(--font-stamp);font-size:11px;letter-spacing:3px;text-transform:uppercase;
+    padding:14px 24px;position:relative;transition:color .25s}
+  nav button:hover{color:var(--text)}
+  nav button.active{color:var(--accent)}
+  nav button.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,transparent,var(--accent),transparent)}
+
+  main{position:relative;z-index:5;padding:36px 48px;max-width:1400px;margin:0 auto}
+  .section{display:none}
+  .section.active{display:block}
+
+  .sec-title{
+    font-family:var(--font-display);font-size:12px;font-weight:700;font-style:italic;
+    letter-spacing:3px;text-transform:uppercase;
+    color:var(--muted2);margin-bottom:20px;
+    display:flex;align-items:center;gap:14px}
+  .sec-title::before{content:'§';color:var(--accent2);font-style:normal;font-size:14px}
+  .sec-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
+
+  /* badge indicating full-dataset */
+  .full-data-badge{
+    display:inline-flex;align-items:center;gap:6px;
+    background:rgba(242,215,83,.08);border:1px solid rgba(242,215,83,.2);
+    color:var(--accent2);font-family:var(--font-ui);font-size:11px;font-weight:600;
+    letter-spacing:1px;text-transform:uppercase;padding:5px 12px;border-radius:2px;
+    margin-bottom:18px}
+  .full-data-badge::before{content:'◈';font-size:10px;color:var(--accent)}
+
+  .sum-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:32px}
+  .sum-card{background:var(--surface);border:1px solid var(--border);border-radius:3px;
+    padding:20px 22px;position:relative;overflow:hidden;transition:border-color .25s}
+  .sum-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+  .sum-card:nth-child(1)::before{background:var(--accent)}
+  .sum-card:nth-child(2)::before{background:var(--accent2)}
+  .sum-card:nth-child(3)::before{background:#4a6eb5}
+  .sum-card:nth-child(4)::before{background:#5a6fa3}
+  .sum-card:hover{border-color:#7aad50}
+  .c-lbl{font-family:var(--font-stamp);font-size:10px;color:var(--muted);letter-spacing:2px;
+    text-transform:uppercase;margin-bottom:10px}
+  .c-val{font-family:var(--font-display);font-size:34px;font-weight:700;line-height:1;color:var(--text)}
+  .c-sub{font-family:var(--font-ui);font-size:12px;color:var(--muted2);margin-top:6px;font-weight:400}
+
+  .fbar{display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+  .fbar input,.fbar select{
+    background:var(--surface2);border:1px solid var(--border);
+    color:var(--text);font-family:var(--font-ui);font-size:13px;font-weight:400;
+    padding:7px 11px;border-radius:2px;outline:none;transition:border-color .2s;appearance:none}
+  .fbar input:focus,.fbar select:focus{border-color:var(--accent)}
+  .fbar input{width:160px}
+  .fbar select{cursor:pointer}
+  .fsep{width:1px;height:24px;background:var(--border);opacity:.35;margin:0 2px}
+  .flbl{font-family:var(--font-ui);font-size:11px;color:var(--muted);font-weight:500;white-space:nowrap;letter-spacing:.5px}
+  .btn{background:none;border:1px solid var(--border);color:var(--muted);
+    font-family:var(--font-stamp);font-size:11px;letter-spacing:2px;text-transform:uppercase;
+    padding:7px 15px;border-radius:2px;cursor:pointer;transition:all .2s}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+
+  .tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:3px;
+    background:var(--surface);max-height:520px;overflow-y:auto}
+  table{width:100%;border-collapse:collapse}
+  thead tr{background:var(--surface2);border-bottom:1px solid var(--border);
+    position:sticky;top:0;z-index:2}
+  th{padding:11px 14px;text-align:left;
+    font-family:var(--font-ui);font-size:11px;font-weight:600;
+    letter-spacing:.5px;text-transform:uppercase;color:var(--muted2);
+    cursor:pointer;user-select:none;white-space:nowrap;transition:color .2s}
+  th:hover{color:var(--accent)}
+  td{padding:8px 14px;border-bottom:1px solid rgba(99,129,64,.1);
+    font-family:var(--font-ui);font-size:13px;font-weight:400;white-space:nowrap;color:var(--text)}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:rgba(242,215,83,.025)}
+  .badge{display:inline-block;padding:3px 10px;border-radius:2px;
+    font-family:var(--font-ui);font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+  .b-ch{background:rgba(91,141,217,.15);color:#7aadee;border:1px solid rgba(91,141,217,.3)}
+  .b-re{background:rgba(235,195,17,.1);color:#ebc311;border:1px solid rgba(235,195,17,.25)}
+  .sp-wrap{display:flex;align-items:center;gap:7px}
+  .sp-bar{width:46px;height:3px;background:rgba(99,129,64,.2);border-radius:2px;overflow:hidden}
+  .sp-fill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:2px}
+
+  .cg{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:18px}
+  .cc{background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:22px;position:relative}
+  .cc::before{content:'';position:absolute;inset:0;
+    background:radial-gradient(ellipse at top right,rgba(242,215,83,.015),transparent 60%);
+    pointer-events:none;border-radius:3px}
+  .ctitle{font-family:var(--font-display);font-size:12px;font-weight:700;font-style:italic;
+    letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);margin-bottom:18px}
+
+  .sg{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:18px}
+  .sb{background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:22px}
+  .sr{display:flex;justify-content:space-between;align-items:baseline;
+    padding:8px 0;border-bottom:1px solid rgba(99,129,64,.1)}
+  .sr:last-child{border-bottom:none}
+  .sk{font-family:var(--font-ui);font-size:12px;color:var(--muted2);font-weight:500}
+  .sv{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--accent)}
+
+  .crr{margin-bottom:14px}
+  .crl{display:flex;justify-content:space-between;font-family:var(--font-ui);font-size:12px;
+    font-weight:500;color:var(--muted2);margin-bottom:6px}
+  .crl span:last-child{color:var(--accent);font-weight:600}
+  .crb{height:5px;background:rgba(99,129,64,.2);border-radius:2px;overflow:hidden}
+  .crf{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:2px}
+
+  .reg-f{background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--accent);
+    padding:14px 18px;border-radius:0 3px 3px 0;font-size:14px;margin-bottom:14px;
+    font-style:italic;font-family:var(--font-prose);color:var(--accent);line-height:1.6}
+  .pred-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .pred-row input{background:var(--surface);border:1px solid var(--border);color:var(--text);
+    font-family:var(--font-ui);font-size:13px;padding:7px 12px;border-radius:2px;
+    outline:none;width:140px;transition:border-color .2s}
+  .pred-row input:focus{border-color:var(--accent)}
+  .pred-row label{font-family:var(--font-ui);font-size:12px;color:var(--muted2);font-weight:500}
+  .pred-res{font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--accent2)}
+
+  .ig{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .ic{background:var(--surface);border:1px solid var(--border);border-radius:3px;
+    padding:26px;position:relative;overflow:hidden}
+  .ic::before{content:attr(data-num);position:absolute;right:16px;top:10px;
+    font-family:var(--font-display);font-size:70px;font-weight:700;font-style:italic;
+    color:rgba(242,215,83,.04);line-height:1}
+  .i-tag{display:inline-block;background:rgba(242,215,83,.08);
+    border:1px solid rgba(242,215,83,.18);color:var(--accent2);
+    font-family:var(--font-ui);font-size:10px;font-weight:600;
+    letter-spacing:1.5px;text-transform:uppercase;
+    padding:3px 10px;border-radius:2px;margin-bottom:12px}
+  .i-title{font-family:var(--font-display);font-size:16px;font-weight:700;
+    margin-bottom:10px;color:var(--text);line-height:1.3}
+  .i-body{font-family:var(--font-prose);font-size:14px;line-height:1.75;color:#b8c4d8}
+  .i-body strong{color:var(--accent2);font-style:italic;font-family:var(--font-prose)}
+
+  .rc{margin-top:10px;font-family:var(--font-ui);font-size:12px;color:var(--muted);font-weight:400}
+  .orn{text-align:center;font-family:var(--font-prose);font-size:16px;color:rgba(99,129,64,.5);
+    letter-spacing:6px;margin:0 0 28px}
+  .r2-note{font-family:var(--font-ui);font-size:12px;color:var(--muted);letter-spacing:.3px}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+  .section.active>*{animation:fadeUp .35s ease both}
+  .section.active>*:nth-child(2){animation-delay:.05s}
+  .section.active>*:nth-child(3){animation-delay:.1s}
+  .section.active>*:nth-child(4){animation-delay:.15s}
+  .section.active>*:nth-child(5){animation-delay:.2s}
+
+  @media(max-width:900px){
+    header,nav{padding-left:20px;padding-right:20px}
+    main{padding:22px 18px}
+    .sum-grid{grid-template-columns:1fr 1fr}
+    .cg,.sg,.ig{grid-template-columns:1fr}
+    .logo-mark{font-size:30px}
+  }
+</style>
+</head>
+<body>
+<div class="vignette"></div>
+
+<!-- LOADING -->
+<div id="ld">
+  <div class="ld-title">Faded Without Notice</div>
+  <div class="ld-sub">Retrieving lost records…</div>
+  <div class="ld-file">customer_churn.csv</div>
+  <div class="ld-bar-wrap"><div class="ld-bar" id="ldBar"></div></div>
+  <div class="ld-pct" id="ldPct"></div>
+  <div class="ld-msg" id="ldMsg">Leafing through the archives…</div>
+  <div id="uploadPrompt">
+    <div class="upload-zone" onclick="document.getElementById('csvIn').click()">
+      <input type="file" id="csvIn" accept=".csv" onchange="handleUpload(event)"/>
+      <div class="upload-label">The file was not found in its usual place.<br/>Provide it manually to proceed.</div>
+      <div class="upload-hint">customer_churn.csv · click to select</div>
+    </div>
+    <button class="upload-btn" onclick="document.getElementById('csvIn').click()">Open from Archive</button>
+  </div>
+</div>
+
+<header>
+  <div class="mr"></div>
+  <div class="logo-eyebrow">Customer Churn Analysis &amp; Insights</div>
+  <span class="logo-mark">Faded Without Notice</span>
+  <span class="logo-sub">A Chronicle of Customer Departures &amp; Retention</span>
+  <div class="mr thin"></div>
+  <div class="hdr-meta">
+    <span class="hdr-date">DE DIOS  |  MANGUBAT</span>
+    <span class="hdr-issue">This reflects the customer churn patterns observed in the dataset https://www.kaggle.com/datasets/somiel20/customer-churn-data</span>
+    <span class="hdr-date" id="hdrCount">—</span>
+  </div>
+  <div class="mr"></div>
+</header>
+
+<nav>
+  <button class="active" onclick="showSec('explorer',this)">The Registry</button>
+  <button onclick="showSec('visualizations',this)">Illustrations</button>
+  <button onclick="showSec('analysis',this)">The Ledger</button>
+  <button onclick="showSec('insights',this)">Dispatches</button>
+</nav>
+
+<main>
+
+  <!-- S1: REGISTRY -->
+  <section id="explorer" class="section active">
+    <div class="orn">— ✦ —</div>
+    <div class="sum-grid" id="sumCards"></div>
+    <div class="sec-title">Customer Records</div>
+    <div class="fbar">
+      <input type="text" id="srch" placeholder="Search ID or gender…" oninput="applyF()"/>
+      <div class="fsep"></div>
+      <span class="flbl">Show:</span>
+      <select id="rowLim" onchange="applyF()">
+        <option value="50" selected>50 rows</option>
+        <option value="100">100 rows</option>
+        <option value="500">500 rows</option>
+        <option value="1000">1 000 rows</option>
+        <option value="999999999">All rows</option>
+      </select>
+      <span class="flbl">Order:</span>
+      <select id="rowOrd" onchange="applyF()">
+        <option value="asc">Ascending</option>
+        <option value="desc">Descending</option>
+      </select>
+      <div class="fsep"></div>
+      <select id="fSub" onchange="applyF()">
+        <option value="">All Subscriptions</option>
+        <option value="Basic">Basic</option>
+        <option value="Standard">Standard</option>
+        <option value="Premium">Premium</option>
+      </select>
+      <select id="fStat" onchange="applyF()">
+        <option value="">All Status</option>
+        <option value="1">Churned</option>
+        <option value="0">Retained</option>
+      </select>
+      <select id="fCon" onchange="applyF()">
+        <option value="">All Contracts</option>
+        <option value="Monthly">Monthly</option>
+        <option value="Quarterly">Quarterly</option>
+        <option value="Annual">Annual</option>
+      </select>
+      <div class="fsep"></div>
+      <select id="fSort" onchange="applyF()">
+        <option value="">Sort by…</option>
+        <option value="totalSpend">Total Spend</option>
+        <option value="tenure">Tenure</option>
+        <option value="age">Age</option>
+        <option value="supportCalls">Support Calls</option>
+        <option value="payDelay">Pay Delay</option>
+      </select>
+      <button class="btn" onclick="resetF()">Reset</button>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th>Customer ID</th><th>Age</th><th>Gender</th><th>Tenure (mo)</th>
+          <th>Usage Freq</th><th>Support Calls</th><th>Pay Delay</th>
+          <th>Subscription</th><th>Contract</th><th>Total Spend</th>
+          <th>Last Interact</th><th>Status</th>
+        </tr></thead>
+        <tbody id="tBody"></tbody>
+      </table>
+    </div>
+    <div class="rc" id="rc"></div>
+  </section>
+
+  <!-- S2: ILLUSTRATIONS -->
+  <section id="visualizations" class="section">
+    <div class="orn">— ✦ —</div>
+    <div class="sec-title">Charts &amp; Illustrations</div>
+    <div style="font-family:var(--font-ui);font-size:12px;color:var(--muted);margin-bottom:18px;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:2px;">
+      ↻ Charts reflect the rows currently visible in The Registry. Change filters or row count to update.
+    </div>
+    <div class="cg" style="margin-bottom:18px">
+      <div class="cc">
+        <div class="ctitle">Top 10 by Total Spend</div>
+        <div style="height:290px"><canvas id="barChart"></canvas></div>
+      </div>
+      <div class="cc">
+        <div class="ctitle">Churn by Subscription</div>
+        <div style="height:290px;display:flex;align-items:center;justify-content:center">
+          <canvas id="dnutChart" style="max-height:270px"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="cc">
+      <div class="ctitle">Tenure vs Total Spend — Scatter with Trend Line</div>
+      <div style="height:310px"><canvas id="scatterChart"></canvas></div>
+    </div>
+  </section>
+
+  <!-- S3: LEDGER — always full dataset -->
+  <section id="analysis" class="section">
+    <div class="orn">— ✦ —</div>
+    <div class="full-data-badge">Full Dataset · All <span id="totalCount">—</span> Records</div>
+    <div class="sec-title">Descriptive Statistics</div>
+    <div class="sg">
+      <div class="sb" id="spendSt"></div>
+      <div class="sb" id="tenureSt"></div>
+      <div class="sb" id="ageSt"></div>
+    </div>
+    <div class="sec-title">Correlation Analysis</div>
+    <div class="cg" style="grid-template-columns:1fr 1fr;margin-bottom:18px">
+      <div class="sb">
+        <div class="ctitle" style="margin-bottom:16px">Pearson Correlation with Churn</div>
+        <div id="corrBars"></div>
+      </div>
+      <div class="sb">
+        <div class="ctitle" style="margin-bottom:16px">Correlation Heatmap</div>
+        <canvas id="hmChart" style="max-height:210px"></canvas>
+      </div>
+    </div>
+    <div class="sec-title">Linear Regression Model</div>
+    <div class="sb">
+      <div class="ctitle" style="margin-bottom:14px">Predict Churn Risk from Tenure &amp; Support Calls</div>
+      <div class="reg-f" id="regF"></div>
+      <div class="r2-note" style="margin-bottom:18px" id="r2v"></div>
+      <div class="pred-row">
+        <label>Tenure (months):</label>
+        <input type="number" id="pTen" min="0" max="72" step="1" placeholder="e.g. 24" oninput="predict()"/>
+        <label>Support Calls:</label>
+        <input type="number" id="pCall" min="0" max="15" step="1" placeholder="e.g. 4" oninput="predict()"/>
+        <span style="font-family:var(--font-prose);font-size:13px;color:var(--muted);font-style:italic">→ Churn Risk:</span>
+        <span class="pred-res" id="predRes">—</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- S4: DISPATCHES — always full dataset -->
+  <section id="insights" class="section">
+    <div class="orn">— ✦ —</div>
+    <div class="full-data-badge">Full Dataset · All <span id="totalCount2">—</span> Records</div>
+    <div class="sec-title">Dispatches from the Data</div>
+    <div class="ig" id="igrid"></div>
+  </section>
+
+</main>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════════════════
+const CSV_FILENAME = 'customer_churn.csv';
+
+// ── STATE ──────────────────────────────────────────────────────
+let S = {};
+let VISIBLE = [];
+let charts  = {};
+let analysisBuilt = false;
+
+// ── MATH HELPERS ───────────────────────────────────────────────
+function makeAcc(){ return {n:0,mean:0,M2:0,min:Infinity,max:-Infinity,sum:0}; }
+function accAdd(a,x){
+  a.n++; a.sum+=x;
+  const d=x-a.mean; a.mean+=d/a.n; a.M2+=d*(x-a.mean);
+  if(x<a.min)a.min=x; if(x>a.max)a.max=x;
+}
+function accResult(a){
+  const variance=a.n>1?a.M2/a.n:0;
+  return{mean:a.mean,variance,stdDev:Math.sqrt(variance),min:a.min,max:a.max,range:a.max-a.min,sum:a.sum,n:a.n};
+}
+function makeCorrAcc(){ return{n:0,sx:0,sy:0,sx2:0,sy2:0,sxy:0}; }
+function corrAdd(c,x,y){ c.n++;c.sx+=x;c.sy+=y;c.sx2+=x*x;c.sy2+=y*y;c.sxy+=x*y; }
+function corrResult(c){
+  const num=c.n*c.sxy-c.sx*c.sy;
+  const den=Math.sqrt((c.n*c.sx2-c.sx*c.sx)*(c.n*c.sy2-c.sy*c.sy));
+  return den===0?0:num/den;
+}
+
+// ── SINGLE-PASS STREAM PARSER (full dataset) ──────────────────
+function streamCSV(text){
+  const aSpend=makeAcc(),aTen=makeAcc(),aAge=makeAcc(),aSupp=makeAcc(),aDel=makeAcc(),aUsage=makeAcc();
+  const cTen=makeCorrAcc(),cSupp=makeCorrAcc(),cDel=makeCorrAcc(),cUsage=makeCorrAcc(),cSpend=makeCorrAcc(),cTenSpend=makeCorrAcc();
+
+  // Full-dataset group accumulators — NOT capped — for accurate Insights
+  const chAcc={tenure:makeAcc(),supp:makeAcc(),spend:makeAcc(),delay:makeAcc()};
+  const reAcc={tenure:makeAcc(),supp:makeAcc(),spend:makeAcc(),delay:makeAcc()};
+
+  let churnedCount=0,retainedCount=0,highDelayChurn=0;
+  const subChurn={Basic:0,Standard:0,Premium:0};
+  const subTotal={Basic:0,Standard:0,Premium:0};
+  const conChurn={Monthly:0,Quarterly:0,Annual:0};
+  const conTotal={Monthly:0,Quarterly:0,Annual:0};
+
+  const MAX_BUF=5000;
+  let rawBuf=[];
+  let top10=[];
+  const SCATTER_SIZE=600;
+  let scatterBuf=[];
+  const MED_SIZE=2000;
+  let medSpend=[],medTen=[],medAge=[];
+  const rTC={sx:0,sy:0,sx2:0,sxy:0,n:0};
+  const rSC={sx:0,sy:0,sx2:0,sxy:0,n:0};
+
+  let n=0;
+  const lines=text.split('\n');
+  const headers=lines[0].split(',');
+  const hi={};
+  ['CustomerID','Age','Gender','Tenure','Usage Frequency','Support Calls',
+   'Payment Delay','Subscription Type','Contract Length','Total Spend','Last Interaction','Churn']
+  .forEach(h=>{ hi[h]=headers.indexOf(h); });
+
+  for(let i=1;i<lines.length;i++){
+    const line=lines[i]; if(!line.trim()) continue;
+    const cols=line.split(','); if(cols.length<12) continue;
+    const age=parseFloat(cols[hi['Age']]);
+    const tenure=parseFloat(cols[hi['Tenure']]);
+    const usage=parseFloat(cols[hi['Usage Frequency']]);
+    const supp=parseFloat(cols[hi['Support Calls']]);
+    const delay=parseFloat(cols[hi['Payment Delay']]);
+    const sub=cols[hi['Subscription Type']].trim();
+    const con=cols[hi['Contract Length']].trim();
+    const spend=parseFloat(cols[hi['Total Spend']]);
+    const last=parseFloat(cols[hi['Last Interaction']]);
+    const churn=parseFloat(cols[hi['Churn']]);
+    const rawId=cols[hi['CustomerID']].trim().replace(/\.0$/,'');
+    if(isNaN(age)||isNaN(spend)||isNaN(churn)) continue;
+    n++;
+
+    accAdd(aSpend,spend);accAdd(aTen,tenure);accAdd(aAge,age);
+    accAdd(aSupp,supp);accAdd(aDel,delay);accAdd(aUsage,usage);
+    corrAdd(cTen,tenure,churn);corrAdd(cSupp,supp,churn);corrAdd(cDel,delay,churn);
+    corrAdd(cUsage,usage,churn);corrAdd(cSpend,spend,churn);corrAdd(cTenSpend,tenure,spend);
+
+    // ── Full-dataset group stats (no cap) ──────────────────────
+    if(churn===1){
+      churnedCount++;
+      if(delay>=20) highDelayChurn++;
+      accAdd(chAcc.tenure,tenure);
+      accAdd(chAcc.supp,supp);
+      accAdd(chAcc.spend,spend);
+      accAdd(chAcc.delay,delay);
+    } else {
+      retainedCount++;
+      accAdd(reAcc.tenure,tenure);
+      accAdd(reAcc.supp,supp);
+      accAdd(reAcc.spend,spend);
+      accAdd(reAcc.delay,delay);
+    }
+
+    if(subChurn[sub]!==undefined){subTotal[sub]++;if(churn===1)subChurn[sub]++;}
+    if(conChurn[con]!==undefined){conTotal[con]++;if(churn===1)conChurn[con]++;}
+
+    // Display buffer (capped)
+    if(rawBuf.length<MAX_BUF)
+      rawBuf.push({id:rawId,age,gender:cols[hi['Gender']].trim(),tenure,usageFreq:usage,supportCalls:supp,payDelay:delay,subscription:sub,contract:con,totalSpend:spend,lastInteract:last,churn});
+
+    top10.push({id:rawId,totalSpend:spend,churn});
+    if(top10.length>12){top10.sort((a,b)=>b.totalSpend-a.totalSpend);top10.length=10;}
+
+    if(scatterBuf.length<SCATTER_SIZE) scatterBuf.push({x:tenure,y:spend,churn,id:rawId});
+    else{const j=Math.floor(Math.random()*n);if(j<SCATTER_SIZE)scatterBuf[j]={x:tenure,y:spend,churn,id:rawId};}
+
+    if(medSpend.length<MED_SIZE){medSpend.push(spend);medTen.push(tenure);medAge.push(age);}
+
+    rTC.sx+=tenure;rTC.sy+=churn;rTC.sx2+=tenure*tenure;rTC.sxy+=tenure*churn;rTC.n++;
+    rSC.sx+=supp;rSC.sy+=churn;rSC.sx2+=supp*supp;rSC.sxy+=supp*churn;rSC.n++;
+  }
+
+  const corrTenure=corrResult(cTen),corrSupport=corrResult(cSupp);
+  const corrDelay=corrResult(cDel),corrUsage=corrResult(cUsage),corrSpend=corrResult(cSpend);
+
+  const regTen=(()=>{const{n:rn,sx,sy,sx2,sxy}=rTC;const sl=(rn*sxy-sx*sy)/(rn*sx2-sx*sx||1);return{slope:sl,intercept:(sy/rn)-sl*(sx/rn)};})();
+  const regSupp=(()=>{const{n:rn,sx,sy,sx2,sxy}=rSC;const sl=(rn*sxy-sx*sy)/(rn*sx2-sx*sx||1);return{slope:sl,intercept:(sy/rn)-sl*(sx/rn)};})();
+  const r2Ten=corrTenure*corrTenure;
+
+  const ctsNum=cTenSpend.n*cTenSpend.sxy-cTenSpend.sx*cTenSpend.sy;
+  const ctsDen=cTenSpend.n*cTenSpend.sx2-cTenSpend.sx*cTenSpend.sx;
+  const scSlope=ctsDen===0?0:ctsNum/ctsDen;
+  const scInt=(cTenSpend.sy/cTenSpend.n)-scSlope*(cTenSpend.sx/cTenSpend.n);
+
+  const med=a=>{const s=[...a].sort((x,y)=>x-y);return s[Math.floor(s.length/2)];};
+  top10.sort((a,b)=>b.totalSpend-a.totalSpend);top10.length=Math.min(top10.length,10);
+
+  S={
+    spend:accResult(aSpend),spendMed:med(medSpend),
+    tenure:accResult(aTen),tenureMed:med(medTen),
+    age:accResult(aAge),ageMed:med(medAge),
+    supp:accResult(aSupp),delay:accResult(aDel),
+    churnedCount,retainedCount,total:n,
+    churnRate:(churnedCount/n*100).toFixed(1),
+    corrTenure,corrSupport,corrDelay,corrUsage,corrSpend,
+    regTen,regSupp,r2Ten,scSlope,scInt,
+    subChurn,subTotal,conChurn,conTotal,highDelayChurn,
+    topSpender:top10[0],
+    rawBuf,maxSpend:aSpend.max,
+    globalTop10:top10,
+    globalScatter:scatterBuf,
+    // Full-dataset group means — used by Insights & Ledger
+    churnedAvgTenure: chAcc.tenure.n ? chAcc.tenure.mean : 0,
+    retainedAvgTenure: reAcc.tenure.n ? reAcc.tenure.mean : 0,
+    churnedAvgSupp: chAcc.supp.n ? chAcc.supp.mean : 0,
+    retainedAvgSupp: reAcc.supp.n ? reAcc.supp.mean : 0,
+    churnedAvgSpend: chAcc.spend.n ? chAcc.spend.mean : 0,
+    retainedAvgSpend: reAcc.spend.n ? reAcc.spend.mean : 0,
+  };
+  VISIBLE=rawBuf.slice(0,50);
+}
+
+// ── LOAD PIPELINE ──────────────────────────────────────────────
+async function autoFetch(){
+  ldMsg('Searching the archives…');
+  try{
+    const resp=await fetch(CSV_FILENAME);
+    if(!resp.ok) throw new Error();
+    processText(await resp.text());
+  }catch{
+    document.getElementById('uploadPrompt').style.display='flex';
+    ldMsg(`Cannot locate ${CSV_FILENAME} — upload it below.`);
+    document.getElementById('ldPct').textContent='';
+  }
+}
+function handleUpload(e){
+  const file=e.target.files[0];if(!file)return;
+  document.getElementById('uploadPrompt').style.display='none';
+  ldMsg('Reading your file…');
+  const reader=new FileReader();
+  reader.onload=ev=>processText(ev.target.result);
+  reader.readAsText(file);
+}
+function processText(text){
+  ldMsg('Parsing the ledger…');setBar(20);
+  setTimeout(()=>{
+    setBar(50);ldMsg('Computing the figures…');
+    setTimeout(()=>{
+      streamCSV(text);
+      setBar(90);ldMsg('Laying out the archives…');
+      setTimeout(()=>{
+        buildSummaryCards();
+        applyF();
+        buildInsights();
+        // Populate total count badges
+        const tc=S.total.toLocaleString();
+        document.getElementById('hdrCount').textContent=`${tc} Records Analyzed`;
+        ['totalCount','totalCount2'].forEach(id=>{
+          const el=document.getElementById(id);if(el)el.textContent=tc;
+        });
+        setBar(100);
+        setTimeout(hideLoading,300);
+      },50);
+    },30);
+  },30);
+}
+function ldMsg(m){document.getElementById('ldMsg').textContent=m;}
+function setBar(p){document.getElementById('ldBar').style.width=p+'%';document.getElementById('ldPct').textContent=p<100?p+'%':'';}
+function hideLoading(){const el=document.getElementById('ld');el.style.transition='opacity .4s';el.style.opacity='0';setTimeout(()=>el.style.display='none',400);}
+
+// ── SUMMARY CARDS ─────────────────────────────────────────────
+function buildSummaryCards(){
+  const{churnRate,churnedCount,retainedCount,spend,tenure,topSpender,total}=S;
+  document.getElementById('sumCards').innerHTML=`
+    <div class="sum-card">
+      <div class="c-lbl">Churn Rate</div>
+      <div class="c-val" style="color:var(--fail)">${churnRate}<span style="font-size:18px;font-weight:400">%</span></div>
+      <div class="c-sub">${churnedCount.toLocaleString()} departed · ${retainedCount.toLocaleString()} remain</div>
+    </div>
+    <div class="sum-card">
+      <div class="c-lbl">Avg Total Spend</div>
+      <div class="c-val" style="color:var(--accent);font-size:26px">$${spend.mean.toFixed(0)}</div>
+      <div class="c-sub">across ${total.toLocaleString()} accounts</div>
+    </div>
+    <div class="sum-card">
+      <div class="c-lbl">Avg Tenure</div>
+      <div class="c-val" style="color:var(--accent2)">${tenure.mean.toFixed(1)}</div>
+      <div class="c-sub">months of membership</div>
+    </div>
+    <div class="sum-card">
+      <div class="c-lbl">Top Spender</div>
+      <div class="c-val" style="color:#7a9fd4;font-size:18px;padding-top:4px">${topSpender?.id??'—'}</div>
+      <div class="c-sub">$${topSpender?.totalSpend.toFixed(2)??0} · ${topSpender?.churn===1?'Churned':'Retained'}</div>
+    </div>`;
+}
+
+// ── TABLE ─────────────────────────────────────────────────────
+function renderTable(visible,totalMatched){
+  document.getElementById('rc').textContent=
+    `Showing ${visible.length.toLocaleString()} of ${totalMatched.toLocaleString()} matched · ${S.total.toLocaleString()} total in registry`;
+  const tbody=document.getElementById('tBody');
+  if(!visible.length){
+    tbody.innerHTML=`<tr><td colspan="12" style="text-align:center;color:var(--muted);padding:36px;font-family:var(--font-prose);font-style:italic">No records match your inquiry.</td></tr>`;
+    return;
+  }
+  const maxSp=S.maxSpend;
+  tbody.innerHTML=visible.map(c=>{
+    const st=c.churn===1?'Churned':'Retained';
+    const pct=(c.totalSpend/maxSp*100).toFixed(0);
+    return`<tr>
+      <td style="color:var(--muted2);font-weight:500">${c.id}</td>
+      <td>${c.age}</td><td>${c.gender}</td><td>${c.tenure}</td><td>${c.usageFreq}</td>
+      <td style="color:${c.supportCalls>=7?'#e87a7a':c.supportCalls<=2?'var(--pass)':'var(--text)'};font-weight:${c.supportCalls>=7?'600':'400'}">${c.supportCalls}</td>
+      <td style="color:${c.payDelay>=20?'#e87a7a':'var(--text)'};font-weight:${c.payDelay>=20?'600':'400'}">${c.payDelay}</td>
+      <td>${c.subscription}</td><td>${c.contract}</td>
+      <td><div class="sp-wrap"><span style="min-width:54px;font-weight:500">$${c.totalSpend.toFixed(0)}</span>
+        <div class="sp-bar"><div class="sp-fill" style="width:${pct}%"></div></div></div></td>
+      <td>${c.lastInteract}d</td>
+      <td><span class="badge ${st==='Churned'?'b-ch':'b-re'}">${st}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── FILTER + CHART UPDATE ─────────────────────────────────────
+function applyF(){
+  const srch=document.getElementById('srch').value.toLowerCase();
+  const sub=document.getElementById('fSub').value;
+  const stat=document.getElementById('fStat').value;
+  const con=document.getElementById('fCon').value;
+  const sortF=document.getElementById('fSort').value;
+  const order=document.getElementById('rowOrd').value;
+  const limit=parseInt(document.getElementById('rowLim').value);
+
+  let data=S.rawBuf.filter(c=>
+    (!srch||c.id.toLowerCase().includes(srch)||c.gender.toLowerCase().includes(srch))&&
+    (!sub||c.subscription===sub)&&
+    (!stat||String(c.churn)===stat)&&
+    (!con||c.contract===con)
+  );
+  const totalMatched=data.length;
+
+  if(sortF) data.sort((a,b)=>order==='asc'?a[sortF]-b[sortF]:b[sortF]-a[sortF]);
+  else if(order==='desc') data=[...data].reverse();
+
+  VISIBLE=data.slice(0,limit);
+  renderTable(VISIBLE,totalMatched);
+  refreshCharts(VISIBLE);
+}
+
+function resetF(){
+  ['srch','fSub','fStat','fCon','fSort'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('rowLim').value='50';
+  document.getElementById('rowOrd').value='asc';
+  applyF();
+}
+
+// ── CHART HELPERS ─────────────────────────────────────────────
+function visStats(rows){
+  const top10=[...rows].sort((a,b)=>b.totalSpend-a.totalSpend).slice(0,10);
+  const subC={Basic:0,Standard:0,Premium:0};
+  const subCh={Basic:0,Standard:0,Premium:0};
+  rows.forEach(c=>{
+    if(subC[c.subscription]!==undefined){subC[c.subscription]++;if(c.churn===1)subCh[c.subscription]++;}
+  });
+  const step=rows.length>600?Math.ceil(rows.length/600):1;
+  const scatter=rows.filter((_,i)=>i%step===0).map(c=>({x:c.tenure,y:c.totalSpend,churn:c.churn,id:c.id}));
+  let n=0,sx=0,sy=0,sx2=0,sxy=0;
+  rows.forEach(c=>{n++;sx+=c.tenure;sy+=c.totalSpend;sx2+=c.tenure*c.tenure;sxy+=c.tenure*c.totalSpend;});
+  const den=n*sx2-sx*sx;
+  const slope=den===0?0:(n*sxy-sx*sy)/den;
+  const intercept=sy/n-slope*(sx/n);
+  const tenMin=n?Math.min(...rows.map(c=>c.tenure)):0;
+  const tenMax=n?Math.max(...rows.map(c=>c.tenure)):60;
+  return{top10,subCh,scatter,slope,intercept,tenMin,tenMax};
+}
+
+const SF="'Inter', system-ui, sans-serif";
+const TICK={color:'#7a9fd4',font:{family:SF,size:11}};
+const GRID={color:'rgba(99,129,64,.1)'};
+
+function refreshCharts(rows){
+  if(!rows||!rows.length) return;
+  const vs=visStats(rows);
+
+  if(!charts.bar){
+    charts.bar=new Chart(document.getElementById('barChart'),{
+      type:'bar',
+      data:{
+        labels:vs.top10.map(c=>c.id),
+        datasets:[{
+          label:'Total Spend',
+          data:vs.top10.map(c=>c.totalSpend),
+          backgroundColor:vs.top10.map(c=>c.churn===1?'rgba(91,141,217,.55)':'rgba(235,195,17,.55)'),
+          borderColor:vs.top10.map(c=>c.churn===1?'#5b8dd9':'#ebc311'),
+          borderWidth:1,borderRadius:2
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{
+          legend:{display:false},
+          tooltip:{callbacks:{label:ctx=>`$${ctx.raw.toFixed(2)} · ${vs.top10[ctx.dataIndex].churn===1?'Churned':'Retained'}`}}
+        },
+        scales:{
+          x:{ticks:{...TICK},grid:{...GRID}},
+          y:{ticks:{...TICK,callback:v=>`$${v}`},grid:{...GRID}}
+        }
+      }
+    });
+
+    charts.dnut=new Chart(document.getElementById('dnutChart'),{
+      type:'doughnut',
+      data:{
+        labels:['Basic Churned','Standard Churned','Premium Churned'],
+        datasets:[{
+          data:[vs.subCh.Basic,vs.subCh.Standard,vs.subCh.Premium],
+          backgroundColor:['rgba(235,195,17,.75)','rgba(216,170,60,.75)','rgba(91,141,217,.75)'],
+          borderColor:'#14171f',borderWidth:3,hoverOffset:8
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,cutout:'62%',
+        plugins:{legend:{position:'bottom',labels:{color:'#7a9fd4',font:{family:SF,size:12},padding:12}}}
+      }
+    });
+
+    charts.scatter=new Chart(document.getElementById('scatterChart'),{
+      type:'scatter',
+      data:{datasets:[
+        {label:'Churned',data:vs.scatter.filter(p=>p.churn===1).map(p=>({x:p.x,y:p.y,id:p.id})),
+          backgroundColor:'rgba(91,141,217,.4)',borderColor:'#5b8dd9',borderWidth:1,pointRadius:3,pointHoverRadius:5},
+        {label:'Retained',data:vs.scatter.filter(p=>p.churn===0).map(p=>({x:p.x,y:p.y,id:p.id})),
+          backgroundColor:'rgba(235,195,17,.4)',borderColor:'#ebc311',borderWidth:1,pointRadius:3,pointHoverRadius:5},
+        {label:'Trend',data:[{x:vs.tenMin,y:vs.slope*vs.tenMin+vs.intercept},{x:vs.tenMax,y:vs.slope*vs.tenMax+vs.intercept}],
+          type:'line',borderColor:'rgba(242,215,83,.5)',borderWidth:2,pointRadius:0,fill:false,tension:0}
+      ]},
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{
+          legend:{labels:{color:'#7a9fd4',font:{family:SF,size:12}}},
+          tooltip:{callbacks:{label:ctx=>ctx.raw.id?`${ctx.raw.id}: ${ctx.raw.x}mo · $${ctx.raw.y.toFixed(0)}`:'Trend'}}
+        },
+        scales:{
+          x:{title:{display:true,text:'Tenure (months)',color:'#7a9fd4',font:{family:SF,size:12}},ticks:{...TICK},grid:{...GRID}},
+          y:{title:{display:true,text:'Total Spend ($)',color:'#7a9fd4',font:{family:SF,size:12}},ticks:{...TICK,callback:v=>`$${v}`},grid:{...GRID}}
+        }
+      }
+    });
+
+  } else {
+    const b=charts.bar;
+    b.data.labels=vs.top10.map(c=>c.id);
+    b.data.datasets[0].data=vs.top10.map(c=>c.totalSpend);
+    b.data.datasets[0].backgroundColor=vs.top10.map(c=>c.churn===1?'rgba(91,141,217,.55)':'rgba(235,195,17,.55)');
+    b.data.datasets[0].borderColor=vs.top10.map(c=>c.churn===1?'#5b8dd9':'#ebc311');
+    b._top10=vs.top10;
+    b.options.plugins.tooltip.callbacks.label=ctx=>`$${ctx.raw.toFixed(2)} · ${(b._top10[ctx.dataIndex]||{}).churn===1?'Churned':'Retained'}`;
+    b.update('none');
+
+    const d=charts.dnut;
+    d.data.datasets[0].data=[vs.subCh.Basic,vs.subCh.Standard,vs.subCh.Premium];
+    d.update('none');
+
+    const sc=charts.scatter;
+    sc.data.datasets[0].data=vs.scatter.filter(p=>p.churn===1).map(p=>({x:p.x,y:p.y,id:p.id}));
+    sc.data.datasets[1].data=vs.scatter.filter(p=>p.churn===0).map(p=>({x:p.x,y:p.y,id:p.id}));
+    sc.data.datasets[2].data=[{x:vs.tenMin,y:vs.slope*vs.tenMin+vs.intercept},{x:vs.tenMax,y:vs.slope*vs.tenMax+vs.intercept}];
+    sc.update('none');
+  }
+}
+
+// ── SECTION SWITCH ─────────────────────────────────────────────
+function showSec(id,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='visualizations') refreshCharts(VISIBLE);
+  if(id==='analysis')       buildAnalysis();
+}
+
+// ── ANALYSIS — always full dataset via S ───────────────────────
+function buildAnalysis(){
+  if(analysisBuilt) return;
+  analysisBuilt=true;
+  const{spend,tenure,age,spendMed,tenureMed,ageMed,
+        corrTenure,corrSupport,corrDelay,corrUsage,corrSpend,
+        regTen,r2Ten}=S;
+
+  function statsHTML(label,res,med,color){
+    return`<div class="ctitle" style="color:${color};margin-bottom:14px">${label}</div>`+
+      [['Min',res.min.toFixed(2)],['Max',res.max.toFixed(2)],['Mean',res.mean.toFixed(2)],
+       ['Median',typeof med==='number'?med.toFixed(2):med],['Variance',res.variance.toFixed(2)],
+       ['Std Dev',res.stdDev.toFixed(2)],['Range',res.range.toFixed(2)]]
+      .map(([k,v])=>`<div class="sr"><span class="sk">${k}</span><span class="sv" style="color:${color}">${v}</span></div>`).join('');
+  }
+  document.getElementById('spendSt').innerHTML=statsHTML('Total Spend ($)',spend,spendMed,'var(--accent)');
+  document.getElementById('tenureSt').innerHTML=statsHTML('Tenure (months)',tenure,tenureMed,'var(--accent2)');
+  document.getElementById('ageSt').innerHTML=statsHTML('Customer Age',age,ageMed,'#7a9fd4');
+
+  const cRows=[['Tenure vs Churn',corrTenure],['Support Calls vs Churn',corrSupport],
+               ['Pay Delay vs Churn',corrDelay],['Usage Freq vs Churn',corrUsage],['Spend vs Churn',corrSpend]];
+  document.getElementById('corrBars').innerHTML=cRows.map(([l,r])=>`
+    <div class="crr">
+      <div class="crl"><span>${l}</span><span>r = ${r.toFixed(3)}</span></div>
+      <div class="crb"><div class="crf" style="width:${Math.abs(r)*100}%"></div></div>
+    </div>`).join('');
+
+  // Destroy existing heatmap chart if any, then rebuild
+  if(charts.hm){ charts.hm.destroy(); charts.hm=null; }
+  charts.hm=new Chart(document.getElementById('hmChart'),{
+    type:'bar',
+    data:{labels:['Tenure','Support Calls','Pay Delay','Usage Freq','Spend'],
+      datasets:[{label:'|r| with Churn',
+        data:[corrTenure,corrSupport,corrDelay,corrUsage,corrSpend].map(Math.abs),
+        backgroundColor:['rgba(235,195,17,.65)','rgba(91,141,217,.65)','rgba(216,170,60,.65)','rgba(122,159,212,.65)','rgba(242,215,83,.65)'],
+        borderWidth:0,borderRadius:2}]},
+    options:{responsive:true,indexAxis:'y',
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{min:0,max:1,ticks:{color:'#7a9fd4',font:{family:SF,size:11}},grid:{color:'rgba(99,129,64,.1)'}},
+        y:{ticks:{color:'#7a9fd4',font:{family:SF,size:11}},grid:{display:false}}
+      }
+    }
+  });
+
+  document.getElementById('regF').textContent=
+    `Churn = ${regTen.slope.toFixed(5)} × Tenure + ${regTen.intercept.toFixed(4)}`;
+  document.getElementById('r2v').textContent=
+    `R² ≈ ${r2Ten.toFixed(4)}  ·  Explains ${(r2Ten*100).toFixed(2)}% of churn variance via tenure alone`;
+}
+
+function predict(){
+  const t=parseFloat(document.getElementById('pTen').value);
+  const s=parseFloat(document.getElementById('pCall').value);
+  const el=document.getElementById('predRes');
+  if(isNaN(t)&&isNaN(s)){el.textContent='—';return;}
+  const{regTen,regSupp,corrTenure,corrSupport,tenure}=S;
+  let risk;
+  if(!isNaN(t)&&isNaN(s)){
+    risk=regTen.slope*t+regTen.intercept;
+  }else{
+    const rT=regTen.slope*(isNaN(t)?tenure.mean:t)+regTen.intercept;
+    const rS=regSupp.slope*s+regSupp.intercept;
+    risk=(rT*Math.abs(corrTenure)+rS*Math.abs(corrSupport))/(Math.abs(corrTenure)+Math.abs(corrSupport));
+  }
+  const pct=Math.max(0,Math.min(1,risk));
+  el.textContent=(pct*100).toFixed(1)+'%';
+  el.style.color=pct>0.5?'#e87a7a':'var(--pass)';
+}
+
+// ── INSIGHTS — full dataset group averages from S ──────────────
+function buildInsights(){
+  const{
+    churnRate,churnedCount,retainedCount,total,
+    corrTenure,corrSupport,highDelayChurn,conChurn,conTotal,
+    churnedAvgTenure,retainedAvgTenure,
+    churnedAvgSupp,retainedAvgSupp,
+    churnedAvgSpend,retainedAvgSpend
+  }=S;
+
+  const f1=(v)=>isNaN(v)?'N/A':v.toFixed(1);
+  const f2=(v)=>isNaN(v)?'N/A':v.toFixed(2);
+
+  const ins=[
+    {tag:'Churn Overview',title:`${churnRate}% of Accounts Slipped Away`,
+     body:`Of <strong>${total.toLocaleString()} customers</strong> observed, <strong>${churnedCount.toLocaleString()} have churned</strong> and <strong>${retainedCount.toLocaleString()} remain</strong>. The data tells a quiet story — customers who faded without notice, no fanfare, no farewell.`},
+    {tag:'Tenure Factor',title:'Short Tenures End in Departure',
+     body:`Churned customers averaged <strong>${f1(churnedAvgTenure)} months</strong> vs <strong>${f1(retainedAvgTenure)} months</strong> for retained. Correlation r = <strong>${corrTenure.toFixed(3)}</strong> — longer tenure builds inertia that keeps customers from drifting away.`},
+    {tag:'Support Distress',title:'High Call Volume Precedes Exit',
+     body:`Churned accounts averaged <strong>${f1(churnedAvgSupp)} support calls</strong> vs <strong>${f1(retainedAvgSupp)}</strong> for retained customers (r = <strong>${corrSupport.toFixed(3)}</strong>). Unresolved frustration compounds until the customer simply stops returning.`},
+    {tag:'Contract Length',title:`Monthly Plans Churn at ${conTotal.Monthly?(conChurn.Monthly/conTotal.Monthly*100).toFixed(1):'N/A'}% vs Annual at ${conTotal.Annual?(conChurn.Annual/conTotal.Annual*100).toFixed(1):'N/A'}%`,
+     body:`Customers on <strong>monthly contracts</strong> churn far more readily than those on annual plans. The longer commitment anchors customers through periods of dissatisfaction, reducing the impulse to leave.`},
+    {tag:'Payment Behavior',title:'Late Payments as a Departure Signal',
+     body:`<strong>${highDelayChurn.toLocaleString()} churned customers</strong> had payment delays of 20+ days. By the time the wallet hesitates, the heart has already left — late payment is disengagement, not merely a billing issue.`},
+    {tag:'Spending Paradox',title:'Churned Customers Spent Less on Average',
+     body:`Retained customers averaged <strong>$${f2(retainedAvgSpend)}</strong> in total spend versus <strong>$${f2(churnedAvgSpend)}</strong> for churned accounts. Higher-value customers appear more committed — spend-tier loyalty incentives could meaningfully shift retention.`},
+  ];
+
+  document.getElementById('igrid').innerHTML=ins.map((x,i)=>`
+    <div class="ic" data-num="${String(i+1).padStart(2,'0')}">
+      <div class="i-tag">${x.tag}</div>
+      <div class="i-title">${x.title}</div>
+      <p class="i-body">${x.body}</p>
+    </div>`).join('');
+}
+
+// ── BOOT ──────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', autoFetch);
+</script>
+</body>
+</html>
