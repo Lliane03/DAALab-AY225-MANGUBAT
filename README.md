@@ -1,126 +1,207 @@
 # 🗞️ Faded Without Notice — Customer Churn Dashboard
 
-> *A Chronicle of Departures & Retained Souls*
+> *A Chronicle of Customer Departures & Retention*
 >
-> Single-file · Browser-based · No build tools required
+> Single-file · Browser-based · CSV-powered · No build tools required
+
+---
+
+## ✦ Overview
+
+**Faded Without Notice** is an interactive, browser-based dashboard for analyzing **customer churn behavior**.
+
+It processes a dataset (`customer_churn.csv`) and generates:
+
+* 📊 Dynamic visualizations
+* 📉 Statistical analysis
+* 🧠 Automated insights
+* 🔮 A churn prediction model
+
+> This reflects the customer churn patterns observed in the dataset:
+> [https://www.kaggle.com/datasets/somiel20/customer-churn-data](https://www.kaggle.com/datasets/somiel20/customer-churn-data)
 
 ---
 
 ## ✦ Requirements
 
-| What | Details |
-|------|---------|
-| **Browser** | Any modern browser — Chrome, Firefox, Edge, Safari 90+ |
-| **Internet** | Required on first load only *(for Google Fonts + Chart.js CDN)* |
-| **Runtime** | None — no Node.js, Python, or package manager needed |
+| What         | Details                                            |
+| ------------ | -------------------------------------------------- |
+| **Browser**  | Chrome, Firefox, Edge, Safari (modern versions)    |
+| **Internet** | Required initially *(CDN: Chart.js, Google Fonts)* |
+| **Runtime**  | None — runs fully in the browser                   |
+| **Dataset**  | `customer_churn.csv` *(required)*                  |
 
 ---
 
 ## ✦ How to Run
 
-### Option 1 — Open Directly *(Simplest)*
+### Option 1 — Open Directly *(with manual CSV upload)*
 
 1. Save the file as **`index.html`**
-2. Double-click to open in your browser
-
-> All data is embedded. It works immediately.
+2. Open it in your browser
+3. If prompted, **upload `customer_churn.csv`**
 
 ---
 
 ### Option 2 — Python Local Server *(Recommended)*
 
 ```bash
-# Python 3
 python -m http.server 8080
-
-# Then open:
-# http://localhost:8080
 ```
+
+Then open:
+
+```
+http://localhost:8080
+```
+
+> The app will automatically attempt to load `customer_churn.csv`
 
 ---
 
-### Option 3 — Node.js (npx)
+### Option 3 — Node.js
 
 ```bash
 npx serve .
-# Open the URL shown in your terminal
 ```
 
 ---
 
 ### Option 4 — VS Code Live Server
 
-Install the **Live Server** extension → right-click `index.html` → **Open with Live Server**
+Install **Live Server** → right-click `index.html` → **Open with Live Server**
 
 ---
 
-## ✦ Navigating the Dashboard
+## ✦ Key Features
 
-| Tab | Description |
-|-----|-------------|
-| **The Registry** | Filterable & sortable table of all 20 customer records + KPI summary cards |
-| **Illustrations** | Bar chart (top spenders), doughnut (churn by subscription), scatter (tenure vs spend) |
-| **The Ledger** | Descriptive statistics, Pearson correlations, and the interactive churn predictor |
-| **Dispatches** | Six narrative insight cards auto-generated from the dataset |
+### 📂 CSV-Based Data Loading
+
+* Automatically loads `customer_churn.csv`
+* Falls back to **manual upload** if file is missing
+* Uses **PapaParse** for parsing
 
 ---
 
-## ✦ Using the Churn Predictor
+### 📋 The Registry (Main Table)
 
-Located in **The Ledger** tab under *Linear Regression Model*:
+* Search, filter, and sort customers
+* KPI summary cards (churn rate, spend, tenure)
+* Dynamic row limits and ordering
 
-1. Enter a **Tenure** value in months — e.g. `24`
-2. Enter a **Support Calls** count — e.g. `6`
-3. **Churn Risk %** updates instantly
+---
 
-> 🔵 Above 50% = high risk &nbsp;|&nbsp; 🟡 Below 50% = lower risk
+### 📊 Illustrations (Charts)
+
+* **Bar Chart** — Top spenders
+* **Doughnut Chart** — Churn by subscription
+* **Scatter Plot** — Tenure vs Spend with trend line
+
+> Charts update based on visible (filtered) data
+
+---
+
+### 📈 The Ledger (Analysis)
+
+* Descriptive statistics (mean, median, variance, etc.)
+* Pearson correlation analysis
+* Heatmap-style correlation visualization
+
+---
+
+### 🔮 Churn Predictor
+
+Located under **Linear Regression Model**
+
+* Inputs:
+
+  * Tenure (months)
+  * Support Calls
+* Output:
+
+  * **Churn Risk (%)**
+
+> 🔴 Above 50% → High risk
+> 🟢 Below 50% → Lower risk
+
+---
+
+### 🧠 Dispatches (Insights)
+
+* Auto-generated narrative insights
+* Based on **full dataset (not filtered view)**
+* Covers:
+
+  * Tenure behavior
+  * Support trends
+  * Contract impact
+  * Payment delays
+  * Spending patterns
+
+---
+
+## ✦ Dataset Format
+
+The dashboard expects a CSV with these columns:
+
+```text
+CustomerID, Age, Gender, Tenure, Usage Frequency,
+Support Calls, Payment Delay, Subscription Type,
+Contract Length, Total Spend, Last Interaction, Churn
+```
 
 ---
 
 ## ✦ Modifying the Dataset
 
-Open `index.html` in any text editor. Find the `CUSTOMERS` array inside the `<script>` tag and edit or extend it. All charts, stats, and insights update automatically.
+Replace or edit the file:
 
-```javascript
-const CUSTOMERS = [
-  {
-    id: 'C001',
-    age: 43,
-    gender: 'Male',           // Male | Female
-    tenure: 42,               // months as a customer
-    usageFreq: 8,
-    supportCalls: 8,
-    payDelay: 25,             // days late on payment
-    subscription: 'Standard', // Basic | Standard | Premium
-    contract: 'Annual',       // Monthly | Quarterly | Annual
-    totalSpend: 136.99,
-    lastInteract: 23,         // days since last interaction
-    churn: 1                  // 1 = Churned, 0 = Retained
-  },
-  // ... add more records
-];
 ```
+customer_churn.csv
+```
+
+* Ensure column names remain consistent
+* The dashboard updates automatically after reload
 
 ---
 
-## ✦ External Dependencies *(CDN — no install needed)*
+## ✦ External Dependencies *(CDN)*
 
-| Library | Version | Purpose |
-|---------|---------|---------|
-| Chart.js | 4.4.0 | Bar, doughnut, and scatter charts |
-| Google Fonts | — | Playfair Display, Special Elite, IM Fell English, Courier Prime |
+| Library      | Version | Purpose             |
+| ------------ | ------- | ------------------- |
+| Chart.js     | 4.4.0   | Data visualizations |
+| PapaParse    | 5.4.1   | CSV parsing         |
+| Google Fonts | —       | Typography          |
 
 ---
 
 ## ✦ Browser Compatibility
 
-| Browser | Status |
-|---------|--------|
-| Chrome 90+ | ✅ Full support |
-| Firefox 88+ | ✅ Full support |
-| Edge 90+ | ✅ Full support |
-| Safari 14+ | ✅ Full support |
+| Browser | Status         |
+| ------- | -------------- |
+| Chrome  | ✅ Full support |
+| Firefox | ✅ Full support |
+| Edge    | ✅ Full support |
+| Safari  | ✅ Full support |
 
 ---
 
-*Faded Without Notice · Customer Intelligence Report · AY 2024–25*
+## ✦ Notes
+
+* Works entirely on the **client-side**
+* No backend required
+* Handles large datasets efficiently using streaming + sampling
+
+---
+
+## ✦ Credits
+
+**Developed by:**
+De Dios · Mangubat
+
+**Dataset Source:**
+Kaggle — Customer Churn Dataset
+https://www.kaggle.com/datasets/somiel20/customer-churn-data
+
+
+
