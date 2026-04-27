@@ -389,25 +389,43 @@
 <body>
 <div class="vignette"></div>
 
-<header>
-  <div class="masthead-rule"></div>
-  <div class="logo-eyebrow">Customer Intelligence Report</div>
-  <span class="logo-mark">Faded Without Notice</span>
-  <span class="logo-sub">A Chronicle of Departures &amp; Retained Souls</span>
-  <div class="masthead-rule thin"></div>
-  <div class="header-meta">
-    <span class="header-dateline">Est. Vol. I · Issue No. 1</span>
-    <span class="header-issue">The ones who left without a word</span>
-    <span class="header-dateline">AY 2024–25 · 20 Records</span>
+<!-- LOADING -->
+<div id="ld">
+  <div class="ld-title">Faded Without Notice</div>
+  <div class="ld-sub">Retrieving lost records…</div>
+  <div class="ld-file">customer_churn.csv</div>
+  <div class="ld-bar-wrap"><div class="ld-bar" id="ldBar"></div></div>
+  <div class="ld-pct" id="ldPct"></div>
+  <div class="ld-msg" id="ldMsg">Leafing through the archives…</div>
+  <div id="uploadPrompt">
+    <div class="upload-zone" onclick="document.getElementById('csvIn').click()">
+      <input type="file" id="csvIn" accept=".csv" onchange="handleUpload(event)"/>
+      <div class="upload-label">The file was not found in its usual place.<br/>Provide it manually to proceed.</div>
+      <div class="upload-hint">customer_churn.csv · click to select</div>
+    </div>
+    <button class="upload-btn" onclick="document.getElementById('csvIn').click()">Open from Archive</button>
   </div>
-  <div class="masthead-rule"></div>
+</div>
+
+<header>
+  <div class="mr"></div>
+  <div class="logo-eyebrow">Customer Churn Analysis & Insights</div>
+  <span class="logo-mark">Faded Without Notice</span>
+  <span class="logo-sub">A Chronicle of Customer Departures &amp; Retention</span>
+  <div class="mr thin"></div>
+  <div class="hdr-meta">
+    <span class="hdr-date">DE DIOS  |  MANGUBAT</span>
+    <span class="hdr-issue">This reflects the customer churn patterns observed in the dataset https://www.kaggle.com/datasets/somiel20/customer-churn-data</span>
+    <span class="hdr-date" id="hdrCount">—</span>
+  </div>
+  <div class="mr"></div>
 </header>
 
 <nav>
-  <button class="active" onclick="showSection('explorer', this)">The Registry</button>
-  <button onclick="showSection('visualizations', this)">Illustrations</button>
-  <button onclick="showSection('analysis', this)">The Ledger</button>
-  <button onclick="showSection('insights', this)">Dispatches</button>
+  <button class="active" onclick="showSec('explorer',this)">The Registry</button>
+  <button onclick="showSec('visualizations',this)">Illustrations</button>
+  <button onclick="showSec('analysis',this)">The Ledger</button>
+  <button onclick="showSec('insights',this)">Dispatches</button>
 </nav>
 
 <main>
