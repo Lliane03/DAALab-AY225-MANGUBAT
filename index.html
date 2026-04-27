@@ -124,6 +124,8 @@
 <body>
 <div class="vignette"></div>
 
+
+
 <header>
   <div class="mr"></div>
   <div class="logo-eyebrow">Customer Churn Analysis &amp; Insights</div>
@@ -139,10 +141,73 @@
 </header>
 
 
-<main>
-    
-</main>
 
+<main>
+  <!-- S1: REGISTRY -->
+  <section id="explorer" class="section active">
+    <div class="orn">— ✦ —</div>
+    <div class="sum-grid" id="sumCards"></div>
+    <div class="sec-title">Customer Records</div>
+    <div class="fbar">
+      <input type="text" id="srch" placeholder="Search ID or gender…" oninput="applyF()"/>
+      <div class="fsep"></div>
+      <span class="flbl">Show:</span>
+      <select id="rowLim" onchange="applyF()">
+        <option value="50" selected>50 rows</option>
+        <option value="100">100 rows</option>
+        <option value="500">500 rows</option>
+        <option value="1000">1 000 rows</option>
+        <option value="999999999">All rows</option>
+      </select>
+      <span class="flbl">Order:</span>
+      <select id="rowOrd" onchange="applyF()">
+        <option value="asc">Ascending</option>
+        <option value="desc">Descending</option>
+      </select>
+      <div class="fsep"></div>
+      <select id="fSub" onchange="applyF()">
+        <option value="">All Subscriptions</option>
+        <option value="Basic">Basic</option>
+        <option value="Standard">Standard</option>
+        <option value="Premium">Premium</option>
+      </select>
+      <select id="fStat" onchange="applyF()">
+        <option value="">All Status</option>
+        <option value="1">Churned</option>
+        <option value="0">Retained</option>
+      </select>
+      <select id="fCon" onchange="applyF()">
+        <option value="">All Contracts</option>
+        <option value="Monthly">Monthly</option>
+        <option value="Quarterly">Quarterly</option>
+        <option value="Annual">Annual</option>
+      </select>
+      <div class="fsep"></div>
+      <select id="fSort" onchange="applyF()">
+        <option value="">Sort by…</option>
+        <option value="totalSpend">Total Spend</option>
+        <option value="tenure">Tenure</option>
+        <option value="age">Age</option>
+        <option value="supportCalls">Support Calls</option>
+        <option value="payDelay">Pay Delay</option>
+      </select>
+      <button class="btn" onclick="resetF()">Reset</button>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th>Customer ID</th><th>Age</th><th>Gender</th><th>Tenure (mo)</th>
+          <th>Usage Freq</th><th>Support Calls</th><th>Pay Delay</th>
+          <th>Subscription</th><th>Contract</th><th>Total Spend</th>
+          <th>Last Interact</th><th>Status</th>
+        </tr></thead>
+        <tbody id="tBody"></tbody>
+      </table>
+    </div>
+    <div class="rc" id="rc"></div>
+  </section>
+</main>
+  
 <script>
 
 </script>
