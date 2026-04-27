@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<<<<<<< HEAD
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Faded Without Notice — Customer Churn Dashboard</title>
@@ -14,7 +13,6 @@
     --border:#638140; --accent:#f2d753; --accent2:#d8aa3c;
     --accent3:#233d81; --text:#f0e8c8; --muted:#fff;
     --muted2:#fff; --pass:#ebc311; --fail:#ffff;
-    /* Readable font stack */
     --font-ui: 'Inter', system-ui, sans-serif;
     --font-display: 'Playfair Display', Georgia, serif;
     --font-stamp: 'Special Elite', 'Courier New', monospace;
@@ -32,7 +30,6 @@
     overflow-x:hidden;
   }
 
-  /* film grain — kept subtle */
   body::before{content:'';position:fixed;inset:0;z-index:0;
     background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.04'/%3E%3C/svg%3E");
     background-size:256px 256px;pointer-events:none;opacity:.6}
@@ -40,7 +37,6 @@
     background:radial-gradient(ellipse at center,transparent 60%,rgba(0,0,0,.5) 100%);
     pointer-events:none}
 
-  /* ── LOADING ────────────────────────────────────── */
   #ld{position:fixed;inset:0;z-index:200;background:var(--bg);
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
   .ld-title{font-family:var(--font-display);font-size:32px;font-weight:700;font-style:italic;color:var(--accent)}
@@ -60,316 +56,106 @@
     font-family:var(--font-stamp);font-size:11px;letter-spacing:2px;text-transform:uppercase;
     padding:9px 22px;cursor:pointer;transition:all .2s;border-radius:2px}
   .upload-btn:hover{border-color:var(--accent);background:rgba(242,215,83,.06)}
-=======
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Faded Without Notice — Customer Churn Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;1,400;1,700&family=Special+Elite&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet"/>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-  <style>
-    :root {
-      --bg:#303B75; --surface:#14171f; --surface2:#1c2030;
-      --border:#638140; --accent:#f2d753; --accent2:#d8aa3c;
-      --accent3:#233d81; --text:#f0e8c8; --muted:#fff;
-      --muted2:#fff; --pass:#ebc311; --fail:#ffff;
-      --font-ui: 'Inter', system-ui, sans-serif;
-      --font-display: 'Playfair Display', Georgia, serif;
-      --font-stamp: 'Special Elite', 'Courier New', monospace;
-      --font-prose: 'IM Fell English', Georgia, serif;
-    }
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
-    header{position:relative;z-index:10;padding:28px 48px 20px;
-      border-bottom:1px solid var(--border);
-      background:linear-gradient(180deg,rgba(242,215,83,.05) 0%,transparent 100%);
-      text-align:center}
-    .mr{width:100%;height:1px;background:linear-gradient(90deg,transparent,var(--border),var(--accent2),var(--border),transparent);margin:8px 0}
-    .mr.thin{opacity:.35;margin:4px 0}
-    .logo-eyebrow{font-family:var(--font-stamp);font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-    .logo-mark{font-family:var(--font-display);font-size:42px;font-weight:700;font-style:italic;
-      color:var(--accent);letter-spacing:-1px;line-height:1;
-      text-shadow:0 2px 24px rgba(242,215,83,.18);display:block}
-    .logo-sub{font-family:var(--font-stamp);font-size:10px;color:var(--muted);letter-spacing:5px;
-      text-transform:uppercase;display:block;margin-top:5px}
-    .hdr-meta{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
-    .hdr-date{font-family:var(--font-ui);font-size:11px;color:var(--muted);letter-spacing:1px;font-weight:500}
-    .hdr-issue{font-family:var(--font-prose);font-size:12px;color:var(--accent2);font-style:italic}
+  header{position:relative;z-index:10;padding:28px 48px 20px;
+    border-bottom:1px solid var(--border);
+    background:linear-gradient(180deg,rgba(242,215,83,.05) 0%,transparent 100%);
+    text-align:center}
+  .mr{width:100%;height:1px;background:linear-gradient(90deg,transparent,var(--border),var(--accent2),var(--border),transparent);margin:8px 0}
+  .mr.thin{opacity:.35;margin:4px 0}
+  .logo-eyebrow{font-family:var(--font-stamp);font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .logo-mark{font-family:var(--font-display);font-size:42px;font-weight:700;font-style:italic;
+    color:var(--accent);letter-spacing:-1px;line-height:1;
+    text-shadow:0 2px 24px rgba(242,215,83,.18);display:block}
+  .logo-sub{font-family:var(--font-stamp);font-size:10px;color:var(--muted);letter-spacing:5px;
+    text-transform:uppercase;display:block;margin-top:5px}
+  .hdr-meta{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+  .hdr-date{font-family:var(--font-ui);font-size:11px;color:var(--muted);letter-spacing:1px;font-weight:500}
+  .hdr-issue{font-family:var(--font-prose);font-size:12px;color:var(--accent2);font-style:italic}
 
-    nav{position:relative;z-index:10;display:flex;justify-content:center;padding:0 48px;
-      border-bottom:1px solid var(--border);background:var(--surface);
-      border-top:1px solid rgba(99,129,64,.25)}
-    nav button{background:none;border:none;color:var(--muted);cursor:pointer;
-      font-family:var(--font-stamp);font-size:11px;letter-spacing:3px;text-transform:uppercase;
-      padding:14px 24px;position:relative;transition:color .25s}
-    nav button:hover{color:var(--text)}
-    nav button.active{color:var(--accent)}
-    nav button.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
-      background:linear-gradient(90deg,transparent,var(--accent),transparent)}
+  nav{position:relative;z-index:10;display:flex;justify-content:center;padding:0 48px;
+    border-bottom:1px solid var(--border);background:var(--surface);
+    border-top:1px solid rgba(99,129,64,.25)}
+  nav button{background:none;border:none;color:var(--muted);cursor:pointer;
+    font-family:var(--font-stamp);font-size:11px;letter-spacing:3px;text-transform:uppercase;
+    padding:14px 24px;position:relative;transition:color .25s}
+  nav button:hover{color:var(--text)}
+  nav button.active{color:var(--accent)}
+  nav button.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,transparent,var(--accent),transparent)}
 
-    main{position:relative;z-index:5;padding:36px 48px;max-width:1400px;margin:0 auto}
-    .section{display:none}
-    .section.active{display:block}
+  main{position:relative;z-index:5;padding:36px 48px;max-width:1400px;margin:0 auto}
+  .section{display:none}
+  .section.active{display:block}
 
-    .sec-title{
-      font-family:var(--font-display);font-size:12px;font-weight:700;font-style:italic;
-      letter-spacing:3px;text-transform:uppercase;
-      color:var(--muted2);margin-bottom:20px;
-      display:flex;align-items:center;gap:14px}
-    .sec-title::before{content:'§';color:var(--accent2);font-style:normal;font-size:14px}
-    .sec-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
->>>>>>> origin/feature/data-engine
+  .sec-title{
+    font-family:var(--font-display);font-size:12px;font-weight:700;font-style:italic;
+    letter-spacing:3px;text-transform:uppercase;
+    color:var(--muted2);margin-bottom:20px;
+    display:flex;align-items:center;gap:14px}
+  .sec-title::before{content:'§';color:var(--accent2);font-style:normal;font-size:14px}
+  .sec-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
 
-    /* badge indicating full-dataset */
-    .full-data-badge{
-      display:inline-flex;align-items:center;gap:6px;
-      background:rgba(242,215,83,.08);border:1px solid rgba(242,215,83,.2);
-      color:var(--accent2);font-family:var(--font-ui);font-size:11px;font-weight:600;
-      letter-spacing:1px;text-transform:uppercase;padding:5px 12px;border-radius:2px;
-      margin-bottom:18px}
-    .full-data-badge::before{content:'◈';font-size:10px;color:var(--accent)}
+  /* badge indicating full-dataset */
+  .full-data-badge{
+    display:inline-flex;align-items:center;gap:6px;
+    background:rgba(242,215,83,.08);border:1px solid rgba(242,215,83,.2);
+    color:var(--accent2);font-family:var(--font-ui);font-size:11px;font-weight:600;
+    letter-spacing:1px;text-transform:uppercase;padding:5px 12px;border-radius:2px;
+    margin-bottom:18px}
+  .full-data-badge::before{content:'◈';font-size:10px;color:var(--accent)}
 
-    .sum-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:32px}
-    .sum-card{background:var(--surface);border:1px solid var(--border);border-radius:3px;
-      padding:20px 22px;position:relative;overflow:hidden;transition:border-color .25s}
-    .sum-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
-    .sum-card:nth-child(1)::before{background:var(--accent)}
-    .sum-card:nth-child(2)::before{background:var(--accent2)}
-    .sum-card:nth-child(3)::before{background:#4a6eb5}
-    .sum-card:nth-child(4)::before{background:#5a6fa3}
-    .sum-card:hover{border-color:#7aad50}
-    .c-lbl{font-family:var(--font-stamp);font-size:10px;color:var(--muted);letter-spacing:2px;
-      text-transform:uppercase;margin-bottom:10px}
-    .c-val{font-family:var(--font-display);font-size:34px;font-weight:700;line-height:1;color:var(--text)}
-    .c-sub{font-family:var(--font-ui);font-size:12px;color:var(--muted2);margin-top:6px;font-weight:400}
+  .sum-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:32px}
+  .sum-card{background:var(--surface);border:1px solid var(--border);border-radius:3px;
+    padding:20px 22px;position:relative;overflow:hidden;transition:border-color .25s}
+  .sum-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+  .sum-card:nth-child(1)::before{background:var(--accent)}
+  .sum-card:nth-child(2)::before{background:var(--accent2)}
+  .sum-card:nth-child(3)::before{background:#4a6eb5}
+  .sum-card:nth-child(4)::before{background:#5a6fa3}
+  .sum-card:hover{border-color:#7aad50}
+  .c-lbl{font-family:var(--font-stamp);font-size:10px;color:var(--muted);letter-spacing:2px;
+    text-transform:uppercase;margin-bottom:10px}
+  .c-val{font-family:var(--font-display);font-size:34px;font-weight:700;line-height:1;color:var(--text)}
+  .c-sub{font-family:var(--font-ui);font-size:12px;color:var(--muted2);margin-top:6px;font-weight:400}
 
-    .fbar{display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
-    .fbar input,.fbar select{
-      background:var(--surface2);border:1px solid var(--border);
-      color:var(--text);font-family:var(--font-ui);font-size:13px;font-weight:400;
-      padding:7px 11px;border-radius:2px;outline:none;transition:border-color .2s;appearance:none}
-    .fbar input:focus,.fbar select:focus{border-color:var(--accent)}
-    .fbar input{width:160px}
-    .fbar select{cursor:pointer}
-    .fsep{width:1px;height:24px;background:var(--border);opacity:.35;margin:0 2px}
-    .flbl{font-family:var(--font-ui);font-size:11px;color:var(--muted);font-weight:500;white-space:nowrap;letter-spacing:.5px}
-    .btn{background:none;border:1px solid var(--border);color:var(--muted);
-      font-family:var(--font-stamp);font-size:11px;letter-spacing:2px;text-transform:uppercase;
-      padding:7px 15px;border-radius:2px;cursor:pointer;transition:all .2s}
-    .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .fbar{display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+  .fbar input,.fbar select{
+    background:var(--surface2);border:1px solid var(--border);
+    color:var(--text);font-family:var(--font-ui);font-size:13px;font-weight:400;
+    padding:7px 11px;border-radius:2px;outline:none;transition:border-color .2s;appearance:none}
+  .fbar input:focus,.fbar select:focus{border-color:var(--accent)}
+  .fbar input{width:160px}
+  .fbar select{cursor:pointer}
+  .fsep{width:1px;height:24px;background:var(--border);opacity:.35;margin:0 2px}
+  .flbl{font-family:var(--font-ui);font-size:11px;color:var(--muted);font-weight:500;white-space:nowrap;letter-spacing:.5px}
+  .btn{background:none;border:1px solid var(--border);color:var(--muted);
+    font-family:var(--font-stamp);font-size:11px;letter-spacing:2px;text-transform:uppercase;
+    padding:7px 15px;border-radius:2px;cursor:pointer;transition:all .2s}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
 
-    .tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:3px;
-      background:var(--surface);max-height:520px;overflow-y:auto}
-    table{width:100%;border-collapse:collapse}
-    thead tr{background:var(--surface2);border-bottom:1px solid var(--border);
-      position:sticky;top:0;z-index:2}
-    th{padding:11px 14px;text-align:left;
-      font-family:var(--font-ui);font-size:11px;font-weight:600;
-      letter-spacing:.5px;text-transform:uppercase;color:var(--muted2);
-      cursor:pointer;user-select:none;white-space:nowrap;transition:color .2s}
-    th:hover{color:var(--accent)}
-    td{padding:8px 14px;border-bottom:1px solid rgba(99,129,64,.1);
-      font-family:var(--font-ui);font-size:13px;font-weight:400;white-space:nowrap;color:var(--text)}
-    tr:last-child td{border-bottom:none}
-    tr:hover td{background:rgba(242,215,83,.025)}
-    .badge{display:inline-block;padding:3px 10px;border-radius:2px;
-      font-family:var(--font-ui);font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
-    .b-ch{background:rgba(91,141,217,.15);color:#7aadee;border:1px solid rgba(91,141,217,.3)}
-    .b-re{background:rgba(235,195,17,.1);color:#ebc311;border:1px solid rgba(235,195,17,.25)}
-    .sp-wrap{display:flex;align-items:center;gap:7px}
-    .sp-bar{width:46px;height:3px;background:rgba(99,129,64,.2);border-radius:2px;overflow:hidden}
-    .sp-fill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:2px}
+  .tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:3px;
+    background:var(--surface);max-height:520px;overflow-y:auto}
+  table{width:100%;border-collapse:collapse}
+  thead tr{background:var(--surface2);border-bottom:1px solid var(--border);
+    position:sticky;top:0;z-index:2}
+  th{padding:11px 14px;text-align:left;
+    font-family:var(--font-ui);font-size:11px;font-weight:600;
+    letter-spacing:.5px;text-transform:uppercase;color:var(--muted2);
+    cursor:pointer;user-select:none;white-space:nowrap;transition:color .2s}
+  th:hover{color:var(--accent)}
+  td{padding:8px 14px;border-bottom:1px solid rgba(99,129,64,.1);
+    font-family:var(--font-ui);font-size:13px;font-weight:400;white-space:nowrap;color:var(--text)}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:rgba(242,215,83,.025)}
+  .badge{display:inline-block;padding:3px 10px;border-radius:2px;
+    font-family:var(--font-ui);font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+  .b-ch{background:rgba(91,141,217,.15);color:#7aadee;border:1px solid rgba(91,141,217,.3)}
+  .b-re{background:rgba(235,195,17,.1);color:#ebc311;border:1px solid rgba(235,195,17,.25)}
+  .sp-wrap{display:flex;align-items:center;gap:7px}
+  .sp-bar{width:46px;height:3px;background:rgba(99,129,64,.2);border-radius:2px;overflow:hidden}
+  .sp-fill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:2px}
 
-<<<<<<< HEAD
-  /* ─── NAV ─────────────────────────────────────────── */
-  nav {
-    position: relative; z-index: 10;
-    display: flex; justify-content: center; gap: 0;
-    padding: 0 48px;
-    border-bottom: 1px solid var(--border);
-    background: var(--surface);
-    border-top: 1px solid rgba(99,129,64,0.3);
-  }
-  nav button {
-    background: none; border: none;
-    color: var(--muted); cursor: pointer;
-    font-family: 'Special Elite', cursive;
-    font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
-    padding: 14px 22px;
-    position: relative;
-    transition: color .3s;
-  }
-  nav button::before {
-    content: '◆';
-    opacity: 0; position: absolute; left: 8px; top: 50%; transform: translateY(-50%);
-    font-size: 6px; color: var(--accent);
-    transition: opacity .2s;
-  }
-  nav button:hover { color: var(--text); }
-  nav button:hover::before { opacity: .5; }
-  nav button.active { color: var(--accent); }
-  nav button.active::after {
-    content: '';
-    position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
-    background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  }
-
-  /* ─── MAIN ───────────────────────────────────────── */
-  main {
-    position: relative; z-index: 5;
-    padding: 40px 48px;
-    max-width: 1400px;
-    margin: 0 auto;
-  }
-
-  .section { display: none; }
-  .section.active { display: block; }
-
-  /* ─── SECTION TITLE ──────────────────────────────── */
-  .section-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 11px; font-weight: 700;
-    letter-spacing: 4px; text-transform: uppercase;
-    color: var(--muted); margin-bottom: 20px;
-    display: flex; align-items: center; gap: 14px;
-  }
-  .section-title::before { content: '§'; color: var(--accent2); font-style: italic; }
-  .section-title::after {
-    content: ''; flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, var(--border), transparent);
-  }
-
-  /* ─── SUMMARY CARDS ──────────────────────────────── STUDENT 1 */
-  .summary-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    margin-bottom: 40px;
-  }
-  .summary-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    padding: 20px 24px;
-    position: relative;
-    overflow: hidden;
-    transition: border-color .3s;
-  }
-  .summary-card::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  }
-  .summary-card:nth-child(1)::before { background: var(--accent); }
-  .summary-card:nth-child(2)::before { background: var(--accent2); }
-  .summary-card:nth-child(3)::before { background: var(--accent3); }
-  .summary-card:nth-child(4)::before { background: #5a6fa3; }
-  .summary-card::after {
-    content: '';
-    position: absolute; bottom: 0; right: 0;
-    width: 40px; height: 40px;
-    background: radial-gradient(circle, rgba(242,215,83,.04) 0%, transparent 70%);
-  }
-  .summary-card:hover { border-color: #8aad60; }
-  .card-label {
-    font-family: 'Special Elite', cursive;
-    font-size: 9px; color: var(--muted); letter-spacing: 3px;
-    text-transform: uppercase; margin-bottom: 12px;
-  }
-  .card-value {
-    font-family: 'Playfair Display', serif;
-    font-size: 34px; font-weight: 700;
-    line-height: 1;
-  }
-  .card-sub {
-    font-family: 'IM Fell English', serif;
-    font-size: 11px; color: var(--muted);
-    margin-top: 6px; font-style: italic;
-  }
-
-  /* ─── FILTER BAR ─────────────────────────────────── STUDENT 1 */
-  .filter-bar {
-    display: flex; gap: 10px; align-items: center;
-    margin-bottom: 20px; flex-wrap: wrap;
-  }
-  .filter-bar input,
-  .filter-bar select {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-family: 'Courier Prime', monospace;
-    font-size: 11px;
-    padding: 7px 12px;
-    border-radius: 1px;
-    outline: none;
-    transition: border-color .2s;
-    appearance: none;
-  }
-  .filter-bar input:focus,
-  .filter-bar select:focus { border-color: var(--accent); }
-  .filter-bar input { width: 200px; }
-  .btn {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    font-family: 'Special Elite', cursive;
-    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
-    padding: 7px 16px; border-radius: 1px;
-    cursor: pointer;
-    transition: all .2s;
-  }
-  .btn:hover { border-color: var(--accent); color: var(--accent); }
-
-  /* ─── TABLE ──────────────────────────────────────── Student 1*/
-  .table-wrap {
-    overflow-x: auto;
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    background: var(--surface);
-  }
-  table { width: 100%; border-collapse: collapse; }
-  thead tr {
-    background: var(--surface2);
-    border-bottom: 1px solid var(--border);
-  }
-  th {
-    padding: 12px 16px;
-    text-align: left;
-    font-family: 'Special Elite', cursive;
-    font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
-    color: var(--muted);
-    cursor: pointer; user-select: none; white-space: nowrap;
-    transition: color .2s;
-  }
-  th:hover { color: var(--accent); }
-  td {
-    padding: 10px 16px;
-    border-bottom: 1px solid rgba(99,129,64,.12);
-    font-size: 12px; white-space: nowrap;
-    font-family: 'Courier Prime', monospace;
-  }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: rgba(242,215,83,.02); }
-  .badge {
-    display: inline-block;
-    padding: 2px 10px; border-radius: 1px;
-    font-family: 'Special Elite', cursive;
-    font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
-  }
-  .badge-churned { background: rgba(57,105,179,.15); color: var(--fail); border: 1px solid rgba(57,105,179,.3); }
-  .badge-retained { background: rgba(235,195,17,.1); color: var(--pass); border: 1px solid rgba(235,195,17,.25); }
-  .spend-bar-wrap { display: flex; align-items: center; gap: 8px; }
-  .spend-bar {
-    width: 55px; height: 3px;
-    background: rgba(99,129,64,.2);
-    border-radius: 1px; overflow: hidden;
-  }
-  .spend-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent2), var(--accent));
-  }
-
-   /* ── CHART CARDS ─────────────────────────────────── */
   .cg{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:18px}
   .cc{background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:22px;position:relative}
   .cc::before{content:'';position:absolute;inset:0;
@@ -378,7 +164,6 @@
   .ctitle{font-family:var(--font-display);font-size:12px;font-weight:700;font-style:italic;
     letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);margin-bottom:18px}
 
-  /* ── STATS ───────────────────────────────────────── */
   .sg{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:18px}
   .sb{background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:22px}
   .sr{display:flex;justify-content:space-between;align-items:baseline;
@@ -405,7 +190,6 @@
   .pred-row label{font-family:var(--font-ui);font-size:12px;color:var(--muted2);font-weight:500}
   .pred-res{font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--accent2)}
 
-  /* ── INSIGHTS ────────────────────────────────────── */
   .ig{display:grid;grid-template-columns:1fr 1fr;gap:18px}
   .ic{background:var(--surface);border:1px solid var(--border);border-radius:3px;
     padding:26px;position:relative;overflow:hidden}
@@ -427,7 +211,6 @@
     letter-spacing:6px;margin:0 0 28px}
   .r2-note{font-family:var(--font-ui);font-size:12px;color:var(--muted);letter-spacing:.3px}
 
-  /* ── ANIMATIONS ──────────────────────────────────── */
   @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
   .section.active>*{animation:fadeUp .35s ease both}
   .section.active>*:nth-child(2){animation-delay:.05s}
@@ -443,53 +226,11 @@
     .logo-mark{font-size:30px}
   }
 </style>
-=======
-  </style>
->>>>>>> origin/feature/data-engine
 </head>
+
 <body>
 <div class="vignette"></div>
 
-<<<<<<< HEAD
-<!-- LOADING -->
-<div id="ld">
-  <div class="ld-title">Faded Without Notice</div>
-  <div class="ld-sub">Retrieving lost records…</div>
-  <div class="ld-file">customer_churn.csv</div>
-  <div class="ld-bar-wrap"><div class="ld-bar" id="ldBar"></div></div>
-  <div class="ld-pct" id="ldPct"></div>
-  <div class="ld-msg" id="ldMsg">Leafing through the archives…</div>
-  <div id="uploadPrompt">
-    <div class="upload-zone" onclick="document.getElementById('csvIn').click()">
-      <input type="file" id="csvIn" accept=".csv" onchange="handleUpload(event)"/>
-      <div class="upload-label">The file was not found in its usual place.<br/>Provide it manually to proceed.</div>
-      <div class="upload-hint">customer_churn.csv · click to select</div>
-    </div>
-    <button class="upload-btn" onclick="document.getElementById('csvIn').click()">Open from Archive</button>
-  </div>
-</div>
-
-<header>
-  <div class="mr"></div>
-  <div class="logo-eyebrow">Customer Churn Analysis & Insights</div>
-  <span class="logo-mark">Faded Without Notice</span>
-  <span class="logo-sub">A Chronicle of Customer Departures &amp; Retention</span>
-  <div class="mr thin"></div>
-  <div class="hdr-meta">
-    <span class="hdr-date">DE DIOS  |  MANGUBAT</span>
-    <span class="hdr-issue">This reflects the customer churn patterns observed in the dataset https://www.kaggle.com/datasets/somiel20/customer-churn-data</span>
-    <span class="hdr-date" id="hdrCount">—</span>
-  </div>
-  <div class="mr"></div>
-</header>
-
-<nav>
-  <button class="active" onclick="showSec('explorer',this)">The Registry</button>
-  <button onclick="showSec('visualizations',this)">Illustrations</button>
-  <button onclick="showSec('analysis',this)">The Ledger</button>
-  <button onclick="showSec('insights',this)">Dispatches</button>
-</nav>
-=======
 
 
 <header>
@@ -507,7 +248,6 @@
 </header>
 
 
->>>>>>> origin/feature/data-engine
 
 <main>
   <!-- S1: REGISTRY -->
@@ -573,77 +313,6 @@
     </div>
     <div class="rc" id="rc"></div>
   </section>
-<<<<<<< HEAD
- <!-- S2: ILLUSTRATIONS -- Student 2-->
-  <section id="visualizations" class="section">
-    <div class="orn">— ✦ —</div>
-    <div class="sec-title">Charts &amp; Illustrations</div>
-    <div style="font-family:var(--font-ui);font-size:12px;color:var(--muted);margin-bottom:18px;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:2px;">
-      ↻ Charts reflect the rows currently visible in The Registry. Change filters or row count to update.
-    </div>
-    <div class="cg" style="margin-bottom:18px">
-      <div class="cc">
-        <div class="ctitle">Top 10 by Total Spend</div>
-        <div style="height:290px"><canvas id="barChart"></canvas></div>
-      </div>
-      <div class="cc">
-        <div class="ctitle">Churn by Subscription</div>
-        <div style="height:290px;display:flex;align-items:center;justify-content:center">
-          <canvas id="dnutChart" style="max-height:270px"></canvas>
-        </div>
-      </div>
-    </div>
-    <div class="cc">
-      <div class="ctitle">Tenure vs Total Spend — Scatter with Trend Line</div>
-      <div style="height:310px"><canvas id="scatterChart"></canvas></div>
-    </div>
-  </section>
-
-  <!-- S3: LEDGER -->
-  <section id="analysis" class="section">
-    <div class="orn">— ✦ —</div>
-    <div class="sec-title">Descriptive Statistics</div>
-    <div class="sg">
-      <div class="sb" id="spendSt"></div>
-      <div class="sb" id="tenureSt"></div>
-      <div class="sb" id="ageSt"></div>
-    </div>
-    <div class="sec-title">Correlation Analysis</div>
-    <div class="cg" style="grid-template-columns:1fr 1fr;margin-bottom:18px">
-      <div class="sb">
-        <div class="ctitle" style="margin-bottom:16px">Pearson Correlation with Churn</div>
-        <div id="corrBars"></div>
-      </div>
-      <div class="sb">
-        <div class="ctitle" style="margin-bottom:16px">Correlation Heatmap</div>
-        <canvas id="hmChart" style="max-height:210px"></canvas>
-      </div>
-    </div>
-    <div class="sec-title">Linear Regression Model</div>
-    <div class="sb">
-      <div class="ctitle" style="margin-bottom:14px">Predict Churn Risk from Tenure &amp; Support Calls</div>
-      <div class="reg-f" id="regF"></div>
-      <div class="r2-note" style="margin-bottom:18px" id="r2v"></div>
-      <div class="pred-row">
-        <label>Tenure (months):</label>
-        <input type="number" id="pTen" min="0" max="72" step="1" placeholder="e.g. 24" oninput="predict()"/>
-        <label>Support Calls:</label>
-        <input type="number" id="pCall" min="0" max="15" step="1" placeholder="e.g. 4" oninput="predict()"/>
-        <span style="font-family:var(--font-prose);font-size:13px;color:var(--muted);font-style:italic">→ Churn Risk:</span>
-        <span class="pred-res" id="predRes">—</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- S4: DISPATCHES -->
-  <section id="insights" class="section">
-    <div class="orn">— ✦ —</div>
-    <div class="sec-title">Dispatches from the Data</div>
-    <div class="ig" id="igrid"></div>
-  </section>
-
-=======
->>>>>>> origin/feature/data-engine
 </main>
   
 <script>
@@ -652,93 +321,6 @@
 // ═══════════════════════════════════════════════════════════════
 const CSV_FILENAME = 'customer_churn.csv';
 
-<<<<<<< HEAD
-// ── HELPERS ──────────────────────────────────────────
-function getStatus(c) { return c.churn === 1 ? 'Churned' : 'Retained'; }
-function mean(arr)    { return arr.reduce((a,b)=>a+b,0)/arr.length; }
-function variance(arr){ const m=mean(arr); return mean(arr.map(x=>(x-m)**2)); }
-function stdDev(arr)  { return Math.sqrt(variance(arr)); }
-function pearson(x,y) {
-  const mx=mean(x), my=mean(y);
-  const num=x.reduce((s,xi,i)=>s+(xi-mx)*(y[i]-my),0);
-  const den=Math.sqrt(x.reduce((s,xi)=>s+(xi-mx)**2,0)*y.reduce((s,yi)=>s+(yi-my)**2,0));
-  return den===0?0:num/den;
-}
-function linReg(x,y) {
-  const mx=mean(x), my=mean(y);
-  const num=x.reduce((s,xi,i)=>s+(xi-mx)*(y[i]-my),0);
-  const den=x.reduce((s,xi)=>s+(xi-mx)**2,0);
-  const slope=den===0?0:num/den;
-  return {slope, intercept:my-slope*mx};
-}
-function r2score(x,y,slope,intercept) {
-  const my=mean(y);
-  const ss_res=y.reduce((s,yi,i)=>s+(yi-(slope*x[i]+intercept))**2,0);
-  const ss_tot=y.reduce((s,yi)=>s+(yi-my)**2,0);
-  return ss_tot===0?0:1-ss_res/ss_tot;
-}
-
-// ── COMPUTED ─────────────────────────────────────────
-const churnVals    = CUSTOMERS.map(c=>c.churn);
-const tenures      = CUSTOMERS.map(c=>c.tenure);
-const spends       = CUSTOMERS.map(c=>c.totalSpend);
-const ages         = CUSTOMERS.map(c=>c.age);
-const supportCalls = CUSTOMERS.map(c=>c.supportCalls);
-const payDelays    = CUSTOMERS.map(c=>c.payDelay);
-const usageFreqs   = CUSTOMERS.map(c=>c.usageFreq);
-
-const churnedCount   = CUSTOMERS.filter(c=>c.churn===1).length;
-const retainedCount  = CUSTOMERS.length - churnedCount;
-const churnRate      = (churnedCount/CUSTOMERS.length*100).toFixed(1);
-const avgSpend       = mean(spends).toFixed(2);
-const avgTenure      = mean(tenures).toFixed(1);
-const topSpender     = CUSTOMERS.reduce((a,b)=>a.totalSpend>b.totalSpend?a:b);
-
-const corrTenure  = pearson(tenures, churnVals);
-const corrSupport = pearson(supportCalls, churnVals);
-const corrDelay   = pearson(payDelays, churnVals);
-const corrUsage   = pearson(usageFreqs, churnVals);
-const corrSpend   = pearson(spends, churnVals);
-
-const regTenure   = linReg(tenures, churnVals);
-const r2Tenure    = r2score(tenures, churnVals, regTenure.slope, regTenure.intercept);
-
-let filteredData = [...CUSTOMERS];
-let charts = {};
-
-// ── INIT ─────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  buildSummaryCards();
-  renderTable(filteredData);
-  buildInsights();
-});
-
-// ── SUMMARY CARDS ───────────────────────────────────── STUDENT 1
-function buildSummaryCards() {
-  const container = document.getElementById('summaryCards');
-  container.innerHTML = `
-    <div class="summary-card">
-      <div class="card-label">Churn Rate</div>
-      <div class="card-value" style="color:var(--fail)">${churnRate}<span style="font-size:18px">%</span></div>
-      <div class="card-sub">${churnedCount} departed · ${retainedCount} remain</div>
-    </div>
-    <div class="summary-card">
-      <div class="card-label">Avg Total Spend</div>
-      <div class="card-value" style="color:var(--accent); font-size:26px; padding-top:4px;">$${parseFloat(avgSpend).toFixed(0)}</div>
-      <div class="card-sub">across all 20 accounts</div>
-    </div>
-    <div class="summary-card">
-      <div class="card-label">Avg Tenure</div>
-      <div class="card-value" style="color:var(--accent2)">${avgTenure}</div>
-      <div class="card-sub">months before departure</div>
-    </div>
-    <div class="summary-card">
-      <div class="card-label">Top Spender</div>
-      <div class="card-value" style="color:#7b8ef5; font-size:20px; padding-top:6px;">${topSpender.id}</div>
-      <div class="card-sub">$${topSpender.totalSpend} · ${getStatus(topSpender)}</div>
-    </div>
-  `;
-=======
 // ── STATE ──────────────────────────────────────────────────────
 let S = {};
 let VISIBLE = [];
@@ -762,7 +344,6 @@ function corrResult(c){
   const num=c.n*c.sxy-c.sx*c.sy;
   const den=Math.sqrt((c.n*c.sx2-c.sx*c.sx)*(c.n*c.sy2-c.sy*c.sy));
   return den===0?0:num/den;
->>>>>>> origin/feature/data-engine
 }
 
 // ── SINGLE-PASS STREAM PARSER (full dataset) ──────────────────
@@ -996,44 +577,6 @@ function renderTable(visible,totalMatched){
   }).join('');
 }
 
-<<<<<<< HEAD
-function applyFilters() {
-  const search  = document.getElementById('searchInput').value.toLowerCase();
-  const sub     = document.getElementById('subFilter').value;
-  const status  = document.getElementById('statusFilter').value;
-  const contract= document.getElementById('contractFilter').value;
-  const sortF   = document.getElementById('sortField').value;
-  const sortD   = document.getElementById('sortDir').value;
-
-  let data = CUSTOMERS.filter(c => {
-    const matchSearch   = c.id.toLowerCase().includes(search) || c.gender.toLowerCase().includes(search);
-    const matchSub      = !sub      || c.subscription === sub;
-    const matchStatus   = !status   || getStatus(c) === status;
-    const matchContract = !contract || c.contract === contract;
-    return matchSearch && matchSub && matchStatus && matchContract;
-  });
-
-  if (sortF) {
-    data.sort((a,b) => sortD==='asc' ? a[sortF]-b[sortF] : b[sortF]-a[sortF]);
-  }
-
-  filteredData = data;
-  renderTable(data);
-}
-
-function resetFilters() {
-  ['searchInput','subFilter','statusFilter','contractFilter'].forEach(id => {
-    const el = document.getElementById(id);
-    el.value = '';
-  });
-  document.getElementById('sortField').value = '';
-  document.getElementById('sortDir').value = 'desc';
-  filteredData = [...CUSTOMERS];
-  renderTable(filteredData);
-}
-
-=======
->>>>>>> origin/feature/data-engine
 
 // The dataset explorer, table rendering, and summary statistics are well implemented and provide clear insights. The filtering system is functional and intuitive, and the structure of the dataset is easy to follow. //
 
