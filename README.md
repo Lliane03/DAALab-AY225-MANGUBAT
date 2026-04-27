@@ -1,12 +1,35 @@
-# 🗞️ Faded Without Notice — Customer Churn Dashboard
+# Faded Without Notice — Customer Churn Dashboard (Final Project)
 
-> *A Chronicle of Customer Departures & Retention*
->
-> Single-file · Browser-based · CSV-powered · No build tools required
+**Collaborative Data Analysis Project**
 
 ---
 
-## ✦ Overview
+## Course Information
+
+| Field | Details |
+|-------|---------|
+| **Course** | BSCS 2206: Design, Analysis & Algorithm Technologies |
+| **Sections** | 9406 (Lec) & 9407 (Lab) |
+| **Instructor** | Mr. Val Patrick Fabregas |
+| **Year Level & Program** | 2nd Year Bachelor of Science in Computer Science |
+| **Semester & Academic Year** |  Second Semester A.Y. 2025-2026 |
+
+---
+
+## Contributors
+
+| Role | Name |
+|------|------|
+| **Repository Owner** | Angel Julliane I. Mangubat |
+| **Collaborator** | Louise Jeanne T. de Dios |
+
+---
+
+## Project Overview
+
+### 🗞️ Faded Without Notice — Customer Churn Dashboard
+
+*A Chronicle of Customer Departures & Retention*
 
 **Faded Without Notice** is an interactive, browser-based dashboard for analyzing **customer churn behavior**.
 
@@ -17,8 +40,36 @@ It processes a dataset (`customer_churn.csv`) and generates:
 * 🧠 Automated insights
 * 🔮 A churn prediction model
 
-> This reflects the customer churn patterns observed in the dataset:
-> [https://www.kaggle.com/datasets/somiel20/customer-churn-data](https://www.kaggle.com/datasets/somiel20/customer-churn-data)
+**Data Source:** [Kaggle Customer Churn Dataset](https://www.kaggle.com/datasets/somiel20/customer-churn-data)
+
+---
+
+## Project Objective
+
+This repository documents a **collaborative final project** focused on **analyzing large datasets through the application of design, analysis, and algorithmic techniques**.
+
+**Goal:** Develop practical skills in data analysis, algorithm design, and implementation through hands-on collaborative activities.
+
+---
+
+## Project Structure
+
+```
+DAALab-AY225-MANGUBAT/
+├── README.md                           # Project documentation (this file)
+├── customer_churn.csv                  # Dataset for dashboard analysis
+├── index.html                          # Customer Churn Dashboard (main deliverable)
+│
+└── MANGUBAT-PRELIM-MIDTERM-FILES       # Previos Lab Work of Angel
+```
+
+---
+
+## Files Description
+
+### Core Deliverable
+- **`index.html`** — Interactive customer churn analysis dashboard with visualizations, statistical analysis, and predictive modeling
+- **`customer_churn.csv`** — Dataset containing customer information for churn analysis
 
 ---
 
@@ -34,6 +85,16 @@ It processes a dataset (`customer_churn.csv`) and generates:
 ---
 
 ## ✦ How to Run
+
+### Setup — Clone the Repository
+
+1. Clone the repository with git:
+```bash
+git clone https://github.com/Lliane03/DAALab-AY225-MANGUBAT.git
+```
+2. Navigate into the project directory
+3. Choose any of the 4 options to run the dashboard
+---
 
 ### Option 1 — Open Directly *(with manual CSV upload)*
 
@@ -194,14 +255,29 @@ customer_churn.csv
 
 ---
 
-## ✦ Credits
+## Acknowledgments
 
-**Developed by:**
-De Dios · Mangubat
+**Project Supervision:**
+- Mr. Val Patrick Fabregas, Instructor, BSCS 2206
 
-**Dataset Source:**
-Kaggle — Customer Churn Dataset
-https://www.kaggle.com/datasets/somiel20/customer-churn-data
+**Data Source:**
+- [Kaggle Customer Churn Dataset](https://www.kaggle.com/datasets/somiel20/customer-churn-data)
+
+**Libraries & Tools:**
+- Chart.js for data visualization
+- PapaParse for CSV processing
+- Google Fonts for typography
+
+---
+
+## License
+
+This project is submitted as coursework for BSCS 2206: Design, Analysis & Algorithm Technologies at University of Perpetual Help System DALTA - Molino Campus.
+
+---
+
+**Last Updated:** April 28, 2025  
+**Repository:** Lliane03/DAALab-AY225-MANGUBAT
 
 
 
