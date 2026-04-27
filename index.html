@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<<<<<<< HEAD
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Faded Without Notice — Customer Churn Dashboard</title>
@@ -59,70 +60,127 @@
     font-family:var(--font-stamp);font-size:11px;letter-spacing:2px;text-transform:uppercase;
     padding:9px 22px;cursor:pointer;transition:all .2s;border-radius:2px}
   .upload-btn:hover{border-color:var(--accent);background:rgba(242,215,83,.06)}
+=======
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Faded Without Notice — Customer Churn Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;1,400;1,700&family=Special+Elite&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <style>
+    :root {
+      --bg:#303B75; --surface:#14171f; --surface2:#1c2030;
+      --border:#638140; --accent:#f2d753; --accent2:#d8aa3c;
+      --accent3:#233d81; --text:#f0e8c8; --muted:#fff;
+      --muted2:#fff; --pass:#ebc311; --fail:#ffff;
+      --font-ui: 'Inter', system-ui, sans-serif;
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-stamp: 'Special Elite', 'Courier New', monospace;
+      --font-prose: 'IM Fell English', Georgia, serif;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
-  /* ─── HEADER ─────────────────────────────────────── */
-  header {
-    position: relative; z-index: 10;
-    padding: 32px 48px 24px;
-    border-bottom: 1px solid var(--border);
-    background: linear-gradient(180deg, rgba(242,215,83,.05) 0%, transparent 100%);
-    text-align: center;
-  }
+    header{position:relative;z-index:10;padding:28px 48px 20px;
+      border-bottom:1px solid var(--border);
+      background:linear-gradient(180deg,rgba(242,215,83,.05) 0%,transparent 100%);
+      text-align:center}
+    .mr{width:100%;height:1px;background:linear-gradient(90deg,transparent,var(--border),var(--accent2),var(--border),transparent);margin:8px 0}
+    .mr.thin{opacity:.35;margin:4px 0}
+    .logo-eyebrow{font-family:var(--font-stamp);font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+    .logo-mark{font-family:var(--font-display);font-size:42px;font-weight:700;font-style:italic;
+      color:var(--accent);letter-spacing:-1px;line-height:1;
+      text-shadow:0 2px 24px rgba(242,215,83,.18);display:block}
+    .logo-sub{font-family:var(--font-stamp);font-size:10px;color:var(--muted);letter-spacing:5px;
+      text-transform:uppercase;display:block;margin-top:5px}
+    .hdr-meta{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+    .hdr-date{font-family:var(--font-ui);font-size:11px;color:var(--muted);letter-spacing:1px;font-weight:500}
+    .hdr-issue{font-family:var(--font-prose);font-size:12px;color:var(--accent2);font-style:italic}
 
-  .header-top {
-    display: flex; align-items: flex-start; justify-content: space-between;
-    margin-bottom: 8px;
-  }
+    nav{position:relative;z-index:10;display:flex;justify-content:center;padding:0 48px;
+      border-bottom:1px solid var(--border);background:var(--surface);
+      border-top:1px solid rgba(99,129,64,.25)}
+    nav button{background:none;border:none;color:var(--muted);cursor:pointer;
+      font-family:var(--font-stamp);font-size:11px;letter-spacing:3px;text-transform:uppercase;
+      padding:14px 24px;position:relative;transition:color .25s}
+    nav button:hover{color:var(--text)}
+    nav button.active{color:var(--accent)}
+    nav button.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+      background:linear-gradient(90deg,transparent,var(--accent),transparent)}
 
-  .masthead-rule {
-    width: 100%;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--border), var(--accent2), var(--border), transparent);
-    margin: 10px 0;
-  }
-  .masthead-rule.thin {
-    height: 1px; opacity: .4;
-    margin: 4px 0;
-  }
+    main{position:relative;z-index:5;padding:36px 48px;max-width:1400px;margin:0 auto}
+    .section{display:none}
+    .section.active{display:block}
 
-  .logo-eyebrow {
-    font-family: 'Special Elite', cursive;
-    font-size: 9px; letter-spacing: 5px; text-transform: uppercase;
-    color: var(--muted); margin-bottom: 6px;
-    text-align: center;
-  }
-  .logo-mark {
-    font-family: 'Playfair Display', serif;
-    font-size: 42px; font-weight: 700;
-    font-style: italic;
-    color: var(--accent);
-    letter-spacing: -1px;
-    line-height: 1;
-    text-shadow: 0 2px 20px rgba(242,215,83,0.2);
-    display: block; text-align: center;
-  }
-  .logo-sub {
-    font-family: 'Special Elite', cursive;
-    font-size: 9px; color: var(--muted);
-    letter-spacing: 6px; text-transform: uppercase;
-    text-align: center; display: block;
-    margin-top: 4px;
-  }
-  .header-dateline {
-    font-family: 'Special Elite', cursive;
-    font-size: 9px; color: var(--muted);
-    letter-spacing: 2px; text-transform: uppercase;
-  }
-  .header-issue {
-    font-family: 'IM Fell English', serif;
-    font-size: 11px; color: var(--accent2);
-    font-style: italic;
-  }
-  .header-meta {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-top: 8px;
-  }
+    .sec-title{
+      font-family:var(--font-display);font-size:12px;font-weight:700;font-style:italic;
+      letter-spacing:3px;text-transform:uppercase;
+      color:var(--muted2);margin-bottom:20px;
+      display:flex;align-items:center;gap:14px}
+    .sec-title::before{content:'§';color:var(--accent2);font-style:normal;font-size:14px}
+    .sec-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
+>>>>>>> origin/feature/data-engine
 
+    /* badge indicating full-dataset */
+    .full-data-badge{
+      display:inline-flex;align-items:center;gap:6px;
+      background:rgba(242,215,83,.08);border:1px solid rgba(242,215,83,.2);
+      color:var(--accent2);font-family:var(--font-ui);font-size:11px;font-weight:600;
+      letter-spacing:1px;text-transform:uppercase;padding:5px 12px;border-radius:2px;
+      margin-bottom:18px}
+    .full-data-badge::before{content:'◈';font-size:10px;color:var(--accent)}
+
+    .sum-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:32px}
+    .sum-card{background:var(--surface);border:1px solid var(--border);border-radius:3px;
+      padding:20px 22px;position:relative;overflow:hidden;transition:border-color .25s}
+    .sum-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+    .sum-card:nth-child(1)::before{background:var(--accent)}
+    .sum-card:nth-child(2)::before{background:var(--accent2)}
+    .sum-card:nth-child(3)::before{background:#4a6eb5}
+    .sum-card:nth-child(4)::before{background:#5a6fa3}
+    .sum-card:hover{border-color:#7aad50}
+    .c-lbl{font-family:var(--font-stamp);font-size:10px;color:var(--muted);letter-spacing:2px;
+      text-transform:uppercase;margin-bottom:10px}
+    .c-val{font-family:var(--font-display);font-size:34px;font-weight:700;line-height:1;color:var(--text)}
+    .c-sub{font-family:var(--font-ui);font-size:12px;color:var(--muted2);margin-top:6px;font-weight:400}
+
+    .fbar{display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+    .fbar input,.fbar select{
+      background:var(--surface2);border:1px solid var(--border);
+      color:var(--text);font-family:var(--font-ui);font-size:13px;font-weight:400;
+      padding:7px 11px;border-radius:2px;outline:none;transition:border-color .2s;appearance:none}
+    .fbar input:focus,.fbar select:focus{border-color:var(--accent)}
+    .fbar input{width:160px}
+    .fbar select{cursor:pointer}
+    .fsep{width:1px;height:24px;background:var(--border);opacity:.35;margin:0 2px}
+    .flbl{font-family:var(--font-ui);font-size:11px;color:var(--muted);font-weight:500;white-space:nowrap;letter-spacing:.5px}
+    .btn{background:none;border:1px solid var(--border);color:var(--muted);
+      font-family:var(--font-stamp);font-size:11px;letter-spacing:2px;text-transform:uppercase;
+      padding:7px 15px;border-radius:2px;cursor:pointer;transition:all .2s}
+    .btn:hover{border-color:var(--accent);color:var(--accent)}
+
+    .tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:3px;
+      background:var(--surface);max-height:520px;overflow-y:auto}
+    table{width:100%;border-collapse:collapse}
+    thead tr{background:var(--surface2);border-bottom:1px solid var(--border);
+      position:sticky;top:0;z-index:2}
+    th{padding:11px 14px;text-align:left;
+      font-family:var(--font-ui);font-size:11px;font-weight:600;
+      letter-spacing:.5px;text-transform:uppercase;color:var(--muted2);
+      cursor:pointer;user-select:none;white-space:nowrap;transition:color .2s}
+    th:hover{color:var(--accent)}
+    td{padding:8px 14px;border-bottom:1px solid rgba(99,129,64,.1);
+      font-family:var(--font-ui);font-size:13px;font-weight:400;white-space:nowrap;color:var(--text)}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:rgba(242,215,83,.025)}
+    .badge{display:inline-block;padding:3px 10px;border-radius:2px;
+      font-family:var(--font-ui);font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+    .b-ch{background:rgba(91,141,217,.15);color:#7aadee;border:1px solid rgba(91,141,217,.3)}
+    .b-re{background:rgba(235,195,17,.1);color:#ebc311;border:1px solid rgba(235,195,17,.25)}
+    .sp-wrap{display:flex;align-items:center;gap:7px}
+    .sp-bar{width:46px;height:3px;background:rgba(99,129,64,.2);border-radius:2px;overflow:hidden}
+    .sp-fill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:2px}
+
+<<<<<<< HEAD
   /* ─── NAV ─────────────────────────────────────────── */
   nav {
     position: relative; z-index: 10;
@@ -385,10 +443,14 @@
     .logo-mark{font-size:30px}
   }
 </style>
+=======
+  </style>
+>>>>>>> origin/feature/data-engine
 </head>
 <body>
 <div class="vignette"></div>
 
+<<<<<<< HEAD
 <!-- LOADING -->
 <div id="ld">
   <div class="ld-title">Faded Without Notice</div>
@@ -427,73 +489,91 @@
   <button onclick="showSec('analysis',this)">The Ledger</button>
   <button onclick="showSec('insights',this)">Dispatches</button>
 </nav>
+=======
+
+
+<header>
+  <div class="mr"></div>
+  <div class="logo-eyebrow">Customer Churn Analysis &amp; Insights</div>
+  <span class="logo-mark">Faded Without Notice</span>
+  <span class="logo-sub">A Chronicle of Customer Departures &amp; Retention</span>
+  <div class="mr thin"></div>
+  <div class="hdr-meta">
+    <span class="hdr-date">DE DIOS  |  MANGUBAT</span>
+    <span class="hdr-issue">This reflects the customer churn patterns observed in the dataset <a href="https://www.kaggle.com/datasets/somiel20/customer-churn-data" target="_blank">here</a></span>
+    <span class="hdr-date" id="hdrCount">—</span>
+  </div>
+  <div class="mr"></div>
+</header>
+
+
+>>>>>>> origin/feature/data-engine
 
 <main>
-
-  <!-- ══════════════════════════════════════════════
-       SECTION 1: DATASET EXPLORER -- STUDENT 1
-  ══════════════════════════════════════════════ -->
+  <!-- S1: REGISTRY -->
   <section id="explorer" class="section active">
-    <div class="ornament">— ✦ —</div>
-    <div class="summary-grid" id="summaryCards"></div>
-
-    <div class="section-title">Customer Records</div>
-    <div class="filter-bar">
-      <input type="text" id="searchInput" placeholder="Search name or ID…" oninput="applyFilters()"/>
-      <select id="subFilter" onchange="applyFilters()">
+    <div class="orn">— ✦ —</div>
+    <div class="sum-grid" id="sumCards"></div>
+    <div class="sec-title">Customer Records</div>
+    <div class="fbar">
+      <input type="text" id="srch" placeholder="Search ID or gender…" oninput="applyF()"/>
+      <div class="fsep"></div>
+      <span class="flbl">Show:</span>
+      <select id="rowLim" onchange="applyF()">
+        <option value="50" selected>50 rows</option>
+        <option value="100">100 rows</option>
+        <option value="500">500 rows</option>
+        <option value="1000">1 000 rows</option>
+        <option value="999999999">All rows</option>
+      </select>
+      <span class="flbl">Order:</span>
+      <select id="rowOrd" onchange="applyF()">
+        <option value="asc">Ascending</option>
+        <option value="desc">Descending</option>
+      </select>
+      <div class="fsep"></div>
+      <select id="fSub" onchange="applyF()">
         <option value="">All Subscriptions</option>
         <option value="Basic">Basic</option>
         <option value="Standard">Standard</option>
         <option value="Premium">Premium</option>
       </select>
-      <select id="statusFilter" onchange="applyFilters()">
+      <select id="fStat" onchange="applyF()">
         <option value="">All Status</option>
-        <option value="Churned">Churned</option>
-        <option value="Retained">Retained</option>
+        <option value="1">Churned</option>
+        <option value="0">Retained</option>
       </select>
-      <select id="contractFilter" onchange="applyFilters()">
+      <select id="fCon" onchange="applyF()">
         <option value="">All Contracts</option>
         <option value="Monthly">Monthly</option>
         <option value="Quarterly">Quarterly</option>
         <option value="Annual">Annual</option>
       </select>
-      <select id="sortField" onchange="applyFilters()">
+      <div class="fsep"></div>
+      <select id="fSort" onchange="applyF()">
         <option value="">Sort by…</option>
         <option value="totalSpend">Total Spend</option>
         <option value="tenure">Tenure</option>
         <option value="age">Age</option>
         <option value="supportCalls">Support Calls</option>
+        <option value="payDelay">Pay Delay</option>
       </select>
-      <select id="sortDir" onchange="applyFilters()">
-        <option value="desc">Desc</option>
-        <option value="asc">Asc</option>
-      </select>
-      <button class="btn" onclick="resetFilters()">Reset</button>
+      <button class="btn" onclick="resetF()">Reset</button>
     </div>
-
-    <div class="table-wrap">
+    <div class="tbl-wrap">
       <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Age</th>
-            <th>Gender</th>
-            <th>Tenure (mo)</th>
-            <th>Usage Freq</th>
-            <th>Support Calls</th>
-            <th>Pay Delay</th>
-            <th>Subscription</th>
-            <th>Contract</th>
-            <th>Total Spend</th>
-            <th>Last Interact</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
+        <thead><tr>
+          <th>Customer ID</th><th>Age</th><th>Gender</th><th>Tenure (mo)</th>
+          <th>Usage Freq</th><th>Support Calls</th><th>Pay Delay</th>
+          <th>Subscription</th><th>Contract</th><th>Total Spend</th>
+          <th>Last Interact</th><th>Status</th>
+        </tr></thead>
+        <tbody id="tBody"></tbody>
       </table>
     </div>
-    <div class="record-count" id="recordCount"></div>
+    <div class="rc" id="rc"></div>
   </section>
+<<<<<<< HEAD
  <!-- S2: ILLUSTRATIONS -- Student 2-->
   <section id="visualizations" class="section">
     <div class="orn">— ✦ —</div>
@@ -562,35 +642,17 @@
     <div class="ig" id="igrid"></div>
   </section>
 
+=======
+>>>>>>> origin/feature/data-engine
 </main>
-
+  
 <script>
-// ──────────────────────────────────────────────────────
-// DATASET — 20 Customers (from customer_churn sample) STUDENT 1
-// ──────────────────────────────────────────────────────
-const CUSTOMERS = [
-  { id:'C001', age:43, gender:'Male',   tenure:42, usageFreq:8,  supportCalls:8,  payDelay:25, subscription:'Standard', contract:'Annual',    totalSpend:136.99, lastInteract:23, churn:1 },
-  { id:'C002', age:23, gender:'Female', tenure:60, usageFreq:12, supportCalls:5,  payDelay:3,  subscription:'Basic',    contract:'Annual',    totalSpend:843.14, lastInteract:17, churn:1 },
-  { id:'C003', age:58, gender:'Male',   tenure:54, usageFreq:10, supportCalls:0,  payDelay:10, subscription:'Standard', contract:'Quarterly', totalSpend:429.39, lastInteract:27, churn:0 },
-  { id:'C004', age:47, gender:'Male',   tenure:35, usageFreq:6,  supportCalls:9,  payDelay:24, subscription:'Premium',  contract:'Quarterly', totalSpend:639.84, lastInteract:24, churn:1 },
-  { id:'C005', age:26, gender:'Male',   tenure:45, usageFreq:21, supportCalls:4,  payDelay:1,  subscription:'Basic',    contract:'Quarterly', totalSpend:761.42, lastInteract:13, churn:0 },
-  { id:'C006', age:51, gender:'Male',   tenure:11, usageFreq:13, supportCalls:2,  payDelay:15, subscription:'Premium',  contract:'Quarterly', totalSpend:969.23, lastInteract:15, churn:0 },
-  { id:'C007', age:26, gender:'Male',   tenure:26, usageFreq:20, supportCalls:6,  payDelay:14, subscription:'Basic',    contract:'Quarterly', totalSpend:691.60, lastInteract:14, churn:0 },
-  { id:'C008', age:26, gender:'Male',   tenure:6,  usageFreq:2,  supportCalls:5,  payDelay:2,  subscription:'Basic',    contract:'Monthly',   totalSpend:674.71, lastInteract:17, churn:1 },
-  { id:'C009', age:62, gender:'Female', tenure:28, usageFreq:3,  supportCalls:4,  payDelay:17, subscription:'Premium',  contract:'Quarterly', totalSpend:366.09, lastInteract:13, churn:0 },
-  { id:'C010', age:36, gender:'Female', tenure:48, usageFreq:14, supportCalls:1,  payDelay:5,  subscription:'Standard', contract:'Annual',    totalSpend:512.47, lastInteract:20, churn:0 },
-  { id:'C011', age:31, gender:'Male',   tenure:15, usageFreq:5,  supportCalls:10, payDelay:30, subscription:'Basic',    contract:'Monthly',   totalSpend:245.88, lastInteract:8,  churn:1 },
-  { id:'C012', age:44, gender:'Female', tenure:52, usageFreq:18, supportCalls:0,  payDelay:0,  subscription:'Premium',  contract:'Annual',    totalSpend:987.50, lastInteract:29, churn:0 },
-  { id:'C013', age:29, gender:'Male',   tenure:9,  usageFreq:4,  supportCalls:7,  payDelay:21, subscription:'Standard', contract:'Monthly',   totalSpend:189.30, lastInteract:6,  churn:1 },
-  { id:'C014', age:55, gender:'Female', tenure:63, usageFreq:16, supportCalls:2,  payDelay:4,  subscription:'Premium',  contract:'Annual',    totalSpend:875.20, lastInteract:25, churn:0 },
-  { id:'C015', age:33, gender:'Male',   tenure:22, usageFreq:9,  supportCalls:6,  payDelay:18, subscription:'Basic',    contract:'Quarterly', totalSpend:320.15, lastInteract:11, churn:1 },
-  { id:'C016', age:48, gender:'Female', tenure:38, usageFreq:11, supportCalls:3,  payDelay:8,  subscription:'Standard', contract:'Quarterly', totalSpend:455.90, lastInteract:19, churn:0 },
-  { id:'C017', age:22, gender:'Male',   tenure:5,  usageFreq:2,  supportCalls:8,  payDelay:26, subscription:'Basic',    contract:'Monthly',   totalSpend:98.45,  lastInteract:4,  churn:1 },
-  { id:'C018', age:60, gender:'Female', tenure:57, usageFreq:19, supportCalls:1,  payDelay:2,  subscription:'Premium',  contract:'Annual',    totalSpend:920.80, lastInteract:28, churn:0 },
-  { id:'C019', age:35, gender:'Male',   tenure:18, usageFreq:7,  supportCalls:9,  payDelay:22, subscription:'Standard', contract:'Monthly',   totalSpend:275.60, lastInteract:9,  churn:1 },
-  { id:'C020', age:41, gender:'Female', tenure:44, usageFreq:15, supportCalls:0,  payDelay:1,  subscription:'Premium',  contract:'Quarterly', totalSpend:780.35, lastInteract:22, churn:0 },
-];
+// ═══════════════════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════════════════
+const CSV_FILENAME = 'customer_churn.csv';
 
+<<<<<<< HEAD
 // ── HELPERS ──────────────────────────────────────────
 function getStatus(c) { return c.churn === 1 ? 'Churned' : 'Retained'; }
 function mean(arr)    { return arr.reduce((a,b)=>a+b,0)/arr.length; }
@@ -676,42 +738,265 @@ function buildSummaryCards() {
       <div class="card-sub">$${topSpender.totalSpend} · ${getStatus(topSpender)}</div>
     </div>
   `;
+=======
+// ── STATE ──────────────────────────────────────────────────────
+let S = {};
+let VISIBLE = [];
+let charts  = {};
+let analysisBuilt = false;
+
+// ── MATH HELPERS ───────────────────────────────────────────────
+function makeAcc(){ return {n:0,mean:0,M2:0,min:Infinity,max:-Infinity,sum:0}; }
+function accAdd(a,x){
+  a.n++; a.sum+=x;
+  const d=x-a.mean; a.mean+=d/a.n; a.M2+=d*(x-a.mean);
+  if(x<a.min)a.min=x; if(x>a.max)a.max=x;
+}
+function accResult(a){
+  const variance=a.n>1?a.M2/a.n:0;
+  return{mean:a.mean,variance,stdDev:Math.sqrt(variance),min:a.min,max:a.max,range:a.max-a.min,sum:a.sum,n:a.n};
+}
+function makeCorrAcc(){ return{n:0,sx:0,sy:0,sx2:0,sy2:0,sxy:0}; }
+function corrAdd(c,x,y){ c.n++;c.sx+=x;c.sy+=y;c.sx2+=x*x;c.sy2+=y*y;c.sxy+=x*y; }
+function corrResult(c){
+  const num=c.n*c.sxy-c.sx*c.sy;
+  const den=Math.sqrt((c.n*c.sx2-c.sx*c.sx)*(c.n*c.sy2-c.sy*c.sy));
+  return den===0?0:num/den;
+>>>>>>> origin/feature/data-engine
 }
 
-// ── TABLE ───────────────────────────────────────────── STUDENT 1
-function renderTable(data) {
-  document.getElementById('recordCount').textContent = `Showing ${data.length} of ${CUSTOMERS.length} records in the registry`;
-  const tbody = document.getElementById('tableBody');
-  if (!data.length) {
-    tbody.innerHTML = `<tr><td colspan="12" style="text-align:center;color:var(--muted);padding:40px;font-family:'IM Fell English',serif;font-style:italic;">No records match your inquiry.</td></tr>`;
+// ── SINGLE-PASS STREAM PARSER (full dataset) ──────────────────
+function streamCSV(text){
+  const aSpend=makeAcc(),aTen=makeAcc(),aAge=makeAcc(),aSupp=makeAcc(),aDel=makeAcc(),aUsage=makeAcc();
+  const cTen=makeCorrAcc(),cSupp=makeCorrAcc(),cDel=makeCorrAcc(),cUsage=makeCorrAcc(),cSpend=makeCorrAcc(),cTenSpend=makeCorrAcc();
+
+  // Full-dataset group accumulators — NOT capped — for accurate Insights
+  const chAcc={tenure:makeAcc(),supp:makeAcc(),spend:makeAcc(),delay:makeAcc()};
+  const reAcc={tenure:makeAcc(),supp:makeAcc(),spend:makeAcc(),delay:makeAcc()};
+
+  let churnedCount=0,retainedCount=0,highDelayChurn=0;
+  const subChurn={Basic:0,Standard:0,Premium:0};
+  const subTotal={Basic:0,Standard:0,Premium:0};
+  const conChurn={Monthly:0,Quarterly:0,Annual:0};
+  const conTotal={Monthly:0,Quarterly:0,Annual:0};
+
+  const MAX_BUF=5000;
+  let rawBuf=[];
+  let top10=[];
+  const SCATTER_SIZE=600;
+  let scatterBuf=[];
+  const MED_SIZE=2000;
+  let medSpend=[],medTen=[],medAge=[];
+  const rTC={sx:0,sy:0,sx2:0,sxy:0,n:0};
+  const rSC={sx:0,sy:0,sx2:0,sxy:0,n:0};
+
+  let n=0;
+  const lines=text.split('\n');
+  const headers=lines[0].split(',');
+  const hi={};
+  ['CustomerID','Age','Gender','Tenure','Usage Frequency','Support Calls',
+   'Payment Delay','Subscription Type','Contract Length','Total Spend','Last Interaction','Churn']
+  .forEach(h=>{ hi[h]=headers.indexOf(h); });
+
+  for(let i=1;i<lines.length;i++){
+    const line=lines[i]; if(!line.trim()) continue;
+    const cols=line.split(','); if(cols.length<12) continue;
+    const age=parseFloat(cols[hi['Age']]);
+    const tenure=parseFloat(cols[hi['Tenure']]);
+    const usage=parseFloat(cols[hi['Usage Frequency']]);
+    const supp=parseFloat(cols[hi['Support Calls']]);
+    const delay=parseFloat(cols[hi['Payment Delay']]);
+    const sub=cols[hi['Subscription Type']].trim();
+    const con=cols[hi['Contract Length']].trim();
+    const spend=parseFloat(cols[hi['Total Spend']]);
+    const last=parseFloat(cols[hi['Last Interaction']]);
+    const churn=parseFloat(cols[hi['Churn']]);
+    const rawId=cols[hi['CustomerID']].trim().replace(/\.0$/,'');
+    if(isNaN(age)||isNaN(spend)||isNaN(churn)) continue;
+    n++;
+
+    accAdd(aSpend,spend);accAdd(aTen,tenure);accAdd(aAge,age);
+    accAdd(aSupp,supp);accAdd(aDel,delay);accAdd(aUsage,usage);
+    corrAdd(cTen,tenure,churn);corrAdd(cSupp,supp,churn);corrAdd(cDel,delay,churn);
+    corrAdd(cUsage,usage,churn);corrAdd(cSpend,spend,churn);corrAdd(cTenSpend,tenure,spend);
+
+    // ── Full-dataset group stats (no cap) ──────────────────────
+    if(churn===1){
+      churnedCount++;
+      if(delay>=20) highDelayChurn++;
+      accAdd(chAcc.tenure,tenure);
+      accAdd(chAcc.supp,supp);
+      accAdd(chAcc.spend,spend);
+      accAdd(chAcc.delay,delay);
+    } else {
+      retainedCount++;
+      accAdd(reAcc.tenure,tenure);
+      accAdd(reAcc.supp,supp);
+      accAdd(reAcc.spend,spend);
+      accAdd(reAcc.delay,delay);
+    }
+
+    if(subChurn[sub]!==undefined){subTotal[sub]++;if(churn===1)subChurn[sub]++;}
+    if(conChurn[con]!==undefined){conTotal[con]++;if(churn===1)conChurn[con]++;}
+
+    // Display buffer (capped)
+    if(rawBuf.length<MAX_BUF)
+      rawBuf.push({id:rawId,age,gender:cols[hi['Gender']].trim(),tenure,usageFreq:usage,supportCalls:supp,payDelay:delay,subscription:sub,contract:con,totalSpend:spend,lastInteract:last,churn});
+
+    top10.push({id:rawId,totalSpend:spend,churn});
+    if(top10.length>12){top10.sort((a,b)=>b.totalSpend-a.totalSpend);top10.length=10;}
+
+    if(scatterBuf.length<SCATTER_SIZE) scatterBuf.push({x:tenure,y:spend,churn,id:rawId});
+    else{const j=Math.floor(Math.random()*n);if(j<SCATTER_SIZE)scatterBuf[j]={x:tenure,y:spend,churn,id:rawId};}
+
+    if(medSpend.length<MED_SIZE){medSpend.push(spend);medTen.push(tenure);medAge.push(age);}
+
+    rTC.sx+=tenure;rTC.sy+=churn;rTC.sx2+=tenure*tenure;rTC.sxy+=tenure*churn;rTC.n++;
+    rSC.sx+=supp;rSC.sy+=churn;rSC.sx2+=supp*supp;rSC.sxy+=supp*churn;rSC.n++;
+  }
+
+  const corrTenure=corrResult(cTen),corrSupport=corrResult(cSupp);
+  const corrDelay=corrResult(cDel),corrUsage=corrResult(cUsage),corrSpend=corrResult(cSpend);
+
+  const regTen=(()=>{const{n:rn,sx,sy,sx2,sxy}=rTC;const sl=(rn*sxy-sx*sy)/(rn*sx2-sx*sx||1);return{slope:sl,intercept:(sy/rn)-sl*(sx/rn)};})();
+  const regSupp=(()=>{const{n:rn,sx,sy,sx2,sxy}=rSC;const sl=(rn*sxy-sx*sy)/(rn*sx2-sx*sx||1);return{slope:sl,intercept:(sy/rn)-sl*(sx/rn)};})();
+  const r2Ten=corrTenure*corrTenure;
+
+  const ctsNum=cTenSpend.n*cTenSpend.sxy-cTenSpend.sx*cTenSpend.sy;
+  const ctsDen=cTenSpend.n*cTenSpend.sx2-cTenSpend.sx*cTenSpend.sx;
+  const scSlope=ctsDen===0?0:ctsNum/ctsDen;
+  const scInt=(cTenSpend.sy/cTenSpend.n)-scSlope*(cTenSpend.sx/cTenSpend.n);
+
+  const med=a=>{const s=[...a].sort((x,y)=>x-y);return s[Math.floor(s.length/2)];};
+  top10.sort((a,b)=>b.totalSpend-a.totalSpend);top10.length=Math.min(top10.length,10);
+
+  S={
+    spend:accResult(aSpend),spendMed:med(medSpend),
+    tenure:accResult(aTen),tenureMed:med(medTen),
+    age:accResult(aAge),ageMed:med(medAge),
+    supp:accResult(aSupp),delay:accResult(aDel),
+    churnedCount,retainedCount,total:n,
+    churnRate:(churnedCount/n*100).toFixed(1),
+    corrTenure,corrSupport,corrDelay,corrUsage,corrSpend,
+    regTen,regSupp,r2Ten,scSlope,scInt,
+    subChurn,subTotal,conChurn,conTotal,highDelayChurn,
+    topSpender:top10[0],
+    rawBuf,maxSpend:aSpend.max,
+    globalTop10:top10,
+    globalScatter:scatterBuf,
+    // Full-dataset group means — used by Insights & Ledger
+    churnedAvgTenure: chAcc.tenure.n ? chAcc.tenure.mean : 0,
+    retainedAvgTenure: reAcc.tenure.n ? reAcc.tenure.mean : 0,
+    churnedAvgSupp: chAcc.supp.n ? chAcc.supp.mean : 0,
+    retainedAvgSupp: reAcc.supp.n ? reAcc.supp.mean : 0,
+    churnedAvgSpend: chAcc.spend.n ? chAcc.spend.mean : 0,
+    retainedAvgSpend: reAcc.spend.n ? reAcc.spend.mean : 0,
+  };
+  VISIBLE=rawBuf.slice(0,50);
+}
+
+// ── LOAD PIPELINE ──────────────────────────────────────────────
+async function autoFetch(){
+  ldMsg('Searching the archives…');
+  try{
+    const resp=await fetch(CSV_FILENAME);
+    if(!resp.ok) throw new Error();
+    processText(await resp.text());
+  }catch{
+    document.getElementById('uploadPrompt').style.display='flex';
+    ldMsg(`Cannot locate ${CSV_FILENAME} — upload it below.`);
+    document.getElementById('ldPct').textContent='';
+  }
+}
+function handleUpload(e){
+  const file=e.target.files[0];if(!file)return;
+  document.getElementById('uploadPrompt').style.display='none';
+  ldMsg('Reading your file…');
+  const reader=new FileReader();
+  reader.onload=ev=>processText(ev.target.result);
+  reader.readAsText(file);
+}
+function processText(text){
+  ldMsg('Parsing the ledger…');setBar(20);
+  setTimeout(()=>{
+    setBar(50);ldMsg('Computing the figures…');
+    setTimeout(()=>{
+      streamCSV(text);
+      setBar(90);ldMsg('Laying out the archives…');
+      setTimeout(()=>{
+        buildSummaryCards();
+        applyF();
+        buildInsights();
+        // Populate total count badges
+        const tc=S.total.toLocaleString();
+        document.getElementById('hdrCount').textContent=`${tc} Records Analyzed`;
+        ['totalCount','totalCount2'].forEach(id=>{
+          const el=document.getElementById(id);if(el)el.textContent=tc;
+        });
+        setBar(100);
+        setTimeout(hideLoading,300);
+      },50);
+    },30);
+  },30);
+}
+function ldMsg(m){document.getElementById('ldMsg').textContent=m;}
+function setBar(p){document.getElementById('ldBar').style.width=p+'%';document.getElementById('ldPct').textContent=p<100?p+'%':'';}
+function hideLoading(){const el=document.getElementById('ld');el.style.transition='opacity .4s';el.style.opacity='0';setTimeout(()=>el.style.display='none',400);}
+
+// ── SUMMARY CARDS ─────────────────────────────────────────────
+function buildSummaryCards(){
+  const{churnRate,churnedCount,retainedCount,spend,tenure,topSpender,total}=S;
+  document.getElementById('sumCards').innerHTML=`
+    <div class="sum-card">
+      <div class="c-lbl">Churn Rate</div>
+      <div class="c-val" style="color:var(--fail)">${churnRate}<span style="font-size:18px;font-weight:400">%</span></div>
+      <div class="c-sub">${churnedCount.toLocaleString()} departed · ${retainedCount.toLocaleString()} remain</div>
+    </div>
+    <div class="sum-card">
+      <div class="c-lbl">Avg Total Spend</div>
+      <div class="c-val" style="color:var(--accent);font-size:26px">$${spend.mean.toFixed(0)}</div>
+      <div class="c-sub">across ${total.toLocaleString()} accounts</div>
+    </div>
+    <div class="sum-card">
+      <div class="c-lbl">Avg Tenure</div>
+      <div class="c-val" style="color:var(--accent2)">${tenure.mean.toFixed(1)}</div>
+      <div class="c-sub">months of membership</div>
+    </div>
+    <div class="sum-card">
+      <div class="c-lbl">Top Spender</div>
+      <div class="c-val" style="color:#7a9fd4;font-size:18px;padding-top:4px">${topSpender?.id??'—'}</div>
+      <div class="c-sub">$${topSpender?.totalSpend.toFixed(2)??0} · ${topSpender?.churn===1?'Churned':'Retained'}</div>
+    </div>`;
+}
+
+// ── TABLE ─────────────────────────────────────────────────────
+function renderTable(visible,totalMatched){
+  document.getElementById('rc').textContent=
+    `Showing ${visible.length.toLocaleString()} of ${totalMatched.toLocaleString()} matched · ${S.total.toLocaleString()} total in registry`;
+  const tbody=document.getElementById('tBody');
+  if(!visible.length){
+    tbody.innerHTML=`<tr><td colspan="12" style="text-align:center;color:var(--muted);padding:36px;font-family:var(--font-prose);font-style:italic">No records match your inquiry.</td></tr>`;
     return;
   }
-  tbody.innerHTML = data.map(c => {
-    const status = getStatus(c);
-    const spendPct = (c.totalSpend/1000*100).toFixed(0);
-    return `
-      <tr>
-        <td style="color:var(--muted)">${c.id}</td>
-        <td>${c.age}</td>
-        <td>${c.gender}</td>
-        <td>${c.tenure}</td>
-        <td>${c.usageFreq}</td>
-        <td style="color:${c.supportCalls>=7?'var(--fail)':c.supportCalls<=2?'var(--pass)':'var(--text)'}">${c.supportCalls}</td>
-        <td style="color:${c.payDelay>=20?'var(--fail)':'var(--text)'}">${c.payDelay}</td>
-        <td>${c.subscription}</td>
-        <td>${c.contract}</td>
-        <td>
-          <div class="spend-bar-wrap">
-            <span style="width:56px">$${c.totalSpend.toFixed(0)}</span>
-            <div class="spend-bar"><div class="spend-bar-fill" style="width:${spendPct}%"></div></div>
-          </div>
-        </td>
-        <td>${c.lastInteract} days</td>
-        <td><span class="badge badge-${status.toLowerCase()}">${status}</span></td>
-      </tr>`;
+  const maxSp=S.maxSpend;
+  tbody.innerHTML=visible.map(c=>{
+    const st=c.churn===1?'Churned':'Retained';
+    const pct=(c.totalSpend/maxSp*100).toFixed(0);
+    return`<tr>
+      <td style="color:var(--muted2);font-weight:500">${c.id}</td>
+      <td>${c.age}</td><td>${c.gender}</td><td>${c.tenure}</td><td>${c.usageFreq}</td>
+      <td style="color:${c.supportCalls>=7?'#e87a7a':c.supportCalls<=2?'var(--pass)':'var(--text)'};font-weight:${c.supportCalls>=7?'600':'400'}">${c.supportCalls}</td>
+      <td style="color:${c.payDelay>=20?'#e87a7a':'var(--text)'};font-weight:${c.payDelay>=20?'600':'400'}">${c.payDelay}</td>
+      <td>${c.subscription}</td><td>${c.contract}</td>
+      <td><div class="sp-wrap"><span style="min-width:54px;font-weight:500">$${c.totalSpend.toFixed(0)}</span>
+        <div class="sp-bar"><div class="sp-fill" style="width:${pct}%"></div></div></div></td>
+      <td>${c.lastInteract}d</td>
+      <td><span class="badge ${st==='Churned'?'b-ch':'b-re'}">${st}</span></td>
+    </tr>`;
   }).join('');
 }
 
+<<<<<<< HEAD
 function applyFilters() {
   const search  = document.getElementById('searchInput').value.toLowerCase();
   const sub     = document.getElementById('subFilter').value;
@@ -747,6 +1032,8 @@ function resetFilters() {
   renderTable(filteredData);
 }
 
+=======
+>>>>>>> origin/feature/data-engine
 
 // The dataset explorer, table rendering, and summary statistics are well implemented and provide clear insights. The filtering system is functional and intuitive, and the structure of the dataset is easy to follow. //
 
