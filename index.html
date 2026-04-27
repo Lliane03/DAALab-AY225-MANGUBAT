@@ -209,5 +209,35 @@
 </main>
   
 <script>
+// ═══════════════════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════════════════
+const CSV_FILENAME = 'customer_churn.csv';
+
+// ── STATE ──────────────────────────────────────────────────────
+let S = {};
+let VISIBLE = [];
+let charts  = {};
+let analysisBuilt = false;
+
+// ── MATH HELPERS ───────────────────────────────────────────────
+function makeAcc(){ return {n:0,mean:0,M2:0,min:Infinity,max:-Infinity,sum:0}; }
+function accAdd(a,x){
+  a.n++; a.sum+=x;
+  const d=x-a.mean; a.mean+=d/a.n; a.M2+=d*(x-a.mean);
+  if(x<a.min)a.min=x; if(x>a.max)a.max=x;
+}
+function accResult(a){
+  const variance=a.n>1?a.M2/a.n:0;
+  return{mean:a.mean,variance,stdDev:Math.sqrt(variance),min:a.min,max:a.max,range:a.max-a.min,sum:a.sum,n:a.n};
+}
+function makeCorrAcc(){ return{n:0,sx:0,sy:0,sx2:0,sy2:0,sxy:0}; }
+function corrAdd(c,x,y){ c.n++;c.sx+=x;c.sy+=y;c.sx2+=x*x;c.sy2+=y*y;c.sxy+=x*y; }
+function corrResult(c){
+  const num=c.n*c.sxy-c.sx*c.sy;
+  const den=Math.sqrt((c.n*c.sx2-c.sx*c.sx)*(c.n*c.sy2-c.sy*c.sy));
+  return den===0?0:num/den;
+}
+
 
 </script>
