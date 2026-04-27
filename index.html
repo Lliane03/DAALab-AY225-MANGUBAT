@@ -239,5 +239,135 @@ function corrResult(c){
   return den===0?0:num/den;
 }
 
+// ── SINGLE-PASS STREAM PARSER (full dataset) ──────────────────
+function streamCSV(text){
+  const aSpend=makeAcc(),aTen=makeAcc(),aAge=makeAcc(),aSupp=makeAcc(),aDel=makeAcc(),aUsage=makeAcc();
+  const cTen=makeCorrAcc(),cSupp=makeCorrAcc(),cDel=makeCorrAcc(),cUsage=makeCorrAcc(),cSpend=makeCorrAcc(),cTenSpend=makeCorrAcc();
 
+  // Full-dataset group accumulators — NOT capped — for accurate Insights
+  const chAcc={tenure:makeAcc(),supp:makeAcc(),spend:makeAcc(),delay:makeAcc()};
+  const reAcc={tenure:makeAcc(),supp:makeAcc(),spend:makeAcc(),delay:makeAcc()};
+
+  let churnedCount=0,retainedCount=0,highDelayChurn=0;
+  const subChurn={Basic:0,Standard:0,Premium:0};
+  const subTotal={Basic:0,Standard:0,Premium:0};
+  const conChurn={Monthly:0,Quarterly:0,Annual:0};
+  const conTotal={Monthly:0,Quarterly:0,Annual:0};
+
+  const MAX_BUF=5000;
+  let rawBuf=[];
+  let top10=[];
+  const SCATTER_SIZE=600;
+  let scatterBuf=[];
+  const MED_SIZE=2000;
+  let medSpend=[],medTen=[],medAge=[];
+  const rTC={sx:0,sy:0,sx2:0,sxy:0,n:0};
+  const rSC={sx:0,sy:0,sx2:0,sxy:0,n:0};
+
+  let n=0;
+  const lines=text.split('\n');
+  const headers=lines[0].split(',');
+  const hi={};
+  ['CustomerID','Age','Gender','Tenure','Usage Frequency','Support Calls',
+   'Payment Delay','Subscription Type','Contract Length','Total Spend','Last Interaction','Churn']
+  .forEach(h=>{ hi[h]=headers.indexOf(h); });
+
+  for(let i=1;i<lines.length;i++){
+    const line=lines[i]; if(!line.trim()) continue;
+    const cols=line.split(','); if(cols.length<12) continue;
+    const age=parseFloat(cols[hi['Age']]);
+    const tenure=parseFloat(cols[hi['Tenure']]);
+    const usage=parseFloat(cols[hi['Usage Frequency']]);
+    const supp=parseFloat(cols[hi['Support Calls']]);
+    const delay=parseFloat(cols[hi['Payment Delay']]);
+    const sub=cols[hi['Subscription Type']].trim();
+    const con=cols[hi['Contract Length']].trim();
+    const spend=parseFloat(cols[hi['Total Spend']]);
+    const last=parseFloat(cols[hi['Last Interaction']]);
+    const churn=parseFloat(cols[hi['Churn']]);
+    const rawId=cols[hi['CustomerID']].trim().replace(/\.0$/,'');
+    if(isNaN(age)||isNaN(spend)||isNaN(churn)) continue;
+    n++;
+
+    accAdd(aSpend,spend);accAdd(aTen,tenure);accAdd(aAge,age);
+    accAdd(aSupp,supp);accAdd(aDel,delay);accAdd(aUsage,usage);
+    corrAdd(cTen,tenure,churn);corrAdd(cSupp,supp,churn);corrAdd(cDel,delay,churn);
+    corrAdd(cUsage,usage,churn);corrAdd(cSpend,spend,churn);corrAdd(cTenSpend,tenure,spend);
+
+    // ── Full-dataset group stats (no cap) ──────────────────────
+    if(churn===1){
+      churnedCount++;
+      if(delay>=20) highDelayChurn++;
+      accAdd(chAcc.tenure,tenure);
+      accAdd(chAcc.supp,supp);
+      accAdd(chAcc.spend,spend);
+      accAdd(chAcc.delay,delay);
+    } else {
+      retainedCount++;
+      accAdd(reAcc.tenure,tenure);
+      accAdd(reAcc.supp,supp);
+      accAdd(reAcc.spend,spend);
+      accAdd(reAcc.delay,delay);
+    }
+
+    if(subChurn[sub]!==undefined){subTotal[sub]++;if(churn===1)subChurn[sub]++;}
+    if(conChurn[con]!==undefined){conTotal[con]++;if(churn===1)conChurn[con]++;}
+
+    // Display buffer (capped)
+    if(rawBuf.length<MAX_BUF)
+      rawBuf.push({id:rawId,age,gender:cols[hi['Gender']].trim(),tenure,usageFreq:usage,supportCalls:supp,payDelay:delay,subscription:sub,contract:con,totalSpend:spend,lastInteract:last,churn});
+
+    top10.push({id:rawId,totalSpend:spend,churn});
+    if(top10.length>12){top10.sort((a,b)=>b.totalSpend-a.totalSpend);top10.length=10;}
+
+    if(scatterBuf.length<SCATTER_SIZE) scatterBuf.push({x:tenure,y:spend,churn,id:rawId});
+    else{const j=Math.floor(Math.random()*n);if(j<SCATTER_SIZE)scatterBuf[j]={x:tenure,y:spend,churn,id:rawId};}
+
+    if(medSpend.length<MED_SIZE){medSpend.push(spend);medTen.push(tenure);medAge.push(age);}
+
+    rTC.sx+=tenure;rTC.sy+=churn;rTC.sx2+=tenure*tenure;rTC.sxy+=tenure*churn;rTC.n++;
+    rSC.sx+=supp;rSC.sy+=churn;rSC.sx2+=supp*supp;rSC.sxy+=supp*churn;rSC.n++;
+  }
+
+  const corrTenure=corrResult(cTen),corrSupport=corrResult(cSupp);
+  const corrDelay=corrResult(cDel),corrUsage=corrResult(cUsage),corrSpend=corrResult(cSpend);
+
+  const regTen=(()=>{const{n:rn,sx,sy,sx2,sxy}=rTC;const sl=(rn*sxy-sx*sy)/(rn*sx2-sx*sx||1);return{slope:sl,intercept:(sy/rn)-sl*(sx/rn)};})();
+  const regSupp=(()=>{const{n:rn,sx,sy,sx2,sxy}=rSC;const sl=(rn*sxy-sx*sy)/(rn*sx2-sx*sx||1);return{slope:sl,intercept:(sy/rn)-sl*(sx/rn)};})();
+  const r2Ten=corrTenure*corrTenure;
+
+  const ctsNum=cTenSpend.n*cTenSpend.sxy-cTenSpend.sx*cTenSpend.sy;
+  const ctsDen=cTenSpend.n*cTenSpend.sx2-cTenSpend.sx*cTenSpend.sx;
+  const scSlope=ctsDen===0?0:ctsNum/ctsDen;
+  const scInt=(cTenSpend.sy/cTenSpend.n)-scSlope*(cTenSpend.sx/cTenSpend.n);
+
+  const med=a=>{const s=[...a].sort((x,y)=>x-y);return s[Math.floor(s.length/2)];};
+  top10.sort((a,b)=>b.totalSpend-a.totalSpend);top10.length=Math.min(top10.length,10);
+
+  S={
+    spend:accResult(aSpend),spendMed:med(medSpend),
+    tenure:accResult(aTen),tenureMed:med(medTen),
+    age:accResult(aAge),ageMed:med(medAge),
+    supp:accResult(aSupp),delay:accResult(aDel),
+    churnedCount,retainedCount,total:n,
+    churnRate:(churnedCount/n*100).toFixed(1),
+    corrTenure,corrSupport,corrDelay,corrUsage,corrSpend,
+    regTen,regSupp,r2Ten,scSlope,scInt,
+    subChurn,subTotal,conChurn,conTotal,highDelayChurn,
+    topSpender:top10[0],
+    rawBuf,maxSpend:aSpend.max,
+    globalTop10:top10,
+    globalScatter:scatterBuf,
+    // Full-dataset group means — used by Insights & Ledger
+    churnedAvgTenure: chAcc.tenure.n ? chAcc.tenure.mean : 0,
+    retainedAvgTenure: reAcc.tenure.n ? reAcc.tenure.mean : 0,
+    churnedAvgSupp: chAcc.supp.n ? chAcc.supp.mean : 0,
+    retainedAvgSupp: reAcc.supp.n ? reAcc.supp.mean : 0,
+    churnedAvgSpend: chAcc.spend.n ? chAcc.spend.mean : 0,
+    retainedAvgSpend: reAcc.spend.n ? reAcc.spend.mean : 0,
+  };
+  VISIBLE=rawBuf.slice(0,50);
+}
+
+//
 </script>
