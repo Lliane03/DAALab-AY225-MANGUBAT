@@ -369,5 +369,106 @@ function streamCSV(text){
   VISIBLE=rawBuf.slice(0,50);
 }
 
-//
+// ── LOAD PIPELINE ──────────────────────────────────────────────
+async function autoFetch(){
+  ldMsg('Searching the archives…');
+  try{
+    const resp=await fetch(CSV_FILENAME);
+    if(!resp.ok) throw new Error();
+    processText(await resp.text());
+  }catch{
+    document.getElementById('uploadPrompt').style.display='flex';
+    ldMsg(`Cannot locate ${CSV_FILENAME} — upload it below.`);
+    document.getElementById('ldPct').textContent='';
+  }
+}
+function handleUpload(e){
+  const file=e.target.files[0];if(!file)return;
+  document.getElementById('uploadPrompt').style.display='none';
+  ldMsg('Reading your file…');
+  const reader=new FileReader();
+  reader.onload=ev=>processText(ev.target.result);
+  reader.readAsText(file);
+}
+function processText(text){
+  ldMsg('Parsing the ledger…');setBar(20);
+  setTimeout(()=>{
+    setBar(50);ldMsg('Computing the figures…');
+    setTimeout(()=>{
+      streamCSV(text);
+      setBar(90);ldMsg('Laying out the archives…');
+      setTimeout(()=>{
+        buildSummaryCards();
+        applyF();
+        buildInsights();
+        // Populate total count badges
+        const tc=S.total.toLocaleString();
+        document.getElementById('hdrCount').textContent=`${tc} Records Analyzed`;
+        ['totalCount','totalCount2'].forEach(id=>{
+          const el=document.getElementById(id);if(el)el.textContent=tc;
+        });
+        setBar(100);
+        setTimeout(hideLoading,300);
+      },50);
+    },30);
+  },30);
+}
+function ldMsg(m){document.getElementById('ldMsg').textContent=m;}
+function setBar(p){document.getElementById('ldBar').style.width=p+'%';document.getElementById('ldPct').textContent=p<100?p+'%':'';}
+function hideLoading(){const el=document.getElementById('ld');el.style.transition='opacity .4s';el.style.opacity='0';setTimeout(()=>el.style.display='none',400);}
+
+// ── SUMMARY CARDS ─────────────────────────────────────────────
+function buildSummaryCards(){
+  const{churnRate,churnedCount,retainedCount,spend,tenure,topSpender,total}=S;
+  document.getElementById('sumCards').innerHTML=`
+    <div class="sum-card">
+      <div class="c-lbl">Churn Rate</div>
+      <div class="c-val" style="color:var(--fail)">${churnRate}<span style="font-size:18px;font-weight:400">%</span></div>
+      <div class="c-sub">${churnedCount.toLocaleString()} departed · ${retainedCount.toLocaleString()} remain</div>
+    </div>
+    <div class="sum-card">
+      <div class="c-lbl">Avg Total Spend</div>
+      <div class="c-val" style="color:var(--accent);font-size:26px">$${spend.mean.toFixed(0)}</div>
+      <div class="c-sub">across ${total.toLocaleString()} accounts</div>
+    </div>
+    <div class="sum-card">
+      <div class="c-lbl">Avg Tenure</div>
+      <div class="c-val" style="color:var(--accent2)">${tenure.mean.toFixed(1)}</div>
+      <div class="c-sub">months of membership</div>
+    </div>
+    <div class="sum-card">
+      <div class="c-lbl">Top Spender</div>
+      <div class="c-val" style="color:#7a9fd4;font-size:18px;padding-top:4px">${topSpender?.id??'—'}</div>
+      <div class="c-sub">$${topSpender?.totalSpend.toFixed(2)??0} · ${topSpender?.churn===1?'Churned':'Retained'}</div>
+    </div>`;
+}
+
+// ── TABLE ─────────────────────────────────────────────────────
+function renderTable(visible,totalMatched){
+  document.getElementById('rc').textContent=
+    `Showing ${visible.length.toLocaleString()} of ${totalMatched.toLocaleString()} matched · ${S.total.toLocaleString()} total in registry`;
+  const tbody=document.getElementById('tBody');
+  if(!visible.length){
+    tbody.innerHTML=`<tr><td colspan="12" style="text-align:center;color:var(--muted);padding:36px;font-family:var(--font-prose);font-style:italic">No records match your inquiry.</td></tr>`;
+    return;
+  }
+  const maxSp=S.maxSpend;
+  tbody.innerHTML=visible.map(c=>{
+    const st=c.churn===1?'Churned':'Retained';
+    const pct=(c.totalSpend/maxSp*100).toFixed(0);
+    return`<tr>
+      <td style="color:var(--muted2);font-weight:500">${c.id}</td>
+      <td>${c.age}</td><td>${c.gender}</td><td>${c.tenure}</td><td>${c.usageFreq}</td>
+      <td style="color:${c.supportCalls>=7?'#e87a7a':c.supportCalls<=2?'var(--pass)':'var(--text)'};font-weight:${c.supportCalls>=7?'600':'400'}">${c.supportCalls}</td>
+      <td style="color:${c.payDelay>=20?'#e87a7a':'var(--text)'};font-weight:${c.payDelay>=20?'600':'400'}">${c.payDelay}</td>
+      <td>${c.subscription}</td><td>${c.contract}</td>
+      <td><div class="sp-wrap"><span style="min-width:54px;font-weight:500">$${c.totalSpend.toFixed(0)}</span>
+        <div class="sp-bar"><div class="sp-fill" style="width:${pct}%"></div></div></div></td>
+      <td>${c.lastInteract}d</td>
+      <td><span class="badge ${st==='Churned'?'b-ch':'b-re'}">${st}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+
 </script>
