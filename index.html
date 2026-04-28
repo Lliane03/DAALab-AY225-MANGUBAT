@@ -464,12 +464,17 @@ function streamCSV(text){
   const rSC={sx:0,sy:0,sx2:0,sxy:0,n:0};
 
   let n=0;
-  const lines=text.split('\n');
+  // Normalize line endings
+  const normalizedText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const lines=normalizedText.split('\n');
+  console.log('Total lines:', lines.length);
   const headers=lines[0].split(',');
+  console.log('Headers:', headers);
   const hi={};
   ['CustomerID','Age','Gender','Tenure','Usage Frequency','Support Calls',
    'Payment Delay','Subscription Type','Contract Length','Total Spend','Last Interaction','Churn']
   .forEach(h=>{ hi[h]=headers.indexOf(h); });
+  console.log('Header indices:', hi);
 
   for(let i=1;i<lines.length;i++){
     const line=lines[i]; if(!line.trim()) continue;
@@ -573,9 +578,12 @@ async function autoFetch(){
   ldMsg('Searching the archives…');
   try{
     const resp=await fetch(CSV_FILENAME);
-    if(!resp.ok) throw new Error();
-    processText(await resp.text());
-  }catch{
+    if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const text=await resp.text();
+    if(!text || text.trim().length<10) throw new Error('Empty file');
+    processText(text);
+  }catch(err){
+    console.error('Auto-fetch failed:', err);
     document.getElementById('uploadPrompt').style.display='flex';
     ldMsg(`Cannot locate ${CSV_FILENAME} — upload it below.`);
     document.getElementById('ldPct').textContent='';
@@ -590,25 +598,38 @@ function handleUpload(e){
   reader.readAsText(file);
 }
 function processText(text){
+  console.log('processText called, text length:', text.length);
   ldMsg('Parsing the ledger…');setBar(20);
   setTimeout(()=>{
     setBar(50);ldMsg('Computing the figures…');
     setTimeout(()=>{
-      streamCSV(text);
-      setBar(90);ldMsg('Laying out the archives…');
-      setTimeout(()=>{
-        buildSummaryCards();
-        applyF();
-        buildInsights();
-        // Populate total count badges
-        const tc=S.total.toLocaleString();
-        document.getElementById('hdrCount').textContent=`${tc} Records Analyzed`;
-        ['totalCount','totalCount2'].forEach(id=>{
-          const el=document.getElementById(id);if(el)el.textContent=tc;
-        });
-        setBar(100);
-        setTimeout(hideLoading,300);
-      },50);
+      try{
+        streamCSV(text);
+        console.log('streamCSV completed, S.total:', S.total);
+        setBar(90);ldMsg('Laying out the archives…');
+        setTimeout(()=>{
+          try{
+            buildSummaryCards();
+            applyF();
+            buildInsights();
+            // Populate total count badges
+            const tc=S.total.toLocaleString();
+            document.getElementById('hdrCount').textContent=`${tc} Records Analyzed`;
+            ['totalCount','totalCount2'].forEach(id=>{
+              const el=document.getElementById(id);if(el)el.textContent=tc;
+            });
+            setBar(100);
+            setTimeout(hideLoading,300);
+          }catch(e){
+            console.error('Error in build/render phase:', e);
+            ldMsg('Error rendering dashboard: ' + e.message);
+          }
+        },50);
+      }catch(e){
+        console.error('Error in streamCSV:', e);
+        ldMsg('Error parsing data: ' + e.message);
+        setBar(0);
+      }
     },30);
   },30);
 }
