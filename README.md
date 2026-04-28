@@ -93,7 +93,7 @@ DAALab-AY225-MANGUBAT/
 git clone https://github.com/Lliane03/DAALab-AY225-MANGUBAT.git
 ```
 2. Navigate into the project directory
-3. Choose any of the 4 options to run the dashboard
+3. Choose any of the 3 options to run the this project
 ---
 
 ### Option 1 — Open Directly *(with manual CSV upload)*
@@ -104,33 +104,31 @@ git clone https://github.com/Lliane03/DAALab-AY225-MANGUBAT.git
 
 ---
 
-### Option 2 — Python Local Server *(Recommended)*
+### Option 2 — VS Code Live Server
 
-```bash
-python -m http.server 8080
-```
+1. Open the project folder in VS Code
+2. Install the Live Server extension
+3. Right-click index.html
+4. Click “Open with Live Server”
 
-Then open:
-
-```
-http://localhost:8080
-```
-
-> The app will automatically attempt to load `customer_churn.csv`
+The dashboard will launch in your browser with automatic reloading
 
 ---
 
-### Option 3 — Node.js
+### Option 3 — GitHub Pages *(Online Access)*
 
-```bash
-npx serve .
-```
+1. Go to the repository:
+    https://github.com/Lliane03/DAALab-AY225-MANGUBAT
+2. Enable GitHub Pages:
+    * Go to Settings → Pages
+    * Under Source, select:
+        * Branch: main
+        * Folder: /root
+3. After saving, access your live site at:
 
----
+https://lliane03.github.io/DAALab-AY225-MANGUBAT/
 
-### Option 4 — VS Code Live Server
-
-Install **Live Server** → right-click `index.html` → **Open with Live Server**
+The dashboard will run directly in the browser without installation. 
 
 ---
 
@@ -233,17 +231,6 @@ customer_churn.csv
 | Chart.js     | 4.4.0   | Data visualizations |
 | PapaParse    | 5.4.1   | CSV parsing         |
 | Google Fonts | —       | Typography          |
-
----
-
-## ✦ Browser Compatibility
-
-| Browser | Status         |
-| ------- | -------------- |
-| Chrome  | ✅ Full support |
-| Firefox | ✅ Full support |
-| Edge    | ✅ Full support |
-| Safari  | ✅ Full support |
 
 ---
 
